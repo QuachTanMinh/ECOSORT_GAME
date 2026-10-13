@@ -1,0 +1,5 @@
+{
+  "name": "EcoSortQuest.Editor",
+  "references": ["EcoSortQuest.Runtime"],
+  "includePlatforms": ["Editor"]
+}

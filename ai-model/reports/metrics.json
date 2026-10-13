@@ -1,0 +1,46 @@
+{
+  "evaluation_set": "held_out_test",
+  "images": 224,
+  "accuracy": 0.90625,
+  "macro_f1": 0.9032666740695127,
+  "macro_precision": 0.9094680193634771,
+  "macro_recall": 0.8992810577586678,
+  "class_names": [
+    "Plastic",
+    "Metal",
+    "Paper"
+  ],
+  "confusion_matrix": [
+    [
+      64,
+      3,
+      6
+    ],
+    [
+      6,
+      53,
+      3
+    ],
+    [
+      3,
+      0,
+      86
+    ]
+  ],
+  "threshold": 0.75,
+  "accepted_count": 210,
+  "coverage": 0.9375,
+  "accepted_accuracy": 0.9380952380952381,
+  "all_images_metrics_include_rejected": true,
+  "target_accuracy_85_met": true,
+  "target_macro_f1_080_met": true,
+  "latency_warm_median_ms": 120.61974999960512,
+  "latency_warm_p95_ms": 144.14351000086754,
+  "latency_samples": 30,
+  "latency_includes": "decode/EXIF/RGB/resize/model; excludes disk IO and HTTP",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "tensorflow": "2.20.0",
+  "gpu_devices": [],
+  "model_sha256": "b0346d1dc428bba255705bacb451e9c6635fffc8d8a0e1a679fe838e828a5f6c",
+  "split_manifest_sha256": "eaf7e344281f308241e22d68b5c6bf41e0cec98752e2734cbd185ac9abf52adc"
+}

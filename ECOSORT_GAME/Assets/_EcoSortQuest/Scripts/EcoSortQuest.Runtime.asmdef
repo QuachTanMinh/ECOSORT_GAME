@@ -1,0 +1,6 @@
+{
+  "name": "EcoSortQuest.Runtime",
+  "rootNamespace": "EcoSortQuest",
+  "references": ["Unity.InputSystem", "UnityEngine.UI"],
+  "autoReferenced": true
+}

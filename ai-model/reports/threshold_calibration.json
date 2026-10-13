@@ -1,0 +1,165 @@
+{
+  "threshold": 0.75,
+  "selection_split": "validation",
+  "target_accepted_accuracy": 0.9,
+  "target_met": true,
+  "chosen": {
+    "threshold": 0.75,
+    "accepted": 212,
+    "coverage": 0.9464285714285714,
+    "accepted_accuracy": 0.9764150943396226
+  },
+  "candidates": [
+    {
+      "threshold": 0.75,
+      "accepted": 212,
+      "coverage": 0.9464285714285714,
+      "accepted_accuracy": 0.9764150943396226
+    },
+    {
+      "threshold": 0.76,
+      "accepted": 212,
+      "coverage": 0.9464285714285714,
+      "accepted_accuracy": 0.9764150943396226
+    },
+    {
+      "threshold": 0.77,
+      "accepted": 211,
+      "coverage": 0.9419642857142857,
+      "accepted_accuracy": 0.976303317535545
+    },
+    {
+      "threshold": 0.78,
+      "accepted": 210,
+      "coverage": 0.9375,
+      "accepted_accuracy": 0.9761904761904762
+    },
+    {
+      "threshold": 0.79,
+      "accepted": 210,
+      "coverage": 0.9375,
+      "accepted_accuracy": 0.9761904761904762
+    },
+    {
+      "threshold": 0.8,
+      "accepted": 209,
+      "coverage": 0.9330357142857143,
+      "accepted_accuracy": 0.9760765550239234
+    },
+    {
+      "threshold": 0.81,
+      "accepted": 209,
+      "coverage": 0.9330357142857143,
+      "accepted_accuracy": 0.9760765550239234
+    },
+    {
+      "threshold": 0.82,
+      "accepted": 208,
+      "coverage": 0.9285714285714286,
+      "accepted_accuracy": 0.9807692307692307
+    },
+    {
+      "threshold": 0.83,
+      "accepted": 208,
+      "coverage": 0.9285714285714286,
+      "accepted_accuracy": 0.9807692307692307
+    },
+    {
+      "threshold": 0.84,
+      "accepted": 207,
+      "coverage": 0.9241071428571429,
+      "accepted_accuracy": 0.9806763285024155
+    },
+    {
+      "threshold": 0.85,
+      "accepted": 207,
+      "coverage": 0.9241071428571429,
+      "accepted_accuracy": 0.9806763285024155
+    },
+    {
+      "threshold": 0.86,
+      "accepted": 206,
+      "coverage": 0.9196428571428571,
+      "accepted_accuracy": 0.9805825242718447
+    },
+    {
+      "threshold": 0.87,
+      "accepted": 206,
+      "coverage": 0.9196428571428571,
+      "accepted_accuracy": 0.9805825242718447
+    },
+    {
+      "threshold": 0.88,
+      "accepted": 205,
+      "coverage": 0.9151785714285714,
+      "accepted_accuracy": 0.9853658536585366
+    },
+    {
+      "threshold": 0.89,
+      "accepted": 204,
+      "coverage": 0.9107142857142857,
+      "accepted_accuracy": 0.9852941176470589
+    },
+    {
+      "threshold": 0.9,
+      "accepted": 203,
+      "coverage": 0.90625,
+      "accepted_accuracy": 0.9852216748768473
+    },
+    {
+      "threshold": 0.91,
+      "accepted": 202,
+      "coverage": 0.9017857142857143,
+      "accepted_accuracy": 0.9851485148514851
+    },
+    {
+      "threshold": 0.92,
+      "accepted": 200,
+      "coverage": 0.8928571428571429,
+      "accepted_accuracy": 0.985
+    },
+    {
+      "threshold": 0.93,
+      "accepted": 197,
+      "coverage": 0.8794642857142857,
+      "accepted_accuracy": 0.9898477157360406
+    },
+    {
+      "threshold": 0.94,
+      "accepted": 195,
+      "coverage": 0.8705357142857143,
+      "accepted_accuracy": 0.9897435897435898
+    },
+    {
+      "threshold": 0.95,
+      "accepted": 192,
+      "coverage": 0.8571428571428571,
+      "accepted_accuracy": 0.9947916666666666
+    },
+    {
+      "threshold": 0.96,
+      "accepted": 189,
+      "coverage": 0.84375,
+      "accepted_accuracy": 0.9947089947089947
+    },
+    {
+      "threshold": 0.97,
+      "accepted": 186,
+      "coverage": 0.8303571428571429,
+      "accepted_accuracy": 0.9946236559139785
+    },
+    {
+      "threshold": 0.98,
+      "accepted": 182,
+      "coverage": 0.8125,
+      "accepted_accuracy": 0.9945054945054945
+    },
+    {
+      "threshold": 0.99,
+      "accepted": 165,
+      "coverage": 0.7366071428571429,
+      "accepted_accuracy": 0.9939393939393939
+    }
+  ],
+  "warning": "Confidence gating is not an out-of-distribution detector; only known-class validation images were available."
+}

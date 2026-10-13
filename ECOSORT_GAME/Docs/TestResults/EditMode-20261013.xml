@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="20" result="Passed" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.1326944">
+  <test-suite type="TestSuite" id="1000" name="ECOSORT_GAME" fullname="ECOSORT_GAME" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.132694" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1025" name="EcoSortQuest.EditModeTests.dll" fullname="E:/Document_Collage/CNM/CK/ECOSORT_GAME/Library/ScriptAssemblies/EcoSortQuest.EditModeTests.dll" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.122661" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="10612" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1026" name="EcoSortQuest" fullname="EcoSortQuest" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.121952" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1027" name="Tests" fullname="EcoSortQuest.Tests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.121562" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="GameRulesTests" fullname="EcoSortQuest.Tests.GameRulesTests" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.046590" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1009" name="CampaignUnlockRequiresPassingThirdLevel" fullname="EcoSortQuest.Tests.GameRulesTests.CampaignUnlockRequiresPassingThirdLevel" methodname="CampaignUnlockRequiresPassingThirdLevel" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1889423232" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.014926" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1010" name="CloudMergeNeverRegressesLocalProgress" fullname="EcoSortQuest.Tests.GameRulesTests.CloudMergeNeverRegressesLocalProgress" methodname="CloudMergeNeverRegressesLocalProgress" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1230676812" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000309" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="CorrectThenWrongGivesFivePoints" fullname="EcoSortQuest.Tests.GameRulesTests.CorrectThenWrongGivesFivePoints" methodname="CorrectThenWrongGivesFivePoints" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1799542444" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000178" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1019" name="NonFiniteConfidenceIsRejected" fullname="EcoSortQuest.Tests.GameRulesTests.NonFiniteConfidenceIsRejected" methodname="NonFiniteConfidenceIsRejected" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1363851357" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000329" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1007" name="PassThresholdAndFinishAreEnforced" fullname="EcoSortQuest.Tests.GameRulesTests.PassThresholdAndFinishAreEnforced" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.005635" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1004" name="PassThresholdAndFinishAreEnforced(6,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PassThresholdAndFinishAreEnforced(6,False)" methodname="PassThresholdAndFinishAreEnforced" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1205096153" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.002118" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1005" name="PassThresholdAndFinishAreEnforced(7,True)" fullname="EcoSortQuest.Tests.GameRulesTests.PassThresholdAndFinishAreEnforced(7,True)" methodname="PassThresholdAndFinishAreEnforced" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1961339858" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000142" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="PassThresholdAndFinishAreEnforced(10,True)" fullname="EcoSortQuest.Tests.GameRulesTests.PassThresholdAndFinishAreEnforced(10,True)" methodname="PassThresholdAndFinishAreEnforced" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1137091355" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000064" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1018" name="PredictionsMustBeAcceptedConfidentAndKnown" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.004494" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1011" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;Plastic&quot;,0.92f,True,True)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;Plastic&quot;,0.92f,True,True)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="586466632" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000834" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1012" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;Paper&quot;,0.5f,True,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;Paper&quot;,0.5f,True,False)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1369500358" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000216" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1013" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;Metal&quot;,0.95f,False,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;Metal&quot;,0.95f,False,False)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1384248547" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000164" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1014" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;Unknown&quot;,0.99f,True,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;Unknown&quot;,0.99f,True,False)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="128473346" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000305" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1015" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;99&quot;,0.99f,True,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;99&quot;,0.99f,True,False)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="343212974" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000657" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1016" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;0&quot;,0.99f,True,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;0&quot;,0.99f,True,False)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="4122657" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000113" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1017" name="PredictionsMustBeAcceptedConfidentAndKnown(&quot;Plastic&quot;,1.1f,True,False)" fullname="EcoSortQuest.Tests.GameRulesTests.PredictionsMustBeAcceptedConfidentAndKnown(&quot;Plastic&quot;,1.1f,True,False)" methodname="PredictionsMustBeAcceptedConfidentAndKnown" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="434054630" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000071" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1008" name="TimeoutDoesNotAwardUnansweredItems" fullname="EcoSortQuest.Tests.GameRulesTests.TimeoutDoesNotAwardUnansweredItems" methodname="TimeoutDoesNotAwardUnansweredItems" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="50389788" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000303" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="WrongAnswerAtZeroCannotMakeScoreNegative" fullname="EcoSortQuest.Tests.GameRulesTests.WrongAnswerAtZeroCannotMakeScoreNegative" methodname="WrongAnswerAtZeroCannotMakeScoreNegative" classname="EcoSortQuest.Tests.GameRulesTests" runstate="Runnable" seed="1395502774" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.000144" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1020" name="WasteCatalogTests" fullname="EcoSortQuest.Tests.WasteCatalogTests" classname="EcoSortQuest.Tests.WasteCatalogTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.073921" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1021" name="CatalogHasEighteenUniqueEducationalItems" fullname="EcoSortQuest.Tests.WasteCatalogTests.CatalogHasEighteenUniqueEducationalItems" methodname="CatalogHasEighteenUniqueEducationalItems" classname="EcoSortQuest.Tests.WasteCatalogTests" runstate="Runnable" seed="1287030898" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.002040" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="ConveyorWrapPreservesTravelAcrossEitherEdge" fullname="EcoSortQuest.Tests.WasteCatalogTests.ConveyorWrapPreservesTravelAcrossEitherEdge" methodname="ConveyorWrapPreservesTravelAcrossEitherEdge" classname="EcoSortQuest.Tests.WasteCatalogTests" runstate="Runnable" seed="1387057848" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.001111" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="DeckKeepsRequestedCategoriesAndAvoidsEarlyRepeats" fullname="EcoSortQuest.Tests.WasteCatalogTests.DeckKeepsRequestedCategoriesAndAvoidsEarlyRepeats" methodname="DeckKeepsRequestedCategoriesAndAvoidsEarlyRepeats" classname="EcoSortQuest.Tests.WasteCatalogTests" runstate="Runnable" seed="798678338" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.001590" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="EveryModelHasUsablePickupColliderAndSelection" fullname="EcoSortQuest.Tests.WasteCatalogTests.EveryModelHasUsablePickupColliderAndSelection" methodname="EveryModelHasUsablePickupColliderAndSelection" classname="EcoSortQuest.Tests.WasteCatalogTests" runstate="Runnable" seed="1485244323" result="Passed" start-time="2026-10-13 05:52:28Z" end-time="2026-10-13 05:52:28Z" duration="0.067922" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/tanmi/AppData/LocalLow/DefaultCompany/ECOSORT_GAME\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

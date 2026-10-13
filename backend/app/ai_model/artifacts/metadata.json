@@ -1,0 +1,42 @@
+{
+  "class_names": [
+    "Plastic",
+    "Metal",
+    "Paper"
+  ],
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "input_dtype": "float32",
+  "input_range": [
+    0,
+    255
+  ],
+  "preprocessing_in_model": "Rescaling(1/127.5, offset=-1)",
+  "resize": "Pillow bilinear, direct resize, EXIF transpose, RGB",
+  "threshold": 0.75,
+  "threshold_target_met_on_validation": true,
+  "model_sha256": "5f97707c552ac491e66f720c1b9bca1eab2325622ea5328e7f9cad05eabbde38",
+  "split_manifest_sha256": "eaf7e344281f308241e22d68b5c6bf41e0cec98752e2734cbd185ac9abf52adc",
+  "seed": 42,
+  "tensorflow": "2.20.0",
+  "keras": "3.13.2",
+  "python": "3.13.15",
+  "selected_stage": "head",
+  "head_validation_loss": 0.15874817967414856,
+  "fine_tune_validation_loss": 0.16749514639377594,
+  "validation_accuracy": 0.9508928571428571,
+  "epochs_run": {
+    "head": 19,
+    "fine_tune": 12
+  },
+  "training_seconds": 418.0166465630001,
+  "selection": "Lowest validation loss between stage checkpoints; train_gpu does not load test tensors",
+  "gpu_devices": [
+    "/physical_device:GPU:0",
+    "/physical_device:GPU:1"
+  ],
+  "precision_policy": "float32"
+}

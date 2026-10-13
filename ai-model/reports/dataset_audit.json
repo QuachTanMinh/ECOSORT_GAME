@@ -1,0 +1,190 @@
+{
+  "dataset_root": "E:\\Document_Collage\\CNM\\CK\\Dataset\\dataset-plastic-metal-paper",
+  "seed": 42,
+  "class_names": [
+    "Plastic",
+    "Metal",
+    "Paper"
+  ],
+  "total": 1486,
+  "class_counts": {
+    "Plastic": 482,
+    "Metal": 410,
+    "Paper": 594
+  },
+  "split_counts": {
+    "train": {
+      "Metal": 286,
+      "Paper": 416,
+      "Plastic": 336
+    },
+    "validation": {
+      "Metal": 62,
+      "Paper": 89,
+      "Plastic": 73
+    },
+    "test": {
+      "Metal": 62,
+      "Paper": 89,
+      "Plastic": 73
+    }
+  },
+  "group_count": 1418,
+  "largest_group": 32,
+  "exact_duplicate_excess": 0,
+  "near_hash_distance": 4,
+  "multi_image_groups": [
+    [
+      "plastic/plastic118.jpg",
+      "plastic/plastic137.jpg"
+    ],
+    [
+      "plastic/plastic12.jpg",
+      "plastic/plastic180.jpg",
+      "plastic/plastic256.jpg",
+      "plastic/plastic26.jpg",
+      "plastic/plastic277.jpg",
+      "plastic/plastic294.jpg",
+      "plastic/plastic296.jpg",
+      "plastic/plastic35.jpg",
+      "plastic/plastic358.jpg",
+      "plastic/plastic385.jpg",
+      "plastic/plastic43.jpg",
+      "plastic/plastic76.jpg",
+      "plastic/plastic90.jpg"
+    ],
+    [
+      "plastic/plastic150.jpg",
+      "plastic/plastic3.jpg"
+    ],
+    [
+      "plastic/plastic17.jpg",
+      "plastic/plastic275.jpg"
+    ],
+    [
+      "plastic/plastic177.jpg",
+      "plastic/plastic179.jpg"
+    ],
+    [
+      "metal/metal120.jpg",
+      "metal/metal50.jpg"
+    ],
+    [
+      "metal/metal141.jpg",
+      "metal/metal390.jpg"
+    ],
+    [
+      "metal/metal165.jpg",
+      "metal/metal166.jpg"
+    ],
+    [
+      "metal/metal331.jpg",
+      "metal/metal337.jpg"
+    ],
+    [
+      "metal/metal394.jpg",
+      "metal/metal76.jpg"
+    ],
+    [
+      "paper/paper110.jpg",
+      "paper/paper117.jpg",
+      "paper/paper118.jpg",
+      "paper/paper119.jpg",
+      "paper/paper143.jpg",
+      "paper/paper151.jpg",
+      "paper/paper204.jpg",
+      "paper/paper239.jpg",
+      "paper/paper255.jpg",
+      "paper/paper277.jpg",
+      "paper/paper317.jpg",
+      "paper/paper322.jpg",
+      "paper/paper324.jpg",
+      "paper/paper329.jpg",
+      "paper/paper347.jpg",
+      "paper/paper361.jpg",
+      "paper/paper368.jpg",
+      "paper/paper383.jpg",
+      "paper/paper385.jpg",
+      "paper/paper414.jpg",
+      "paper/paper427.jpg",
+      "paper/paper444.jpg",
+      "paper/paper477.jpg",
+      "paper/paper493.jpg",
+      "paper/paper497.jpg",
+      "paper/paper498.jpg",
+      "paper/paper50.jpg",
+      "paper/paper54.jpg",
+      "paper/paper552.jpg",
+      "paper/paper557.jpg",
+      "paper/paper560.jpg",
+      "paper/paper582.jpg"
+    ],
+    [
+      "paper/paper136.jpg",
+      "paper/paper148.jpg"
+    ],
+    [
+      "paper/paper147.jpg",
+      "paper/paper99.jpg"
+    ],
+    [
+      "paper/paper152.jpg",
+      "paper/paper392.jpg"
+    ],
+    [
+      "paper/paper176.jpg",
+      "paper/paper549.jpg"
+    ],
+    [
+      "paper/paper180.jpg",
+      "paper/paper284.jpg"
+    ],
+    [
+      "paper/paper185.jpg",
+      "paper/paper390.jpg"
+    ],
+    [
+      "paper/paper246.jpg",
+      "paper/paper349.jpg"
+    ],
+    [
+      "paper/paper249.jpg",
+      "paper/paper419.jpg"
+    ],
+    [
+      "paper/paper265.jpg",
+      "paper/paper408.jpg"
+    ],
+    [
+      "paper/paper305.jpg",
+      "paper/paper308.jpg"
+    ],
+    [
+      "paper/paper345.jpg",
+      "paper/paper451.jpg"
+    ],
+    [
+      "paper/paper373.jpg",
+      "paper/paper511.jpg"
+    ],
+    [
+      "paper/paper459.jpg",
+      "paper/paper466.jpg"
+    ],
+    [
+      "paper/paper522.jpg",
+      "paper/paper534.jpg"
+    ],
+    [
+      "paper/paper540.jpg",
+      "paper/paper56.jpg"
+    ],
+    [
+      "paper/paper68.jpg",
+      "paper/paper74.jpg"
+    ]
+  ],
+  "explicit_object_session_groups": false,
+  "invalid_images": [],
+  "limitations": "No object/session metadata supplied. dHash grouping is heuristic, not proof of object-disjoint splits."
+}

@@ -1,0 +1,6 @@
+{
+  "name": "EcoSortQuest.EditModeTests",
+  "references": ["EcoSortQuest.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

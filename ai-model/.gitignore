@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.keras/
+.matplotlib/
+handoff/
+artifacts/*.keras
+artifacts/*.npz
+reports/feature-cache/
