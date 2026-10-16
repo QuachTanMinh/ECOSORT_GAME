@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="13" result="Skipped:Ignored" total="13" passed="12" failed="0" inconclusive="0" skipped="1" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:36:48Z" duration="67.2541456">
+  <test-suite type="TestSuite" id="1021" name="ECOSORT_GAME" fullname="ECOSORT_GAME" runstate="Runnable" testcasecount="13" result="Skipped" label="Ignored" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:36:48Z" duration="67.254146" total="13" passed="12" failed="0" inconclusive="0" skipped="1" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <reason>
+      <message><![CDATA[One or more child tests were ignored]]></message>
+    </reason>
+    <test-suite type="Assembly" id="1036" name="EcoSortQuest.PlayModeTests.dll" fullname="E:/Document_Collage/CNM/CK/ECOSORT_GAME/Library/ScriptAssemblies/EcoSortQuest.PlayModeTests.dll" runstate="Runnable" testcasecount="13" result="Skipped" label="Ignored" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:36:48Z" duration="67.241132" total="13" passed="12" failed="0" inconclusive="0" skipped="1" asserts="0">
+      <properties>
+        <property name="_PID" value="30068" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <reason>
+        <message><![CDATA[One or more child tests were ignored]]></message>
+      </reason>
+      <test-suite type="TestSuite" id="1037" name="EcoSortQuest" fullname="EcoSortQuest" runstate="Runnable" testcasecount="13" result="Skipped" label="Ignored" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:36:48Z" duration="67.239818" total="13" passed="12" failed="0" inconclusive="0" skipped="1" asserts="0">
+        <properties />
+        <reason>
+          <message><![CDATA[One or more child tests were ignored]]></message>
+        </reason>
+        <test-suite type="TestSuite" id="1038" name="Tests" fullname="EcoSortQuest.Tests" runstate="Runnable" testcasecount="13" result="Skipped" label="Ignored" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:36:48Z" duration="67.238982" total="13" passed="12" failed="0" inconclusive="0" skipped="1" asserts="0">
+          <properties />
+          <reason>
+            <message><![CDATA[One or more child tests were ignored]]></message>
+          </reason>
+          <test-suite type="TestFixture" id="1022" name="ClientFlowTests" fullname="EcoSortQuest.Tests.ClientFlowTests" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" testcasecount="13" result="Skipped" label="Ignored" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:36:48Z" duration="67.236759" total="13" passed="12" failed="0" inconclusive="0" skipped="1" asserts="0">
+            <properties />
+            <reason>
+              <message><![CDATA[One or more child tests were ignored]]></message>
+            </reason>
+            <test-case id="1033" name="AiMissionRequiresOwnChoiceAndSeparatesMockFromReal" fullname="EcoSortQuest.Tests.ClientFlowTests.AiMissionRequiresOwnChoiceAndSeparatesMockFromReal" methodname="AiMissionRequiresOwnChoiceAndSeparatesMockFromReal" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="726260554" result="Passed" start-time="2026-10-15 01:35:41Z" end-time="2026-10-15 01:35:42Z" duration="1.695317" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1035" name="AudioAssetsAndTwoDimensionalRoutingAreReady" fullname="EcoSortQuest.Tests.ClientFlowTests.AudioAssetsAndTwoDimensionalRoutingAreReady" methodname="AudioAssetsAndTwoDimensionalRoutingAreReady" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="479779638" result="Passed" start-time="2026-10-15 01:35:42Z" end-time="2026-10-15 01:35:43Z" duration="0.428846" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="CampaignScanAndSimulatedChallengeWorkEndToEnd" fullname="EcoSortQuest.Tests.ClientFlowTests.CampaignScanAndSimulatedChallengeWorkEndToEnd" methodname="CampaignScanAndSimulatedChallengeWorkEndToEnd" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="531351628" result="Passed" start-time="2026-10-15 01:35:43Z" end-time="2026-10-15 01:36:42Z" duration="59.372332" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="ClickAndDropOutsideDoNotScore" fullname="EcoSortQuest.Tests.ClientFlowTests.ClickAndDropOutsideDoNotScore" methodname="ClickAndDropOutsideDoNotScore" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="1868437923" result="Passed" start-time="2026-10-15 01:36:42Z" end-time="2026-10-15 01:36:42Z" duration="0.162809" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="ConnectionMenuValidatesUrlAndKeepsChoiceAcrossScenes" fullname="EcoSortQuest.Tests.ClientFlowTests.ConnectionMenuValidatesUrlAndKeepsChoiceAcrossScenes" methodname="ConnectionMenuValidatesUrlAndKeepsChoiceAcrossScenes" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="2089686396" result="Passed" start-time="2026-10-15 01:36:42Z" end-time="2026-10-15 01:36:43Z" duration="0.285565" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="ConveyorCarriesWasteAndPauseStopsBoth" fullname="EcoSortQuest.Tests.ClientFlowTests.ConveyorCarriesWasteAndPauseStopsBoth" methodname="ConveyorCarriesWasteAndPauseStopsBoth" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="765087445" result="Passed" start-time="2026-10-15 01:36:43Z" end-time="2026-10-15 01:36:43Z" duration="0.687475" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1026" name="FieldGuideShowsAllCategoriesAndModelsRender" fullname="EcoSortQuest.Tests.ClientFlowTests.FieldGuideShowsAllCategoriesAndModelsRender" methodname="FieldGuideShowsAllCategoriesAndModelsRender" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="1959883940" result="Passed" start-time="2026-10-15 01:36:43Z" end-time="2026-10-15 01:36:44Z" duration="0.580172" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="ImageFileLoadsAndInvalidPathDoesNotCrash" fullname="EcoSortQuest.Tests.ClientFlowTests.ImageFileLoadsAndInvalidPathDoesNotCrash" methodname="ImageFileLoadsAndInvalidPathDoesNotCrash" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="443807857" result="Passed" start-time="2026-10-15 01:36:44Z" end-time="2026-10-15 01:36:44Z" duration="0.162543" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1032" name="LearningHubThemesAndStatisticsAreReachable" fullname="EcoSortQuest.Tests.ClientFlowTests.LearningHubThemesAndStatisticsAreReachable" methodname="LearningHubThemesAndStatisticsAreReachable" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="1507657349" result="Passed" start-time="2026-10-15 01:36:44Z" end-time="2026-10-15 01:36:45Z" duration="1.037677" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1034" name="LearningRestRoundTripDoesNotDuplicate" fullname="EcoSortQuest.Tests.ClientFlowTests.LearningRestRoundTripDoesNotDuplicate" methodname="LearningRestRoundTripDoesNotDuplicate" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="1201970408" result="Skipped" label="Ignored" start-time="2026-10-15 01:36:45Z" end-time="2026-10-15 01:36:45Z" duration="0.053130" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <reason>
+                <message><![CDATA[Set a dedicated local backend URL for REST integration.]]></message>
+              </reason>
+            </test-case>
+            <test-case id="1031" name="LearningTestHidesAnswersSavesHistoryAndDoesNotUnlockCampaign" fullname="EcoSortQuest.Tests.ClientFlowTests.LearningTestHidesAnswersSavesHistoryAndDoesNotUnlockCampaign" methodname="LearningTestHidesAnswersSavesHistoryAndDoesNotUnlockCampaign" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="630223044" result="Passed" start-time="2026-10-15 01:36:45Z" end-time="2026-10-15 01:36:47Z" duration="2.245191" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1029" name="PauseStopsTimerAndExpiryEndsRound" fullname="EcoSortQuest.Tests.ClientFlowTests.PauseStopsTimerAndExpiryEndsRound" methodname="PauseStopsTimerAndExpiryEndsRound" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="1927558425" result="Passed" start-time="2026-10-15 01:36:47Z" end-time="2026-10-15 01:36:48Z" duration="0.461098" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1030" name="RestWithoutUrlReportsErrorAndKeepsLocalSave" fullname="EcoSortQuest.Tests.ClientFlowTests.RestWithoutUrlReportsErrorAndKeepsLocalSave" methodname="RestWithoutUrlReportsErrorAndKeepsLocalSave" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="146210557" result="Passed" start-time="2026-10-15 01:36:48Z" end-time="2026-10-15 01:36:48Z" duration="0.043094" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/tanmi/AppData/LocalLow/DefaultCompany/ECOSORT_GAME\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

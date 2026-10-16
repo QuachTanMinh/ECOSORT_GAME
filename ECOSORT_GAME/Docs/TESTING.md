@@ -1,5 +1,38 @@
 # Kiểm thử Unity Client
 
+## Organic và Khám phá 3D — 15/10/2026
+
+- EditMode: **23 passed, 0 failed**, `TestResults/Organic-EditMode-20261015.xml`.
+- PlayMode: **16 passed, 0 failed, 1 skipped**, `TestResults/Organic-PlayMode-20261015.xml`; bỏ qua bài Unity–backend trực tiếp do không cấu hình server test riêng. Các ca đạt kiểm tra di chuyển bàn phím, pause, giới hạn khoảng cách nhặt/bỏ, sửa sai không tính điểm lặp, đặt xuống/nhặt lại, dọn đủ 12 vật và lưu lịch sử Explore. Bộ kéo/thả, âm thanh, cài đặt và chiến dịch cũ cũng đạt.
+- Backend: **10 passed**, gồm schema Organic/Explore, checkpoint bốn đầu ra và đối chiếu API với inference trực tiếp trên 10 ảnh Organic test đầu tiên (kể cả ảnh model đoán sai).
+- Công cụ AI: **27 passed, 1 skipped**; bỏ qua smoke GPU opt-in. Huấn luyện thực tế chạy CPU; 372 ảnh held-out được đánh giá riêng trong `ai-model/reports-organic/metrics.json`.
+- Đã xem ảnh `Evidence/exploration-park-start.png`, `exploration-result.png` và `02-gameplay.png`: nhân vật, bốn thùng, HUD và màn kết quả hiển thị rõ ở 1600×900.
+- Windows build thành công: **106173462 bytes**, exit code 0, log `Logs/Organic-Windows-Build.log`; đầu ra `Builds/Windows/`.
+
+Chưa kiểm thử độc lập ảnh điện thoại, Docker/Adafruit mới, thiết bị AR hoặc playtest thủ công bản standalone. Các kết quả cũ bên dưới thuộc lần chạy trước.
+
+## Thanh âm lượng 15/10/2026
+
+Audio-Volume-20261015.xml: **2/2 passed**. Kiểm tra ba slider thay đổi source ngay, tổng 50% × nhạc 40% = 20%, tổng 50% × hiệu ứng 80% = 40%; giữ giá trị sau tải lại scene, clamp về 0–100%, clip/routing/Nghe thử không hồi quy. Ảnh audio-volume-controls.png đã được xem. Test khôi phục mức âm người dùng sau khi chạy.
+
+## Bối cảnh rộng và âm thanh 15/10/2026
+
+Environment-Audio-20261015.xml: **12 passed, 0 failed, 1 ignored** (REST integration không chạy lại vì không cấu hình backend riêng). Kiểm thử bao gồm kéo thả, ba bối cảnh, model/âm thanh được nạp, sample nhạc không rỗng, nguồn 2D, bật/tắt âm. Audio-Preview-20261015.xml: **1/1 passed** sau bổ sung bỏ Editor mute bằng nút Nghe thử. Đã xem ảnh ba bối cảnh mới và audio-settings. Test khôi phục các cấu hình âm bị thay đổi, không tự sửa Windows mixer.
+
+Hiệu ứng Kenney CC0 có license trong Resources/Audio; nhạc nền được tổng hợp runtime. Chưa khẳng định loa/tai nghe của người dùng nghe được chỉ từ kiểm thử tự động. Xem AUDIO-CREDITS.md để thử trực tiếp và kiểm tra thiết bị đầu ra nếu còn im.
+
+Build Windows đợt bối cảnh/âm thanh thành công: 106.141.238 bytes, Environment-Audio-Build.log kết thúc return code 0. Bản build chưa được nghe thử trên loa của người dùng.
+
+## Nâng cấp học tập 15/10/2026
+
+- EditMode: **23/23 đạt**, Learning-EditMode-20261015.xml. Bổ sung danh mục bối cảnh, ôn câu sai theo đáp án gần nhất, thống kê tách kiểm tra và chống trùng outbox.
+- PlayMode: **12/12 đạt**, Learning-PlayMode-20261015.xml. Bao gồm 8 ca cũ, 3 ca học/kiểm tra/bối cảnh/nhiệm vụ mock và 1 ca Unity REST → FastAPI local thật ở 127.0.0.1:18015. Gửi lại cùng lượt hai lần, GET trả một lượt và 9 câu chưa trả lời. Backend riêng chỉ dùng local, đã dừng sau kiểm tra.
+- Backend: **7/7 đạt** ngày 15/10, pytest gồm model thật, schema lịch sử, idempotency, conflict, phân tách player và lưu qua lần khởi động lại. Có một deprecation warning của TestClient/httpx, không có test thất bại.
+- Đã xem các ảnh learning-hub, learning-statistics, learning-test-school, learning-answer-review, learning-context-Home/School/Park và learning-ai-mission-mock trong Evidence. Ảnh nhiệm vụ được ghi rõ mock.
+- Windows x64: build thành công, **106.120.554 bytes**, Learning-WindowsBuild.log kết thúc return code 0. Chưa thực hiện playtest standalone trên máy nhận.
+
+Các test không nghiệm thu webcam/loa thực tế, ảnh điện thoại mới, Docker trên máy nhận hay luồng ghi Adafruit mới. Lịch sử chi tiết nằm ở backend local; Dashboard cloud cũ không có thống kê chi tiết mới. Chạy bộ PlayMode trong Editor không có ECOSORT_LEARNING_TEST_URL sẽ bỏ qua riêng ca REST integration. Các kết quả bên dưới là mốc lịch sử trước nâng cấp.
+
 ## Bản nâng cấp gameplay ngày 13/10/2026
 
 - **EditMode: 20/20 passed**, `TestResults/EditMode-20261013.xml`: luật cũ và danh mục 18 vật phẩm, bộ chọn vật phẩm theo nhóm, vòng lại băng chuyền, collider của tất cả mô hình.
@@ -56,4 +89,10 @@ Chưa kiểm thử thủ công webcam/quyền camera, ảnh EXIF, Android/cảm 
 | M18 | Android AR và cảm ứng | Chưa nằm trong lần kiểm thử PC này |
 
 M12/M17/M18 cần webcam/backend/phần cứng tương ứng; không đánh dấu pass khi chưa kiểm tra. Console không được có lỗi runtime trong từng kịch bản. Ghi ngày, thiết bị, resolution, ảnh và Pass/Fail khi chạy thủ công.
+
+## Kiểm chứng menu cài đặt và âm kéo/thả — 15/10/2026
+
+PlayMode: **15 passed, 0 failed, 1 skipped** trong `TestResults/Settings-Sound-20261015.xml`. Bài REST integration bỏ qua vì lần này không cấu hình backend kiểm thử. Các bài đạt gồm chuỗi pickup/drop/correct hoặc retry, kiểm tra không tiết lộ đáp án qua âm trong chế độ kiểm tra, mở ba tab cài đặt và khôi phục trạng thái đang chơi hoặc đang tạm dừng.
+
+Đã xem ba ảnh 1600×900: `Evidence/settings-audio-tab.png`, `Evidence/settings-visual-tab.png`, `Evidence/settings-gameplay-tab.png`. Windows build thành công, 106155590 bytes, exit code 0; log `Logs/Settings-Sound-Build.log`. Chưa kiểm tra nghe trực tiếp qua loa/tai nghe hoặc thao tác toàn màn hình trong bản standalone.
 

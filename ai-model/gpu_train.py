@@ -55,8 +55,8 @@ def train_gpu(dataset, run, config=None):
     with manifest.open(encoding="utf-8", newline="") as stream:
         rows = list(csv.DictReader(stream))
     sets = {name: [r for r in rows if r["split"] == name] for name in ("train", "validation", "test")}
-    if any({int(r["label"]) for r in part} != {0, 1, 2} for part in sets.values()):
-        raise ValueError("Every split must contain all three classes")
+    if any({int(r["label"]) for r in part} != set(range(len(CLASS_NAMES))) for part in sets.values()):
+        raise ValueError("Every split must contain all configured classes")
     if len({r["path"] for r in rows}) != len(rows):
         raise ValueError("Repeated path in manifest")
     for key in ("group_id", "sha256_pixels"):
@@ -95,10 +95,10 @@ def train_gpu(dataset, run, config=None):
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
     x = tf.keras.layers.Dense(128, activation="relu")(x)
     x = tf.keras.layers.Dropout(.35)(x)
-    outputs = tf.keras.layers.Dense(3, activation="softmax", dtype="float32", name="class_probabilities")(x)
+    outputs = tf.keras.layers.Dense(len(CLASS_NAMES), activation="softmax", dtype="float32", name="class_probabilities")(x)
     model = tf.keras.Model(inputs, outputs, name="ecosort_mobilenetv2")
-    counts = np.bincount(y_train, minlength=3)
-    class_weights = {i: float(len(y_train) / (3 * counts[i])) for i in range(3)}
+    counts = np.bincount(y_train, minlength=len(CLASS_NAMES))
+    class_weights = {i: float(len(y_train) / (len(CLASS_NAMES) * counts[i])) for i in range(len(CLASS_NAMES))}
     histories = {}; start = time.perf_counter()
 
     def fit_phase(phase, epochs, lr, patience):

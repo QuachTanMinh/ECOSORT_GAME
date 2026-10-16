@@ -20,7 +20,7 @@ markdown("""# ECOSORT QUEST AR — Kaggle GPU Training
 
 Pipeline độc lập: audit/chia nhóm → head → fine-tune → chọn checkpoint/ngưỡng bằng validation → test → export cho backend.
 
-**Trước Run All:** thêm dataset chứa `plastic/`, `metal/`, `paper/` bằng Add Input; Settings → Accelerator → GPU; bật Internet để tải trọng số ImageNet. Không cài lại TensorFlow/CUDA bằng pip. Notebook giữ phiên bản runtime thực tế trong output. Mặc định dùng một GPU (T4 x2 vẫn chỉ dùng GPU đầu), float32 để dễ chạy backend CPU.
+**Trước Run All:** thêm dataset chứa `plastic/`, `metal/`, `paper/`, `organic/` bằng Add Input; Settings → Accelerator → GPU; bật Internet để tải trọng số ImageNet. Không cài lại TensorFlow/CUDA bằng pip. Notebook giữ phiên bản runtime thực tế trong output. Mặc định dùng một GPU (T4 x2 vẫn chỉ dùng GPU đầu), float32 để dễ chạy backend CPU.
 
 Notebook chứa toàn bộ source, không cần upload code riêng. Chỉ dùng 3 lớp trên nếu input có thêm lớp. Không tự giải nén zip: upload bộ ảnh để Kaggle giải nén thành thư mục, hoặc giải nén an toàn trước. Không ghi vào `/kaggle/input`.
 
@@ -46,7 +46,7 @@ markdown("""## 1. Cấu hình — sửa trước khi chạy
 
 Đặt `DATASET_ROOT` là thư mục **cha của ba thư mục lớp**, không phải đường dẫn zip. Để `None` nếu chỉ có đúng một bộ dữ liệu phù hợp trong Input. Chọn `RUN_NAME` mới cho mỗi lần train, không ghi đè model cũ. `GROUPS_CSV` tùy chọn có cột `path,group_id` cho vật phẩm/phiên chụp. Dataset hiện tại thiếu ID gốc nên dHash chỉ giảm rò rỉ, không chứng minh object-disjoint.
 """)
-code('''DATASET_ROOT = None  # Ví dụ: Path("/kaggle/input/your-dataset/dataset-plastic-metal-paper")
+code('''DATASET_ROOT = None  # Ví dụ: Path("/kaggle/input/your-dataset/dataset-four-classes")
 GROUPS_CSV = None
 RUN_NAME = "ecosort_gpu_v1"
 CONFIG = {
@@ -61,12 +61,12 @@ RUN = Path("/kaggle/working") / RUN_NAME
 assert not RUN.exists(), "Run already exists. Choose a new RUN_NAME or restart a clean session."
 if DATASET_ROOT is None:
     candidates = sorted({p.parent for p in Path("/kaggle/input").rglob("plastic")
-                         if p.is_dir() and all((p.parent / c).is_dir() for c in ("plastic", "metal", "paper"))})
+                         if p.is_dir() and all((p.parent / c).is_dir() for c in ("plastic", "metal", "paper", "organic"))})
     print("Dataset candidates:", candidates)
     assert len(candidates) == 1, "Set DATASET_ROOT explicitly to one dataset root."
     DATASET_ROOT = candidates[0]
 DATASET_ROOT = Path(DATASET_ROOT)
-assert all((DATASET_ROOT / c).is_dir() for c in ("plastic", "metal", "paper"))
+assert all((DATASET_ROOT / c).is_dir() for c in ("plastic", "metal", "paper", "organic"))
 print("Input:", DATASET_ROOT, "Output:", RUN)
 ''')
 markdown("## 2. Source tự chứa — không cần sửa cell này")

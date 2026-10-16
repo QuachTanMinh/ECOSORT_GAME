@@ -81,6 +81,7 @@ namespace EcoSortQuest
         }
         public WasteItem Item(WasteType type, Vector3 position)
         {
+            if (type == WasteType.Organic) return CatalogItem(WasteCatalog.Get(type,0),position);
             var go = new GameObject(type + " Item"); go.transform.SetParent(root, false); go.transform.localPosition = position;
             var item = go.AddComponent<WasteItem>(); item.type = type;
             var color = WasteInfo.Color(type);

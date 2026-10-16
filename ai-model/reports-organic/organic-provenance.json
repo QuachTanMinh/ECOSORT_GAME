@@ -1,0 +1,11 @@
+{
+  "source": "https://www.kaggle.com/datasets/mostafaabla/garbage-classification",
+  "author": "Mostafa Mohamed",
+  "version": 1,
+  "original_class": "biological",
+  "target_class": "Organic",
+  "license": "Database: Open Database, Contents: Copyright Original Authors",
+  "images": 985,
+  "archive_sha256": "bf0255312ae3c7db71f38af7faf51b720a9279391c69c2d185b442012b93544d",
+  "limitation": "Labels inherited from public dataset; source/background shift versus original three classes. Raw images excluded from Git."
+}

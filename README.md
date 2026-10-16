@@ -1,8 +1,14 @@
 # EcoSort Quest
 
+**Bản bốn nhóm rác và Khám phá 3D (15/10/2026):** 36 vật phẩm theo Nhà ở/Trường học/Công viên; thêm Organic, nhân vật đi nhặt rác và bốn thùng. Vào **Học tập / AI / Thống kê → chọn bối cảnh → Khám phá 3D**. Mô hình bốn lớp đã huấn luyện và tích hợp vào backend. Xem [cách chơi, kết quả AI và cập nhật Docker](ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md).
+
+**Nâng cấp học tập 15/10/2026:** Menu → Học tập / AI / Thống kê để chọn Học, Kiểm tra, Ôn câu sai, ba bối cảnh và nhiệm vụ vật thật. Có lịch sử từng đáp án và API riêng; xem [hướng dẫn nâng cấp](ECOSORT_GAME/Docs/LEARNING-UPGRADE.md). Cập nhật backend cùng client để dùng `/learning/sessions`.
+
+Xác minh bản nâng cấp: **23/23 EditMode, 12/12 PlayMode, 7/7 backend**, có ca Unity–FastAPI lịch sử thật trên backend local riêng; Windows build thành công. Chưa nghiệm thu webcam/loa, ảnh mới hay Docker/cloud của bản mới. Chi tiết trong [TESTING](ECOSORT_GAME/Docs/TESTING.md).
+
 Game giáo dục phân loại rác trên Windows, Unity 6000.6.2f1 + FastAPI + MobileNetV2 + Adafruit IO.
 
-Giữ chuột để kéo vật phẩm đang chạy trên băng chuyền, thả vào thùng Nhựa / Kim loại / Giấy. Có 18 mẫu vật phẩm, sổ tay kiến thức, ba level với độ khó tăng dần, pause, lưu tiến trình và thử thách 3D mô phỏng sau chiến dịch.
+Giữ chuột để kéo vật phẩm đang chạy trên băng chuyền, thả vào thùng Nhựa / Kim loại / Giấy / Hữu cơ; hoặc chọn Khám phá 3D để điều khiển nhân vật đi nhặt rác. Có 36 mẫu vật phẩm, sổ tay kiến thức, ba level với độ khó tăng dần, pause, lưu tiến trình và thử thách AR mô phỏng sau chiến dịch.
 
 ![Gameplay Windows](ECOSORT_GAME/Docs/Evidence/02-gameplay.png)
 

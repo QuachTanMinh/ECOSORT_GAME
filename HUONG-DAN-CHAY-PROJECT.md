@@ -1,4 +1,14 @@
+# Cập nhật Organic và Khám phá 3D — 15/10/2026
+
+Xem [hướng dẫn bản mới](ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md): 36 vật phẩm theo bối cảnh, bốn nhóm rác, điều khiển nhân vật bằng WASD/E và mô hình AI bốn lớp. Backend Docker cần `docker compose up --build -d` trong thư mục `backend`; backend Python cần khởi động lại. `/health` phải có `Organic`. Source chứa checkpoint đã huấn luyện, không cần train lại để chơi.
+
 # Hướng dẫn chạy và chia sẻ EcoSort Quest
+
+## Bổ sung học tập ngày 15/10/2026
+
+Menu → **Học tập / AI / Thống kê**: Học có hướng dẫn, Kiểm tra, Ôn câu sai, ba bối cảnh và nhiệm vụ AI. Xem [hướng dẫn chi tiết](ECOSORT_GAME/Docs/LEARNING-UPGRADE.md). Học không cần mở khóa chiến dịch. Offline dùng được học/kiểm tra/ôn; nhiệm vụ AI thật cần Online và FastAPI.
+
+Cập nhật source rồi dừng/chạy lại FastAPI; Docker chạy `docker compose up -d --build` trong backend. API `/learning/sessions` lưu lịch sử trong learning.json ở backend/volume. Sáu feed Adafruit giữ nguyên; thống kê chi tiết không nằm trên Dashboard hiện tại. Client giữ lượt chưa gửi để thử lại từ Kết quả học tập. Báo cáo Word 13/10 là mốc trước nâng cấp này.
 
 Cập nhật ngày 13/10/2026. Bản Windows / Unity Editor có 18 mẫu rác, sổ tay phân loại, băng chuyền chuyển động và kéo thả vào thùng. Thử thách AR hiện là mô phỏng 3D trên PC. Repo gốc có README và .gitignore để đưa source lên GitHub; không cần installer.
 
@@ -227,4 +237,3 @@ Trên máy backend, dùng `ipconfig` lấy IPv4 của mạng LAN, ví dụ `192.
 - [ ] Nếu gửi bản exe: build mới, gửi đầy đủ thư mục và thử standalone.
 
 Backend đã chạy lại 6/6 test thành công ngày 13/10/2026. Test cloud adapter dùng transport mô phỏng, không thay cho nghiệm thu cloud. Dữ liệu sáu feed thực tế đã được quan sát trong tài khoản ngày 13/10. Gameplay nâng cấp đã chạy 20/20 EditMode và 7/8 PlayMode test thành công, có kiểm tra ảnh giao diện. Docker có cấu hình, tài liệu này không tự chứng minh container đã build/run trên máy nhận.
-

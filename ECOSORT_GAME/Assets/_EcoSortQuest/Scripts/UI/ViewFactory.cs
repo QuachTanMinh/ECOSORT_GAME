@@ -13,6 +13,7 @@ namespace EcoSortQuest
         public static readonly Color Accent = new Color(.08f, .46f, .37f);
         public static readonly Color Cream = new Color(.96f, .96f, .91f);
         public RectTransform Root { get; }
+        public Action SettingsRequested { get; set; }
         readonly Font font;
         public ViewFactory(Transform parent)
         {
@@ -56,9 +57,22 @@ namespace EcoSortQuest
             button.targetGraphic = rect.GetComponent<Image>();
             var colors = button.colors; colors.highlightedColor = new Color(.82f, .94f, .85f);
             colors.pressedColor = new Color(.65f, .83f, .72f); colors.disabledColor = new Color(.7f, .73f, .7f);
-            button.colors = colors; button.onClick.AddListener(() => clicked?.Invoke());
+            button.colors = colors; button.onClick.AddListener(() => { EcoSortAudio.Current?.Click(); clicked?.Invoke(); });
             Text(rect, title, .05f, .06f, .9f, .88f, 23, primary ? Color.white : Ink, TextAnchor.MiddleCenter);
             return button;
+        }
+        public Slider VolumeSlider(Transform parent, string title, float value, float y, Action<float> changed)
+        {
+            var row=Rect(title,parent,.06f,y,.88f,.09f);
+            var label=Text(row,title+": "+Mathf.RoundToInt(value*100)+"%",0,0,.35f,1,22);
+            var track=Panel(row,.38f,.35f,.62f,.30f,new Color(.75f,.82f,.77f),title+" slider");
+            var slider=track.gameObject.AddComponent<Slider>();slider.minValue=0;slider.maxValue=1;
+            var fill=Panel(track,0,0,1,1,Accent,"Fill");slider.fillRect=fill;
+            var area=Rect("Handle area",track,0,-.8f,1,2.6f);
+            var handle=Panel(area,0,0,0,1,Ink,"Handle");handle.sizeDelta=new Vector2(22,0);
+            slider.handleRect=handle;slider.targetGraphic=handle.GetComponent<Image>();slider.value=value;
+            slider.onValueChanged.AddListener(v=>{label.text=title+": "+Mathf.RoundToInt(v*100)+"%";changed(v);});
+            return slider;
         }
         public InputField Input(Transform parent, string placeholder, float x, float y, float w, float h)
         {
@@ -76,7 +90,9 @@ namespace EcoSortQuest
             Text(header, "ECOSORT / QUEST", .035f, .3f, .30f, .45f, 28);
             Text(header, subtitle, .36f, .3f, .29f, .45f, 23, Muted);
             Text(header, mode, .65f, .3f, .19f, .45f, 18, Accent, TextAnchor.MiddleRight);
-            if (home != null) Button(header, "Menu", .87f, .25f, .095f, .5f, home);
+            if (home != null) Button(header, "Menu", .845f, .25f, .085f, .5f, home);
+            var gear=Button(header,"",.94f,.25f,.045f,.5f,()=>SettingsRequested?.Invoke());gear.name="Settings gear";
+            var icon=Rect("Gear icon",gear.transform,.2f,.12f,.6f,.76f);icon.gameObject.AddComponent<GearIcon>().color=Ink;
             return header;
         }
     }

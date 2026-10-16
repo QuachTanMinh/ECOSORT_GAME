@@ -9,8 +9,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-CLASS_NAMES = ("Plastic", "Metal", "Paper")  # Serialized output order; never alphabetical.
-FOLDERS = ("plastic", "metal", "paper")
+CLASS_NAMES = ("Plastic", "Metal", "Paper", "Organic")  # Serialized output order; never alphabetical.
+FOLDERS = ("plastic", "metal", "paper", "organic")
 IMAGE_SIZE = (224, 224)
 MAX_BYTES = 4 * 1024 * 1024
 MAX_PIXELS = 20_000_000

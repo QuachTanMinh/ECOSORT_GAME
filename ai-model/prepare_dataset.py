@@ -111,8 +111,8 @@ def prepare(root: Path, output: Path, seed=42, near_distance=4, groups_csv: Path
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset", type=Path, default=Path(__file__).parent.parent / "Dataset/dataset-plastic-metal-paper")
-    parser.add_argument("--output", type=Path, default=Path(__file__).parent / "reports")
+    parser.add_argument("--dataset", type=Path, default=Path(__file__).parent.parent / "Dataset/dataset-four-classes")
+    parser.add_argument("--output", type=Path, default=Path(__file__).parent / "reports-organic")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--near-distance", type=int, choices=range(0, 9), default=4)
     parser.add_argument("--groups-csv", type=Path)

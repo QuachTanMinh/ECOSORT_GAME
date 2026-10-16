@@ -15,7 +15,9 @@ namespace EcoSortQuest
             GameObject Box(string name, Vector3 p, Vector3 s, Color c) => Shape(name, PrimitiveType.Cube, parent, p, s, c, false);
             GameObject Round(string name, Vector3 p, Vector3 s, Color c) => Shape(name, PrimitiveType.Cylinder, parent, p, s, c, false);
             int model = definition.Model;
-            if (definition.Type == WasteType.Plastic)
+            if (definition.Type == WasteType.Organic) OrganicModel(parent, model);
+            else if (model >= 6) ExtraModel(parent, definition.Type, model);
+            else if (definition.Type == WasteType.Plastic)
             {
                 if (model == 0 || model == 5)
                 {

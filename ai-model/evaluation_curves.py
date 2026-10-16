@@ -13,12 +13,12 @@ from data import CLASS_NAMES
 
 def diagnostic_curves(labels, probabilities, output, threshold, split="test"):
     labels, probabilities = np.asarray(labels), np.asarray(probabilities)
-    if probabilities.shape != (len(labels), 3) or set(labels.tolist()) != {0, 1, 2}:
-        raise ValueError("Curves require all three labeled classes and Nx3 probabilities")
+    if probabilities.shape != (len(labels), len(CLASS_NAMES)) or set(labels.tolist()) != set(range(len(CLASS_NAMES))):
+        raise ValueError("Curves require all configured classes and NxC probabilities")
     if not np.isfinite(probabilities).all() or np.any(probabilities < 0) or not np.allclose(probabilities.sum(1), 1, atol=1e-4):
         raise ValueError("Invalid probabilities")
     output = Path(output); output.mkdir(parents=True, exist_ok=True)
-    truth = np.eye(3)[labels]
+    truth = np.eye(len(CLASS_NAMES))[labels]
     predicted = probabilities.argmax(1)
     confidence = probabilities.max(1)
     correct = predicted == labels
@@ -49,7 +49,7 @@ def diagnostic_curves(labels, probabilities, output, threshold, split="test"):
     save(fig, "roc_pr_curves.png")
 
     fig, ax = plt.subplots(figsize=(6, 5))
-    ConfusionMatrixDisplay(confusion_matrix(labels, predicted, labels=[0, 1, 2], normalize="true"),
+    ConfusionMatrixDisplay(confusion_matrix(labels, predicted, labels=list(range(len(CLASS_NAMES))), normalize="true"),
                            display_labels=CLASS_NAMES).plot(ax=ax, cmap="Blues", values_format=".2f", colorbar=False)
     ax.set_title(f"Confusion matrix normalized by true class ({split})")
     save(fig, "confusion_matrix_normalized.png")
@@ -122,10 +122,10 @@ def training_curves(histories, output):
 def split_distribution(rows, output):
     from collections import Counter
     fig, ax = plt.subplots(figsize=(8, 4))
-    x = np.arange(3)
+    x = np.arange(len(CLASS_NAMES))
     for i, split in enumerate(("train", "validation", "test")):
         counts = Counter(int(row["label"]) for row in rows if row["split"] == split)
-        bars = ax.bar(x + (i - 1) * .25, [counts[j] for j in range(3)], .25, label=split)
+        bars = ax.bar(x + (i - 1) * .25, [counts[j] for j in range(len(CLASS_NAMES))], .25, label=split)
         ax.bar_label(bars, fontsize=8)
     ax.set_xticks(x, CLASS_NAMES); ax.set(ylabel="Images", title="Dataset distribution by split"); ax.legend()
     fig.tight_layout(); fig.savefig(Path(output) / "split_distribution.png", dpi=170); plt.close(fig)

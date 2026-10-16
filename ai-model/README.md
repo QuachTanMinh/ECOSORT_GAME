@@ -1,3 +1,7 @@
+# Checkpoint hiện tại: bốn lớp, gồm Organic
+
+Ngày 15/10/2026 đã train MobileNetV2 với 2.471 ảnh / bốn nhóm Plastic, Metal, Paper, Organic. Checkpoint được phục vụ ở `../backend/app/ai_model/artifacts`; báo cáo mới ở `reports-organic`. Accuracy test 372 ảnh: 96,77%, macro F1 95,99%. Xem [cách tái tạo, nguồn dữ liệu và giới hạn](../ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md). Các mục ba lớp và `reports/` bên dưới giữ lịch sử lần huấn luyện cũ; không dùng số liệu cũ để mô tả model mới. Notebook Kaggle đã được tái tạo từ mã bốn lớp nhưng lần huấn luyện mới chạy CPU cục bộ.
+
 # EcoSort Quest AR — Thành viên 2: AI
 
 Module AI thật đã huấn luyện: MobileNetV2 ImageNet, classification head ba lớp theo thứ tự **Plastic, Metal, Paper**. Model xuất nhận RGB 224×224 với giá trị 0–255; chuẩn hóa nằm trong model. Hàm `predict_image(image_bytes: bytes) -> dict` tự giải mã, xử lý EXIF, chuyển RGB và resize ảnh.

@@ -56,6 +56,7 @@ namespace EcoSortQuest.Tests
             testId = "test-" + Guid.NewGuid().ToString("N");
             LocalProgress.Save(new PlayerProgress { player_id = testId });
             EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null;
+            EcoSortApp.SelectedLearningMode = LearningMode.Campaign; EcoSortApp.SelectedContext = LearningContext.Home; EcoSortApp.AiMission = false;
             oldBackground = InputSystem.settings.backgroundBehavior;
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
             #if UNITY_EDITOR
@@ -79,8 +80,10 @@ namespace EcoSortQuest.Tests
             foreach(var settings in testSettings) UnityEngine.Object.Destroy(settings);
             testSettings.Clear();
             if (hadSave) PlayerPrefs.SetString(SaveKey, originalSave); else PlayerPrefs.DeleteKey(SaveKey);
+            PlayerPrefs.DeleteKey(LearningStore.Key(testId));
             PlayerPrefs.DeleteKey("EcoSort.MockCloud." + testId); PlayerPrefs.Save();
             EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null;
+            EcoSortApp.SelectedLearningMode = LearningMode.Campaign; EcoSortApp.SelectedContext = LearningContext.Home; EcoSortApp.AiMission = false;
             InputSystem.RemoveDevice(mouse);
             InputSystem.settings.backgroundBehavior = oldBackground;
             #if UNITY_EDITOR
@@ -275,6 +278,216 @@ namespace EcoSortQuest.Tests
             error = null;
             yield return service.Predict(null, WasteType.Plastic, _ => Assert.Fail("Missing image must not succeed"), e => error = e);
             Assert.IsNotEmpty(error); UnityEngine.Object.Destroy(settings);
+        }
+        [UnityTest] public IEnumerator LearningTestHidesAnswersSavesHistoryAndDoesNotUnlockCampaign()
+        {
+            EcoSortApp.SelectedLearningMode=LearningMode.Test; EcoSortApp.SelectedContext=LearningContext.School;
+            yield return Open("GameScene");
+            StringAssert.Contains("Quan sát mô hình",Field<Text>(App,"itemName").text);
+            StringAssert.Contains("Ẩn điểm",Field<Text>(App,"scoreText").text);
+            yield return Capture("learning-test-school");
+            yield return Sort(false);
+            Assert.AreEqual(1,Field<SortingRound>(App,"round").Answered);
+            StringAssert.Contains("Ẩn điểm",Field<Text>(App,"scoreText").text);
+            typeof(EcoSortApp).GetField("remaining",Fields).SetValue(App,.01f);
+            yield return new WaitForSeconds(.15f);
+            var history=LearningStore.Load(testId);
+            Assert.AreEqual("Test",history.sessions.Single().mode);
+            Assert.AreEqual(1,history.sessions[0].answers.Length);
+            Assert.IsTrue(history.sessions[0].expired);
+            Assert.AreEqual(1,LocalProgress.Load().unlocked_level);
+            Assert.AreEqual(1,LearningStore.Mistakes(history).Count);
+            typeof(EcoSortApp).GetMethod("ShowAnswerReview",Fields).Invoke(App,new object[]{0});
+            yield return Capture("learning-answer-review");
+            EcoSortApp.SelectedLearningMode=LearningMode.Review;
+            yield return Open("GameScene");
+            Assert.IsTrue(Field<WasteDefinition[]>(App,"roundItems").All(d=>d.Id==history.sessions[0].answers[0].item_id));
+            StringAssert.Contains("Gợi ý",Field<Text>(App,"lessonText").text);
+        }
+        [UnityTest] public IEnumerator LearningHubThemesAndStatisticsAreReachable()
+        {
+            yield return Open("MainMenu");Call(App,"ShowLearningHub");
+            ButtonNamed("Công viên").onClick.Invoke();yield return null;
+            yield return Capture("learning-hub");
+            ButtonNamed("Kết quả học tập").onClick.Invoke();yield return null;
+            yield return Capture("learning-statistics");
+            foreach(var context in new[]{LearningContext.Home,LearningContext.School,LearningContext.Park})
+            {
+                EcoSortApp.SelectedContext=context;EcoSortApp.SelectedLearningMode=LearningMode.Learn;
+                yield return Open("GameScene");yield return Capture("learning-context-"+context);
+                Assert.AreEqual(0,Field<float>(App,"sessionLimit"));
+            }
+        }
+        [UnityTest] public IEnumerator AiMissionRequiresOwnChoiceAndSeparatesMockFromReal()
+        {
+            EcoSortApp.AiMission=true;yield return Open("ScanScene");
+            ButtonNamed("Chạy dự đoán MOCK").onClick.Invoke();
+            Assert.IsNull(Field<Prediction>(App,"scanResult"));
+            ButtonNamed("Plastic").onClick.Invoke();
+            ButtonNamed("Chạy dự đoán MOCK").onClick.Invoke();yield return new WaitForSecondsRealtime(.3f);
+            Assert.IsTrue(Field<bool>(App,"missionPassed"));
+            Assert.IsTrue(LearningStore.Load(testId).missions.Single().mock);
+            yield return Capture("learning-ai-mission-mock");
+            ButtonNamed("Nhiệm vụ tiếp / hoàn thành →").onClick.Invoke();
+            Assert.IsNull(Field<byte[]>(App,"jpeg"));Assert.IsNull(Field<Prediction>(App,"scanResult"));
+            Assert.AreEqual(1,Field<int>(App,"missionStep"));
+        }
+        [UnityTest] public IEnumerator ExplorationRequiresProximitySupportsCorrectionAndSavesCompleteRound()
+        {
+            EcoSortApp.SelectedLearningMode=LearningMode.Explore;EcoSortApp.SelectedContext=LearningContext.Park;
+            yield return Open("GameScene");
+            var actor=Field<ExplorerController>(App,"explorer");
+            Assert.IsFalse(Camera.main.orthographic);
+            var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
+            Assert.AreEqual(12,litter.Count);
+            Assert.IsTrue(litter.All(i=>i.Definition.AppearsIn(LearningContext.Park)));
+            var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);
+            Assert.AreEqual(4,bins.Length);
+            yield return Capture("exploration-park-start");
+            // Keyboard movement passes through the actual controller rather than moving the transform.
+            var keyboard=InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                var start=actor.transform.position;
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));yield return new WaitForSeconds(.3f);
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;
+                Assert.Greater(Vector3.Distance(start,actor.transform.position),.2f);
+                Call(App,"TogglePause");start=actor.transform.position;
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));yield return new WaitForSecondsRealtime(.15f);
+                Assert.Less(Vector3.Distance(start,actor.transform.position),.01f);
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState());Call(App,"TogglePause");yield return null;
+            }
+            finally{InputSystem.RemoveDevice(keyboard);}
+            void MoveTo(Vector3 position)
+            {var cc=actor.GetComponent<CharacterController>();cc.enabled=false;actor.transform.position=position;cc.enabled=true;Physics.SyncTransforms();}
+            MoveTo(new Vector3(10,.1f,-7));Call(App,"InteractExploration");Assert.IsNull(Field<WasteItem>(App,"carried"));
+            var first=litter.First();MoveTo(first.transform.position+Vector3.back*.6f);Call(App,"InteractExploration");
+            Assert.AreSame(first,Field<WasteItem>(App,"carried"));
+            Call(App,"InteractExploration");Assert.AreEqual(0,Field<SortingRound>(App,"round").Answered);
+            var wrong=bins.First(b=>b.type!=first.type);MoveTo(wrong.transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");
+            Assert.AreSame(first,Field<WasteItem>(App,"carried"));Assert.AreEqual(1,Field<SortingRound>(App,"round").Answered);
+            Call(App,"PutDownExploration");Assert.IsNull(Field<WasteItem>(App,"carried"));Call(App,"InteractExploration");
+            var right=bins.Single(b=>b.type==first.type);MoveTo(right.transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");
+            Assert.AreEqual(1,Field<int>(App,"cleaned"));Assert.AreEqual(1,Field<SortingRound>(App,"round").Answered);
+            yield return Capture("exploration-corrected-drop");
+            foreach(var item in litter.ToArray())
+            {
+                MoveTo(item.transform.position+Vector3.back*.6f);Call(App,"InteractExploration");
+                Assert.AreSame(item,Field<WasteItem>(App,"carried"));
+                var bin=bins.Single(b=>b.type==item.type);MoveTo(bin.transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");yield return null;
+            }
+            yield return new WaitForSeconds(.2f);
+            var session=LearningStore.Load(testId).sessions.Single();
+            Assert.AreEqual("Explore",session.mode);Assert.AreEqual(12,session.answers.Length);Assert.AreEqual(110,session.score);
+            Assert.AreEqual(11,session.answers.Count(a=>a.correct));Assert.IsFalse(session.expired);
+            yield return Capture("exploration-result");
+        }
+        [Serializable] sealed class LearningApiCount { public int total_sessions; public int test_unanswered; }
+        [UnityTest] public IEnumerator LearningRestRoundTripDoesNotDuplicate()
+        {
+            string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
+            if(string.IsNullOrEmpty(url)){Assert.Ignore("Set a dedicated local backend URL for REST integration.");yield break;}
+            Assert.AreEqual("127.0.0.1",new Uri(url).Host,"Integration tests must use an isolated local backend.");
+            var settings=ScriptableObject.CreateInstance<ApiSettings>();settings.mode=ApiMode.Rest;settings.baseUrl=url;
+            try
+            {
+                var rest=new RestEcoSortService(settings);
+                var session=new LearningSession{player_id=testId,mode="Test",context="School",created_at=DateTime.UtcNow.ToString("O"),
+                    level=1,total=10,score=10,expired=true,answers=new[]{new LearningAnswer{item_id="water-bottle",expected="Plastic",choice="Plastic",correct=true,seconds=1.5f}}};
+                int successes=0;
+                yield return rest.PostLearning(session,()=>successes++,e=>Assert.Fail(e));
+                yield return rest.PostLearning(session,()=>successes++,e=>Assert.Fail(e));
+                Assert.AreEqual(2,successes);
+                using(var request=UnityEngine.Networking.UnityWebRequest.Get(url+"/learning/"+testId))
+                {
+                    request.timeout=10;yield return request.SendWebRequest();Assert.AreEqual(200,request.responseCode);
+                    var data=JsonUtility.FromJson<LearningApiCount>(request.downloadHandler.text);
+                    Assert.AreEqual(1,data.total_sessions);Assert.AreEqual(9,data.test_unanswered);
+                }
+            }
+            finally{UnityEngine.Object.Destroy(settings);}
+        }
+        [UnityTest] public IEnumerator AudioAssetsAndTwoDimensionalRoutingAreReady()
+        {
+            float oldListenerVolume=AudioListener.volume;
+            #if UNITY_EDITOR
+            bool oldEditorMute=UnityEditor.EditorUtility.audioMasterMute;
+            #endif
+            int old=PlayerPrefs.GetInt("EcoSortQuest.Sound",1);bool had=PlayerPrefs.HasKey("EcoSortQuest.Sound");
+            try
+            {
+                PlayerPrefs.SetInt("EcoSortQuest.Sound",1);yield return Open("GameScene");
+                var sound=App.GetComponent<EcoSortAudio>();Assert.IsNotNull(sound);
+                Assert.AreEqual(0,sound.Effects.spatialBlend);Assert.AreEqual(0,sound.Music.spatialBlend);
+                Assert.IsNotNull(sound.Music.clip);Assert.IsTrue(sound.Music.loop);
+                foreach(var name in new[]{"correct","retry","click","pickup","drop"})
+                {var clip=Resources.Load<AudioClip>("Audio/"+name);Assert.IsNotNull(clip);Assert.Greater(clip.samples,100);}
+                var samples=new float[sound.Music.clip.samples];sound.Music.clip.GetData(samples,0);
+                Assert.IsTrue(samples.Any(x=>Mathf.Abs(x)>.01f));
+                PlayerPrefs.SetInt("EcoSortQuest.Sound",0);sound.Apply();Assert.IsTrue(sound.Effects.mute);
+                Call(App,"ShowExperienceSettings");ButtonNamed("Nghe thử").onClick.Invoke();
+                Assert.AreEqual(1,PlayerPrefs.GetInt("EcoSortQuest.Sound"));Assert.IsFalse(sound.Effects.mute);
+                yield return Capture("audio-settings");
+            }
+            finally{
+                AudioListener.volume=oldListenerVolume;
+                #if UNITY_EDITOR
+                UnityEditor.EditorUtility.audioMasterMute=oldEditorMute;
+                #endif
+                if(had)PlayerPrefs.SetInt("EcoSortQuest.Sound",old);else PlayerPrefs.DeleteKey("EcoSortQuest.Sound");PlayerPrefs.Save();}
+        }
+        [UnityTest] public IEnumerator AudioVolumeControlsPersistAndMixChannels()
+        {
+            string[] keys={"EcoSortQuest.Volume.Master","EcoSortQuest.Volume.Music","EcoSortQuest.Volume.Effects"};
+            bool[] had=keys.Select(PlayerPrefs.HasKey).ToArray();float[] old=keys.Select(k=>PlayerPrefs.GetFloat(k)).ToArray();
+            try
+            {
+                yield return Open("GameScene");Call(App,"ShowExperienceSettings");
+                var sliders=UnityEngine.Object.FindObjectsByType<Slider>(FindObjectsSortMode.None);
+                Assert.AreEqual(3,sliders.Length);
+                sliders.Single(x=>x.name=="Âm lượng tổng slider").value=.5f;
+                sliders.Single(x=>x.name=="Nhạc nền slider").value=.4f;
+                sliders.Single(x=>x.name=="Hiệu ứng slider").value=.8f;
+                var audio=App.GetComponent<EcoSortAudio>();
+                Assert.AreEqual(.2f,audio.Music.volume,.001f);Assert.AreEqual(.4f,audio.Effects.volume,.001f);
+                yield return Capture("audio-volume-controls");
+                yield return Open("GameScene");audio=App.GetComponent<EcoSortAudio>();
+                Assert.AreEqual(.2f,audio.Music.volume,.001f);Assert.AreEqual(.4f,audio.Effects.volume,.001f);
+                audio.SetVolume("Master",2);Assert.AreEqual(1,EcoSortAudio.Volume("Master",0));
+            }
+            finally{for(int i=0;i<keys.Length;i++){if(had[i])PlayerPrefs.SetFloat(keys[i],old[i]);else PlayerPrefs.DeleteKey(keys[i]);}PlayerPrefs.Save();}
+        }
+        [UnityTest] public IEnumerator SettingsGearPausesAndRestoresRoundAcrossTabs()
+        {
+            yield return Open("GameScene");
+            var gear=UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Single(b=>b.name=="Settings gear");
+            gear.onClick.Invoke();yield return null;
+            Assert.AreEqual(0,Time.timeScale);Assert.IsTrue(Field<bool>(App,"paused"));
+            float remaining=Field<float>(App,"remaining");yield return new WaitForSecondsRealtime(.1f);
+            Assert.AreEqual(remaining,Field<float>(App,"remaining"));
+            yield return Capture("settings-audio-tab");
+            ButtonNamed("Hình ảnh").onClick.Invoke();yield return null;yield return Capture("settings-visual-tab");
+            ButtonNamed("Lối chơi").onClick.Invoke();yield return null;yield return Capture("settings-gameplay-tab");
+            Call(App,"TogglePause");yield return null;Assert.AreEqual(1,Time.timeScale);Assert.IsFalse(Field<bool>(App,"paused"));
+            Call(App,"TogglePause");gear.onClick.Invoke();yield return null;ButtonNamed("Đóng").onClick.Invoke();
+            Assert.AreEqual(0,Time.timeScale);Assert.IsTrue(Field<bool>(App,"paused"));Call(App,"TogglePause");
+        }
+        [UnityTest] public IEnumerator DragAndBinDropPlayDistinctInteractionAndOutcomeClips()
+        {
+            bool had=PlayerPrefs.HasKey("EcoSortQuest.Sound");int old=PlayerPrefs.GetInt("EcoSortQuest.Sound",1);
+            try
+            {
+                PlayerPrefs.SetInt("EcoSortQuest.Sound",1);yield return Open("GameScene");
+                var sounds=new System.Collections.Generic.List<string>();App.GetComponent<EcoSortAudio>().CuePlayed+=sounds.Add;
+                yield return Sort(true);
+                CollectionAssert.AreEqual(new[]{"pickup","drop","correct"},sounds);
+                sounds.Clear();yield return Sort(false);
+                CollectionAssert.AreEqual(new[]{"pickup","drop","retry"},sounds);
+                EcoSortApp.SelectedLearningMode=LearningMode.Test;yield return Open("GameScene");
+                sounds.Clear();App.GetComponent<EcoSortAudio>().CuePlayed+=sounds.Add;yield return Sort(false);
+                CollectionAssert.AreEqual(new[]{"pickup","drop"},sounds,"Testing mode must not reveal correctness through audio.");
+            }
+            finally{if(had)PlayerPrefs.SetInt("EcoSortQuest.Sound",old);else PlayerPrefs.DeleteKey("EcoSortQuest.Sound");PlayerPrefs.Save();}
         }
         static IEnumerator Capture(string name)
         {

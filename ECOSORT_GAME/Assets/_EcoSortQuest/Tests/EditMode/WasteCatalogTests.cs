@@ -6,12 +6,12 @@ namespace EcoSortQuest.Tests
 {
     public sealed class WasteCatalogTests
     {
-        [Test] public void CatalogHasEighteenUniqueEducationalItems()
+        [Test] public void CatalogHasThirtySixUniqueEducationalItems()
         {
-            Assert.AreEqual(18,WasteCatalog.All.Count);
-            Assert.AreEqual(18,WasteCatalog.All.Select(x=>x.Id).Distinct().Count());
+            Assert.AreEqual(36,WasteCatalog.All.Count);
+            Assert.AreEqual(36,WasteCatalog.All.Select(x=>x.Id).Distinct().Count());
             foreach(WasteType type in System.Enum.GetValues(typeof(WasteType)))
-                Assert.AreEqual(6,WasteCatalog.All.Count(x=>x.Type==type));
+                Assert.AreEqual(9,WasteCatalog.All.Count(x=>x.Type==type));
             Assert.IsTrue(WasteCatalog.All.All(x=>!string.IsNullOrWhiteSpace(x.Name) && !string.IsNullOrWhiteSpace(x.Lesson)));
         }
         [Test] public void DeckKeepsRequestedCategoriesAndAvoidsEarlyRepeats()

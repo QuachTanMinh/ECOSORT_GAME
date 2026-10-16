@@ -11,11 +11,11 @@ def test_two_stage_export_and_evaluation(tmp_path, monkeypatch):
     import gpu_train
     from evaluate import evaluate
     base = Path(__file__).parents[1]
-    dataset = base.parent / "Dataset/dataset-plastic-metal-paper"
-    with (base / "reports/splits.csv").open(newline="", encoding="utf-8") as stream:
+    dataset = base.parent / "Dataset/dataset-four-classes"
+    with (base / "reports-organic/splits.csv").open(newline="", encoding="utf-8") as stream:
         original = list(csv.DictReader(stream))
     chosen = []
-    for label in range(3):
+    for label in range(4):
         samples = [r for r in original if int(r["label"]) == label][:4]
         for row, split in zip(samples, ("train", "train", "validation", "test")):
             chosen.append({**row, "split": split, "group_id": row["path"]})
@@ -34,7 +34,7 @@ def test_two_stage_export_and_evaluation(tmp_path, monkeypatch):
     assert metadata["selected_stage"] == ("fine_tune" if metadata["fine_tune_validation_loss"] < metadata["head_validation_loss"] else "head")
     assert metadata["epochs_run"] == {"head": 1, "fine_tune": 1}
     metrics = evaluate(dataset, reports / "splits.csv", tmp_path / "artifacts", reports)
-    assert metrics["images"] == 3
+    assert metrics["images"] == 4
     assert (reports / "training_curves.png").is_file()
     assert (reports / "roc_pr_curves.png").is_file()
     assert (reports / "inference_smoke.json").is_file()

@@ -15,7 +15,7 @@ BASE = Path(__file__).parents[1]
 
 @pytest.fixture(scope="module")
 def predictor():
-    return Predictor(BASE / "artifacts")
+    return Predictor(BASE / "artifacts-organic")
 
 
 def test_missing_model_reports_actionable_error(tmp_path):
@@ -29,9 +29,9 @@ def test_invalid_bytes_fail_before_loading_global_model():
 
 
 def test_real_model_contract_and_preprocessing_agree(predictor):
-    with (BASE / "reports/splits.csv").open(encoding="utf-8", newline="") as stream:
+    with (BASE / "reports-organic/splits.csv").open(encoding="utf-8", newline="") as stream:
         rows = list(csv.DictReader(stream))
-    root = BASE.parent / "Dataset/dataset-plastic-metal-paper"
+    root = BASE.parent / "Dataset/dataset-four-classes"
     for name in CLASS_NAMES:
         row = next(row for row in rows if row["split"] == "test" and row["class_name"] == name)
         content = (root / row["path"]).read_bytes()
@@ -48,9 +48,9 @@ def test_real_model_contract_and_preprocessing_agree(predictor):
 
 
 def test_global_predict_image_uses_real_model():
-    with (BASE / "reports/splits.csv").open(encoding="utf-8", newline="") as stream:
+    with (BASE / "reports-organic/splits.csv").open(encoding="utf-8", newline="") as stream:
         row = next(row for row in csv.DictReader(stream) if row["split"] == "test")
-    content = (BASE.parent / "Dataset/dataset-plastic-metal-paper" / row["path"]).read_bytes()
+    content = (BASE.parent / "Dataset/dataset-four-classes" / row["path"]).read_bytes()
     assert predict_image(content)["class_name"] in CLASS_NAMES
 
 

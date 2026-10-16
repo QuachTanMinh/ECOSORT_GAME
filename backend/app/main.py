@@ -12,6 +12,7 @@ from .ai_model.inference import Predictor
 from .config import Settings
 from .schemas import ArResultSubmission, Prediction, Progress, ScoreSubmission
 from .storage import LocalJsonStore, Store, default_progress
+from .learning import LearningSession, LearningStore
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("ecosort.api")
@@ -34,6 +35,7 @@ async def lifespan(app: FastAPI):
     app.state.settings = settings
     app.state.predictor = predictor
     app.state.store = store
+    app.state.learning = LearningStore(settings.data_file.parent / "learning.json")
     try:
         yield
     finally:
@@ -41,6 +43,22 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="EcoSort Quest API", version="1.0.0", lifespan=lifespan)
+
+
+@app.post("/learning/sessions", status_code=201)
+def post_learning(session: LearningSession, request: Request):
+    try:
+        created = request.app.state.learning.add(session)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {"accepted": True, "created": created}
+
+
+@app.get("/learning/{player_id}")
+def get_learning(player_id: str, request: Request):
+    if not player_id or len(player_id) > 64 or not all(c.isalnum() or c in "-_" for c in player_id):
+        raise HTTPException(status_code=422, detail="Invalid player_id")
+    return request.app.state.learning.history(player_id)
 
 
 @app.exception_handler(AdafruitIOError)

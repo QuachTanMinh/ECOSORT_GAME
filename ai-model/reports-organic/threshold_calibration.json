@@ -1,0 +1,165 @@
+{
+  "threshold": 0.75,
+  "selection_split": "validation",
+  "target_accepted_accuracy": 0.9,
+  "target_met": true,
+  "chosen": {
+    "threshold": 0.75,
+    "accepted": 361,
+    "coverage": 0.9704301075268817,
+    "accepted_accuracy": 0.9861495844875346
+  },
+  "candidates": [
+    {
+      "threshold": 0.75,
+      "accepted": 361,
+      "coverage": 0.9704301075268817,
+      "accepted_accuracy": 0.9861495844875346
+    },
+    {
+      "threshold": 0.76,
+      "accepted": 361,
+      "coverage": 0.9704301075268817,
+      "accepted_accuracy": 0.9861495844875346
+    },
+    {
+      "threshold": 0.77,
+      "accepted": 361,
+      "coverage": 0.9704301075268817,
+      "accepted_accuracy": 0.9861495844875346
+    },
+    {
+      "threshold": 0.78,
+      "accepted": 359,
+      "coverage": 0.9650537634408602,
+      "accepted_accuracy": 0.9888579387186629
+    },
+    {
+      "threshold": 0.79,
+      "accepted": 359,
+      "coverage": 0.9650537634408602,
+      "accepted_accuracy": 0.9888579387186629
+    },
+    {
+      "threshold": 0.8,
+      "accepted": 359,
+      "coverage": 0.9650537634408602,
+      "accepted_accuracy": 0.9888579387186629
+    },
+    {
+      "threshold": 0.81,
+      "accepted": 358,
+      "coverage": 0.9623655913978495,
+      "accepted_accuracy": 0.9916201117318436
+    },
+    {
+      "threshold": 0.82,
+      "accepted": 358,
+      "coverage": 0.9623655913978495,
+      "accepted_accuracy": 0.9916201117318436
+    },
+    {
+      "threshold": 0.83,
+      "accepted": 358,
+      "coverage": 0.9623655913978495,
+      "accepted_accuracy": 0.9916201117318436
+    },
+    {
+      "threshold": 0.84,
+      "accepted": 358,
+      "coverage": 0.9623655913978495,
+      "accepted_accuracy": 0.9916201117318436
+    },
+    {
+      "threshold": 0.85,
+      "accepted": 357,
+      "coverage": 0.9596774193548387,
+      "accepted_accuracy": 0.9915966386554622
+    },
+    {
+      "threshold": 0.86,
+      "accepted": 357,
+      "coverage": 0.9596774193548387,
+      "accepted_accuracy": 0.9915966386554622
+    },
+    {
+      "threshold": 0.87,
+      "accepted": 356,
+      "coverage": 0.956989247311828,
+      "accepted_accuracy": 0.9943820224719101
+    },
+    {
+      "threshold": 0.88,
+      "accepted": 356,
+      "coverage": 0.956989247311828,
+      "accepted_accuracy": 0.9943820224719101
+    },
+    {
+      "threshold": 0.89,
+      "accepted": 355,
+      "coverage": 0.9543010752688172,
+      "accepted_accuracy": 0.9943661971830986
+    },
+    {
+      "threshold": 0.9,
+      "accepted": 354,
+      "coverage": 0.9516129032258065,
+      "accepted_accuracy": 0.9943502824858758
+    },
+    {
+      "threshold": 0.91,
+      "accepted": 354,
+      "coverage": 0.9516129032258065,
+      "accepted_accuracy": 0.9943502824858758
+    },
+    {
+      "threshold": 0.92,
+      "accepted": 353,
+      "coverage": 0.9489247311827957,
+      "accepted_accuracy": 0.9943342776203966
+    },
+    {
+      "threshold": 0.93,
+      "accepted": 351,
+      "coverage": 0.9435483870967742,
+      "accepted_accuracy": 0.9971509971509972
+    },
+    {
+      "threshold": 0.94,
+      "accepted": 350,
+      "coverage": 0.9408602150537635,
+      "accepted_accuracy": 0.9971428571428571
+    },
+    {
+      "threshold": 0.95,
+      "accepted": 350,
+      "coverage": 0.9408602150537635,
+      "accepted_accuracy": 0.9971428571428571
+    },
+    {
+      "threshold": 0.96,
+      "accepted": 350,
+      "coverage": 0.9408602150537635,
+      "accepted_accuracy": 0.9971428571428571
+    },
+    {
+      "threshold": 0.97,
+      "accepted": 347,
+      "coverage": 0.9327956989247311,
+      "accepted_accuracy": 0.9971181556195965
+    },
+    {
+      "threshold": 0.98,
+      "accepted": 343,
+      "coverage": 0.9220430107526881,
+      "accepted_accuracy": 0.9970845481049563
+    },
+    {
+      "threshold": 0.99,
+      "accepted": 338,
+      "coverage": 0.9086021505376344,
+      "accepted_accuracy": 0.9970414201183432
+    }
+  ],
+  "warning": "Confidence gating is not an out-of-distribution detector; only known-class validation images were available."
+}

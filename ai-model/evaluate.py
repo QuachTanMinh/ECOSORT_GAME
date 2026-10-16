@@ -55,9 +55,9 @@ def evaluate(dataset: Path, manifest: Path, artifacts: Path, reports: Path, exte
     predicted = probabilities.argmax(axis=1)
     confidence = probabilities.max(axis=1)
     accepted = confidence >= predictor.threshold
-    report = classification_report(labels, predicted, labels=[0, 1, 2], target_names=CLASS_NAMES,
+    report = classification_report(labels, predicted, labels=list(range(len(CLASS_NAMES))), target_names=CLASS_NAMES,
                                    output_dict=True, zero_division=0)
-    matrix = confusion_matrix(labels, predicted, labels=[0, 1, 2])
+    matrix = confusion_matrix(labels, predicted, labels=list(range(len(CLASS_NAMES))))
     latencies = []
     predictor.predict((dataset / rows[0]["path"]).read_bytes())  # Warmup, not measured.
     for row in rows[:30]:
@@ -136,8 +136,8 @@ Thời gian inference sau warmup, bao gồm giải mã/resize và model, không 
 
 - Dataset hiện tại có nền và điều kiện chụp hẹp. Kết quả này chưa chứng minh chất lượng trên ảnh điện thoại người dùng.
 - Không có object/session ID gốc; nhóm ảnh gần nhau bằng dHash chỉ giảm rủi ro rò rỉ, không bảo đảm object-disjoint.
-- Chỉ nhận diện một vật phẩm chính thuộc Plastic/Metal/Paper; không object detection hoặc phân loại nhiều vật phẩm.
-- Confidence cao không bảo đảm ảnh thuộc ba lớp. Chưa có tập unknown/OOD để đánh giá khả năng từ chối vật phẩm lạ.
+- Chỉ nhận diện một vật phẩm chính thuộc Plastic/Metal/Paper/Organic; không object detection hoặc phân loại nhiều vật phẩm.
+- Confidence cao không bảo đảm ảnh thuộc bốn lớp. Chưa có tập unknown/OOD để đánh giá khả năng từ chối vật phẩm lạ.
 - Chưa kiểm thử Unity → FastAPI → model thật hoặc ảnh chụp điện thoại độc lập.
 
 Model SHA256: `{metadata['model_sha256']}`.
@@ -160,12 +160,12 @@ Chi tiết từng ảnh: `predictions.csv`; số liệu máy đọc: `metrics.js
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     base = Path(__file__).parent
-    parser.add_argument("--dataset", type=Path, default=base.parent / "Dataset/dataset-plastic-metal-paper")
-    parser.add_argument("--manifest", type=Path, default=base / "reports/splits.csv")
-    parser.add_argument("--artifacts", type=Path, default=base / "artifacts")
-    parser.add_argument("--reports", type=Path, default=base / "reports")
+    parser.add_argument("--dataset", type=Path, default=base.parent / "Dataset/dataset-four-classes")
+    parser.add_argument("--manifest", type=Path, default=base / "reports-organic/splits.csv")
+    parser.add_argument("--artifacts", type=Path, default=base / "artifacts-organic")
+    parser.add_argument("--reports", type=Path, default=base / "reports-organic")
     parser.add_argument("--external-dataset", type=Path)
     args = parser.parse_args()
-    if args.external_dataset and args.reports == base / "reports":
+    if args.external_dataset and args.reports == base / "reports-organic":
         parser.error("Use a separate --reports directory for external evaluation to preserve the held-out test report")
     evaluate(args.dataset, args.manifest, args.artifacts, args.reports, args.external_dataset)

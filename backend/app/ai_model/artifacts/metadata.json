@@ -2,7 +2,8 @@
   "class_names": [
     "Plastic",
     "Metal",
-    "Paper"
+    "Paper",
+    "Organic"
   ],
   "input_shape": [
     224,
@@ -18,25 +19,17 @@
   "resize": "Pillow bilinear, direct resize, EXIF transpose, RGB",
   "threshold": 0.75,
   "threshold_target_met_on_validation": true,
-  "model_sha256": "5f97707c552ac491e66f720c1b9bca1eab2325622ea5328e7f9cad05eabbde38",
-  "split_manifest_sha256": "eaf7e344281f308241e22d68b5c6bf41e0cec98752e2734cbd185ac9abf52adc",
   "seed": 42,
+  "split_manifest_sha256": "931d02f88d91e5694a031d2f88cf89341b5b56286cc6acf8d7aef6d0860eb383",
+  "model_sha256": "6066774bbd847366db93a717e46c47dc15cac2b6f764613fe6170969d328da46",
   "tensorflow": "2.20.0",
-  "keras": "3.13.2",
-  "python": "3.13.15",
-  "selected_stage": "head",
-  "head_validation_loss": 0.15874817967414856,
-  "fine_tune_validation_loss": 0.16749514639377594,
-  "validation_accuracy": 0.9508928571428571,
-  "epochs_run": {
-    "head": 19,
-    "fine_tune": 12
-  },
-  "training_seconds": 418.0166465630001,
-  "selection": "Lowest validation loss between stage checkpoints; train_gpu does not load test tensors",
-  "gpu_devices": [
-    "/physical_device:GPU:0",
-    "/physical_device:GPU:1"
-  ],
-  "precision_policy": "float32"
+  "keras": "3.15.1",
+  "python": "3.12.14",
+  "epochs_requested": 35,
+  "epochs_run": 16,
+  "augmented_train_views": 2,
+  "fine_tune_epochs_requested": 0,
+  "training_seconds": 117.54,
+  "validation_accuracy": 0.967741935483871,
+  "selection": "best validation loss; test set not loaded by train.py"
 }

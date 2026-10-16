@@ -40,5 +40,7 @@
 /ECOSORT_GAME/*.user
 /backend/data/
 /ai-model/artifacts/
+/ai-model/artifacts-organic/
+/ai-model/artifacts-three-class/
 /ai-model/handoff/
 # Verified serving checkpoint under backend/app/ai_model/artifacts is intentionally included.

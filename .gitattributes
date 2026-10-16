@@ -11,3 +11,4 @@
 *.keras binary
 *.png binary
 *.jpg binary
+*.ogg binary

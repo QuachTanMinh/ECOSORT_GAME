@@ -73,6 +73,8 @@ namespace EcoSortQuest
         }
         public IEnumerator PutProgress(PlayerProgress progress, Action success, Action<string> failure) =>
             Send("PUT", "/progress/" + Uri.EscapeDataString(progress.player_id), JsonUtility.ToJson(progress), _ => success(), failure);
+        public IEnumerator PostLearning(LearningSession session, Action success, Action<string> failure) =>
+            Send("POST", "/learning/sessions", JsonUtility.ToJson(session), _ => success(), failure);
         public IEnumerator PostScore(ScoreRequest score, Action success, Action<string> failure) =>
             Send("POST", "/scores", JsonUtility.ToJson(score), _ => success(), failure);
         public IEnumerator PostArResult(ArResultRequest result, Action success, Action<string> failure) =>

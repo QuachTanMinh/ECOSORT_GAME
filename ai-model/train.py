@@ -66,7 +66,7 @@ def train(dataset: Path, manifest: Path, artifacts: Path, reports: Path, epochs=
     feature_input = tf.keras.Input(shape=(1280,))
     hidden = tf.keras.layers.Dense(128, activation="relu")(feature_input)
     hidden = tf.keras.layers.Dropout(.35)(hidden)
-    output = tf.keras.layers.Dense(3, activation="softmax", name="class_probabilities")(hidden)
+    output = tf.keras.layers.Dense(len(CLASS_NAMES), activation="softmax", name="class_probabilities")(hidden)
     head = tf.keras.Model(feature_input, output, name="classification_head")
     head.compile(optimizer=tf.keras.optimizers.Adam(1e-3), loss="sparse_categorical_crossentropy", metrics=["accuracy"])
     augmentation = tf.keras.Sequential([
@@ -94,8 +94,8 @@ def train(dataset: Path, manifest: Path, artifacts: Path, reports: Path, epochs=
     train_features = np.concatenate(train_features)
     train_labels = np.tile(y_train, augmented_views + 1)
     val_features = encode(x_val)
-    counts = np.bincount(y_train, minlength=3)
-    class_weights = {i: float(len(y_train) / (3 * count)) for i, count in enumerate(counts)}
+    counts = np.bincount(y_train, minlength=len(CLASS_NAMES))
+    class_weights = {i: float(len(y_train) / (len(CLASS_NAMES) * count)) for i, count in enumerate(counts)}
     train_ds = tf.data.Dataset.from_tensor_slices((train_features, train_labels)).shuffle(len(train_labels), seed=seed).batch(batch_size)
     val_ds = tf.data.Dataset.from_tensor_slices((val_features, y_val)).batch(batch_size)
     history = head.fit(train_ds, validation_data=val_ds, epochs=epochs, class_weight=class_weights,
@@ -154,10 +154,10 @@ def train(dataset: Path, manifest: Path, artifacts: Path, reports: Path, epochs=
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     base = Path(__file__).parent
-    parser.add_argument("--dataset", type=Path, default=base.parent / "Dataset/dataset-plastic-metal-paper")
-    parser.add_argument("--manifest", type=Path, default=base / "reports/splits.csv")
-    parser.add_argument("--artifacts", type=Path, default=base / "artifacts")
-    parser.add_argument("--reports", type=Path, default=base / "reports")
+    parser.add_argument("--dataset", type=Path, default=base.parent / "Dataset/dataset-four-classes")
+    parser.add_argument("--manifest", type=Path, default=base / "reports-organic/splits.csv")
+    parser.add_argument("--artifacts", type=Path, default=base / "artifacts-organic")
+    parser.add_argument("--reports", type=Path, default=base / "reports-organic")
     parser.add_argument("--epochs", type=int, default=35)
     parser.add_argument("--augmented-views", type=int, default=2)
     parser.add_argument("--fine-tune-epochs", type=int, default=0)

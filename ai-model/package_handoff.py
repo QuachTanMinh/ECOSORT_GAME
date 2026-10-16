@@ -8,7 +8,7 @@ import zipfile
 def package():
     base = Path(__file__).resolve().parent
     files = [p for p in base.iterdir() if p.is_file() and p.suffix in (".py", ".md", ".txt")]
-    for folder in ("artifacts", "reports", "tests", "kaggle"):
+    for folder in ("artifacts-organic", "reports-organic", "tests", "kaggle"):
         files.extend(p for p in (base / folder).rglob("*") if p.is_file() and p.suffix in
                      (".py", ".keras", ".json", ".csv", ".png", ".md", ".ipynb", ".npz"))
     files = sorted(files)

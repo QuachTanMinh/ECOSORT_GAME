@@ -14,7 +14,7 @@ def test_backend_package_import():
         spec.loader.exec_module(module)
         assert callable(module.predict_image)
         assert module.predict_image.__module__ == "ai_model.inference"
-        assert sys.modules["ai_model.inference"].CLASS_NAMES == ("Plastic", "Metal", "Paper")
+        assert sys.modules["ai_model.inference"].CLASS_NAMES == ("Plastic", "Metal", "Paper", "Organic")
     finally:
         for name in list(sys.modules):
             if name == "ai_model" or name.startswith("ai_model."):

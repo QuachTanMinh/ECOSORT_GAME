@@ -18,13 +18,13 @@ else:
 
 class Predictor:
     def __init__(self, artifacts: Path | str | None = None, threshold: float | None = None):
-        root = Path(artifacts or os.environ.get("ECOSORT_AI_ARTIFACTS", Path(__file__).parent / "artifacts"))
+        root = Path(artifacts or os.environ.get("ECOSORT_AI_ARTIFACTS", Path(__file__).parent / "artifacts-organic"))
         model_path, metadata_path = root / "model.keras", root / "metadata.json"
         if not model_path.is_file() or not metadata_path.is_file():
             raise RuntimeError("AI artifacts missing: need model.keras and metadata.json")
         self.metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
         self.classes = tuple(self.metadata["class_names"])
-        if self.classes != CLASS_NAMES or self.metadata["input_shape"] != [224, 224, 3]:
+        if self.classes not in (CLASS_NAMES, CLASS_NAMES[:3]) or self.metadata["input_shape"] != [224, 224, 3]:
             raise RuntimeError("Unsupported model class mapping or input shape")
         if hashlib.sha256(model_path.read_bytes()).hexdigest() != self.metadata["model_sha256"]:
             raise RuntimeError("Model checksum does not match metadata")
@@ -34,7 +34,7 @@ class Predictor:
         os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
         import tensorflow as tf
         self.model = tf.keras.models.load_model(model_path, compile=False, safe_mode=True)
-        if tuple(self.model.input_shape[1:]) != (224, 224, 3) or self.model.output_shape[-1] != 3:
+        if tuple(self.model.input_shape[1:]) != (224, 224, 3) or self.model.output_shape[-1] != len(self.classes):
             raise RuntimeError("Model dimensions do not match metadata")
         self.lock = threading.Lock()
 
@@ -43,7 +43,7 @@ class Predictor:
         # Rescaling is inside the exported model: do not call preprocess_input again.
         with self.lock:
             probabilities = np.asarray(self.model(image, training=False))[0]
-        if probabilities.shape != (3,) or not np.all(np.isfinite(probabilities)) or np.any(probabilities < 0) or not np.isclose(probabilities.sum(), 1, atol=1e-4):
+        if probabilities.shape != (len(self.classes),) or not np.all(np.isfinite(probabilities)) or np.any(probabilities < 0) or not np.isclose(probabilities.sum(), 1, atol=1e-4):
             raise RuntimeError("Model returned invalid probabilities")
         index = int(probabilities.argmax())
         confidence = float(probabilities[index])

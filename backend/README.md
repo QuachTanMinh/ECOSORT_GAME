@@ -1,4 +1,14 @@
+# Cập nhật mô hình bốn lớp — 15/10/2026
+
+Checkpoint phục vụ hiện tại nhận Plastic, Metal, Paper, Organic; `/health` trả về bốn lớp. Schema nhận Organic trong `/predict`, kết quả AR và lịch sử học tập. Lịch sử có thêm mode `Explore`. Rebuild Docker với `docker compose up --build -d`, hoặc khởi động lại Uvicorn; không chỉ restart image cũ. Xem [tài liệu Organic / 3D](../ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md). Các thông số ba lớp ở phần lịch sử bên dưới không mô tả checkpoint mới.
+
 # EcoSort Quest AR backend
+
+## Learning extension 2026-10-15
+
+`POST /learning/sessions` accepts session_id, player_id, mode, context, created_at, level, total, score, expired, answers. Each answer: item_id, expected, choice, correct, seconds. Modes: Campaign/Learn/Test/Review; contexts: Home/School/Park; materials: Plastic/Metal/Paper.
+
+Retries with same ID/content do not duplicate; changed content under same player/ID returns 409. Invalid material, correctness, score or answer count returns 422. `GET /learning/{player_id}` returns recent 100 sessions and test-only aggregate counts including unanswered. Storage is learning.json beside ECOSORT_DATA_FILE, also when progress uses Adafruit. Docker volume retains this file. No new feed required. Routes remain anonymous, for a single backend instance in a trusted local demo. Unity retains an outbox and retries from Learning results. Restart/rebuild backend after updating. See [learning guide](../ECOSORT_GAME/Docs/LEARNING-UPGRADE.md).
 
 FastAPI service for the Unity Windows client. It loads the Kaggle-trained model once at startup, accepts Unity's multipart upload, and exposes progress, score, and AR routes. Local JSON persistence is the default. Adafruit IO is an optional cloud adapter enabled with environment variables.
 
@@ -100,4 +110,3 @@ The loopback URL works when Unity and the backend run on the same PC. For anothe
 ## Evidence and acceptance
 
 See [EVIDENCE-CHECKLIST.md](EVIDENCE-CHECKLIST.md) for verified work and remaining local steps. Capture actual Swagger, Unity REST gameplay, Docker, and Adafruit feed screenshots/logs only after running those components.
-

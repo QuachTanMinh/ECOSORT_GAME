@@ -8,13 +8,13 @@ from evaluation_curves import diagnostic_curves, training_curves
 
 
 def test_curve_metrics_perfect_classifier(tmp_path):
-    labels = np.array([0, 1, 2, 0, 1, 2])
-    probabilities = np.eye(3)[labels] * .9 + (1 - np.eye(3)[labels]) * .05
+    labels = np.array([0, 1, 2, 3, 0, 1, 2, 3])
+    probabilities = np.eye(4)[labels] * .9 + (1 - np.eye(4)[labels]) * (.1 / 3)
     summary = diagnostic_curves(labels, probabilities, tmp_path, .75)
     assert summary["macro_roc_auc_ovr"] == pytest.approx(1)
     assert summary["macro_average_precision"] == pytest.approx(1)
     assert summary["ece_10_equal_width_bins"] == pytest.approx(.1)
-    assert summary["multiclass_brier_score_sum_over_classes"] == pytest.approx(.015)
+    assert summary["multiclass_brier_score_sum_over_classes"] == pytest.approx(.01 + .01 / 3)
     assert len(list(tmp_path.glob("*.png"))) == 4
     assert summary["threshold_diagnostics_not_for_test_selection"][-1]["accepted_accuracy"] is None
     saved = np.load(tmp_path / "probabilities.npz")

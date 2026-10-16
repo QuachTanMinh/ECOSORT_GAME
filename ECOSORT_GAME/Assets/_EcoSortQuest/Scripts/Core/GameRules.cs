@@ -3,17 +3,17 @@ using UnityEngine;
 
 namespace EcoSortQuest
 {
-    public enum WasteType { Plastic, Metal, Paper }
+    public enum WasteType { Plastic, Metal, Paper, Organic }
     public enum ClientScreen { MainMenu, Game, Scan, ARChallenge, Progress }
 
     public static class WasteInfo
     {
         public static string Label(WasteType type) => type == WasteType.Plastic ? "PLASTIC / NHỰA" :
-            type == WasteType.Metal ? "METAL / KIM LOẠI" : "PAPER / GIẤY";
+            type == WasteType.Metal ? "METAL / KIM LOẠI" : type == WasteType.Paper ? "PAPER / GIẤY" : "ORGANIC / HỮU CƠ";
         public static string Tip(WasteType type) => type == WasteType.Plastic ? "Chai nhựa thuộc nhóm Plastic." :
-            type == WasteType.Metal ? "Lon kim loại thuộc nhóm Metal." : "Giấy và báo thuộc nhóm Paper.";
+            type == WasteType.Metal ? "Lon kim loại thuộc nhóm Metal." : type == WasteType.Paper ? "Giấy và báo thuộc nhóm Paper." : "Thức ăn thừa, vỏ quả và lá cây thuộc Hữu cơ.";
         public static Color Color(WasteType type) => type == WasteType.Plastic ? new Color(.12f, .66f, .88f) :
-            type == WasteType.Metal ? new Color(.95f, .62f, .18f) : new Color(.36f, .76f, .48f);
+            type == WasteType.Metal ? new Color(.95f, .62f, .18f) : type == WasteType.Paper ? new Color(.36f, .76f, .48f) : new Color(.66f, .40f, .22f);
     }
 
     // Pure round state; shared by mouse/touch interaction and independent of scene/UI.

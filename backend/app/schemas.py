@@ -11,7 +11,7 @@ class StrictModel(BaseModel):
 
 
 class Prediction(StrictModel):
-    class_name: Literal["Plastic", "Metal", "Paper"]
+    class_name: Literal["Plastic", "Metal", "Paper", "Organic"]
     confidence: float = Field(ge=0, le=1, allow_inf_nan=False)
     accepted: bool
 
@@ -34,8 +34,8 @@ class ScoreSubmission(StrictModel):
 
 class ArResultSubmission(StrictModel):
     player_id: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
-    predicted_class: Literal["Plastic", "Metal", "Paper"]
+    predicted_class: Literal["Plastic", "Metal", "Paper", "Organic"]
     confidence: float = Field(ge=0, le=1, allow_inf_nan=False)
-    player_choice: Literal["Plastic", "Metal", "Paper"]
+    player_choice: Literal["Plastic", "Metal", "Paper", "Organic"]
     is_correct: bool
 
