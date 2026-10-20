@@ -153,7 +153,7 @@ namespace EcoSortQuest
         }
         void ShowAR()
         {
-            view.Header("AR CHALLENGE / PC SIMULATION", Mode, Home);
+            view.Header(deviceARActive ? "AR CHALLENGE / AR FOUNDATION" : "AR CHALLENGE / PC SIMULATION", Mode, Home);
             var info = view.Panel(view.Root, .035f, .72f, .93f, .13f, ViewFactory.Cream);
             bool fixture = PendingPrediction == null;
             if (fixture) PendingPrediction = new Prediction { class_name = "Plastic", confidence = .92f, accepted = true };
@@ -164,20 +164,22 @@ namespace EcoSortQuest
                 Footer("Không thể mở nhiệm vụ."); arComplete = true; return;
             }
             view.Text(info, "NHIỆM VỤ: " + WasteInfo.Label(type) + "\n" + (fixture ? "Dữ liệu mẫu để chạy scene trực tiếp." : "Vật phẩm được chọn theo kết quả từ ScanScene."), .025f, .15f, .75f, .7f, 26);
-            view.Button(info, "Đặt ở giữa", .80f, .22f, .17f, .56f, () => { if (!arPlaced) PlaceChallenge(Vector3.zero); });
+            var centerButton = view.Button(info, "Đặt ở giữa", .80f, .22f, .17f, .56f, () => { if (!arPlaced && !deviceARActive) PlaceChallenge(Vector3.zero); });
+            centerButton.interactable = !deviceARActive;
             var lower = view.Panel(view.Root, 0, .065f, 1, .12f, ViewFactory.Cream);
-            instruction = view.Text(lower, "Chạm mặt sàn để đặt ba thùng, hoặc nhấn Đặt ở giữa.", .035f, .1f, .93f, .8f, 26, ViewFactory.Accent, TextAnchor.MiddleCenter);
-            Footer("MÔ PHỎNG 3D TRÊN PC • Không có plane tracking, camera AR hoặc bằng chứng AR trên thiết bị.");
+            instruction = view.Text(lower, deviceARActive ? "Di chuyển điện thoại để dò mặt phẳng, rồi chạm để đặt thử thách." : "Chạm để đặt lên mặt phẳng mô phỏng, hoặc chọn Đặt ở giữa.", .035f, .1f, .93f, .8f, 26, ViewFactory.Accent, TextAnchor.MiddleCenter);
+            Footer(deviceARActive ? "AR THẬT • ARKit (iOS) / ARCore (Android) • Chạm mặt phẳng đã dò." : "MÔ PHỎNG PC • Plane tracking và camera AR chạy trên thiết bị iOS/Android.");
         }
         void PlaceChallenge(Vector3 position)
         {
             if (arPlaced || arComplete) return;
             // Keep the task readable and bins inside the island regardless of the clicked point.
-            position.x = Mathf.Clamp(position.x, -1.2f, 1.2f); position.z = Mathf.Clamp(position.z, -1.3f, .6f);
+            if (!deviceARActive)
+            { position.x = Mathf.Clamp(position.x, -1.2f, 1.2f); position.z = Mathf.Clamp(position.z, -1.3f, .6f); }
             SpawnBins(position + new Vector3(0, 0, -1));
             PendingPrediction.TryAccept(0, out WasteType type);
             currentItem = SpawnItem(type, position + new Vector3(0, .15f, 1.5f));
-            arPlaced = true; instruction.text = "Đã đặt thùng mô phỏng. Kéo rác và thả vào thùng đúng.";
+            arPlaced = true; instruction.text = deviceARActive ? "Đã đặt thử thách lên mặt phẳng. Chạm giữ vật phẩm, kéo đến thùng đúng rồi thả." : "Đã đặt thùng mô phỏng. Kéo rác và thả vào thùng đúng.";
         }
         void CompleteChallenge(WasteType choice)
         {
@@ -187,7 +189,7 @@ namespace EcoSortQuest
             { instruction.text = "Chưa đúng. " + WasteInfo.Tip(currentItem.type) + " Hãy thử lại; không cộng điểm."; return; }
             arComplete = true; currentItem.Select(false);
             progress.ar_completed++; LocalProgress.Save(progress);
-            instruction.text = "HOÀN THÀNH! +20 điểm nhiệm vụ AR mô phỏng.";
+            instruction.text = deviceARActive ? "HOÀN THÀNH AR! +20 điểm nhiệm vụ." : "HOÀN THÀNH! +20 điểm nhiệm vụ AR mô phỏng.";
             var panel = view.Panel(view.Root, .26f, .30f, .48f, .32f, ViewFactory.Cream);
             view.Text(panel, "+20 / THỬ THÁCH HOÀN THÀNH", .05f, .59f, .9f, .30f, 31, ViewFactory.Accent, TextAnchor.MiddleCenter);
             view.Text(panel, progress.HasBadge ? "Huy hiệu: EcoSort Beginner" : "Hoàn thành cả 3 level để nhận EcoSort Beginner.", .06f, .37f, .88f, .19f, 22, null, TextAnchor.MiddleCenter);

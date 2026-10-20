@@ -1,12 +1,14 @@
 using UnityEngine;
 namespace EcoSortQuest
 {
-    public interface IPlacementProvider { bool TryPlace(Ray ray, out Vector3 position); }
-    // PC simulation only. A future ARRaycastManager adapter implements the same interface.
+    public interface IPlacementProvider { bool TryPlace(Vector2 screenPoint, Camera camera, out Vector3 position); }
+    // Desktop/editor fallback; mobile players use ARFoundationPlacementProvider.
     public sealed class SimulatedPlacementProvider : IPlacementProvider
     {
-        public bool TryPlace(Ray ray, out Vector3 position)
+        public bool TryPlace(Vector2 screenPoint, Camera camera, out Vector3 position)
         {
+            if (camera == null) { position = default; return false; }
+            Ray ray = camera.ScreenPointToRay(screenPoint);
             var plane = new Plane(Vector3.up, Vector3.zero);
             if (plane.Raycast(ray, out float distance))
             {

@@ -27,7 +27,7 @@ namespace EcoSortQuest
         IEcoSortService service;
         Transform worldRoot;
         Text status;
-        bool busy, paused, resolving, arPlaced, arComplete, resultShown;
+        bool busy, paused, resolving, arPlaced, arComplete, resultShown, deviceARActive;
         SortingRound round;
         LevelConfig level;
         WasteItem currentItem;
@@ -41,7 +41,7 @@ namespace EcoSortQuest
         Text scoreText, correctText, timeText, instruction;
         RectTransform pausePanel;
         float remaining;
-        readonly IPlacementProvider placement = new SimulatedPlacementProvider();
+        IPlacementProvider placement;
         string Mode => service.IsMock ? "OFFLINE / LUYỆN TẬP" : "ONLINE / FASTAPI";
 
         void Start()
@@ -52,10 +52,24 @@ namespace EcoSortQuest
             LoadConnectionSettings();
             service = apiSettings != null && apiSettings.mode == ApiMode.Rest ?
                 (IEcoSortService)new RestEcoSortService(apiSettings) : new MockEcoSortService(apiSettings != null ? apiSettings.mockLatency : .35f);
-            worldRoot = authoredWorld != null ? authoredWorld : new GameObject("Runtime World").transform;
-            if (authoredWorld == null) worldRoot.SetParent(transform, false);
+            deviceARActive = screen == ClientScreen.ARChallenge && Application.isMobilePlatform &&
+                (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android);
+            if (deviceARActive)
+            {
+                worldRoot = new GameObject("AR Challenge Content").transform;
+                if (authoredCamera != null) authoredCamera.transform.SetParent(null, true);
+                if (authoredWorld != null) authoredWorld.gameObject.SetActive(false);
+            }
+            else
+            {
+                worldRoot = authoredWorld != null ? authoredWorld : new GameObject("Runtime World").transform;
+                if (authoredWorld == null) worldRoot.SetParent(transform, false);
+            }
             world = new WorldFactory(worldRoot);
             sceneCamera = authoredCamera != null ? authoredCamera : world.BuildEnvironment(screen != ClientScreen.ARChallenge);
+            placement = deviceARActive ?
+                (IPlacementProvider)new ARFoundationPlacementProvider(ARDeviceSession.Create(sceneCamera, worldRoot)) :
+                new SimulatedPlacementProvider();
             if (screen == ClientScreen.Game && SelectedLearningMode != LearningMode.Explore)
             {
                 sceneCamera.transform.position = new Vector3(0, 10, -15);
@@ -111,6 +125,7 @@ namespace EcoSortQuest
             Time.timeScale = 1; StopCamera();
             if (imageTexture != null) Destroy(imageTexture);
             world?.Dispose();
+            if (deviceARActive && worldRoot != null) Destroy(worldRoot.gameObject);
 
             if (ownsSettings && apiSettings != null) Destroy(apiSettings);
         }
@@ -138,7 +153,8 @@ namespace EcoSortQuest
         {
             for (int i = 0; i < 4; i++)
             {
-                var position = origin + new Vector3((i - 1.5f) * 2.6f, 0, 0);
+                float spacing = deviceARActive ? .95f : 2.6f;
+                var position = origin + new Vector3((i - 1.5f) * spacing, 0, 0);
                 if (binPrefabs != null && binPrefabs.Length > i && binPrefabs[i] != null)
                 { var bin = Instantiate(binPrefabs[i], worldRoot); bin.transform.localPosition = position; }
                 else world.Bin((WasteType)i, position);
@@ -245,8 +261,10 @@ namespace EcoSortQuest
             Ray ray = sceneCamera.ScreenPointToRay(position);
             if (screen == ClientScreen.ARChallenge && !arPlaced)
             {
-                if (placement.TryPlace(ray, out Vector3 point)) PlaceChallenge(point);
-                else instruction.text = "Chọn mặt sàn ở khu vực giữa để đặt bốn thùng mô phỏng.";
+                if (placement.TryPlace(position, sceneCamera, out Vector3 point)) PlaceChallenge(point);
+                else instruction.text = deviceARActive ?
+                    "Chưa thấy mặt phẳng. Di chuyển điện thoại chậm quanh sàn hoặc mặt bàn, rồi chạm lại." :
+                    "Chưa trúng mặt sàn mô phỏng. Hãy chạm lại trong khu vực giữa.";
                 return;
             }
             if (screen != ClientScreen.Game && screen != ClientScreen.ARChallenge) return;
