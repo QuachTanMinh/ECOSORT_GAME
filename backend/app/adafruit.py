@@ -28,8 +28,9 @@ class AdafruitIOStore(Store):
     mode = "adafruit_io"
 
     def __init__(self, username: str, key: str, base_url: str, timeout: float = 8.0,
-                 transport: httpx.BaseTransport | None = None):
+                 transport: httpx.BaseTransport | None = None, feed_prefix: str = ""):
         self.username = username
+        self.feed_prefix = feed_prefix.strip().strip(".")
         self.base_url = base_url.rstrip("/")
         self.client = httpx.Client(
             base_url=self.base_url,
@@ -39,6 +40,8 @@ class AdafruitIOStore(Store):
         )
 
     def _path(self, feed: str, suffix: str = "") -> str:
+        if self.feed_prefix:
+            feed = self.feed_prefix + "." + feed
         return f"/{quote(self.username, safe='')}/feeds/{quote(feed, safe='')}{suffix}"
 
     def _request(self, method: str, path: str, **kwargs) -> httpx.Response:

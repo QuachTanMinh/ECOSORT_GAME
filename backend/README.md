@@ -59,6 +59,13 @@ Progress fields match Unity `PlayerProgress`: `player_id`, `unlocked_level`, `be
 
 ## Adafruit IO cloud mode
 
+Grouped feeds: if the feed list shows keys such as `ecosort.game-score`, set
+`AIO_FEED_PREFIX=ecosort` in the local `.env`. Leave it empty for default-group
+keys such as `game-score`. After changing configuration or backend/model files,
+run `docker compose up -d --build`; restarting an old image does not update its code.
+The 23/10/2026 cloud incident was caused by grouped feeds being addressed without
+their prefix, plus an outdated running image. See `ECOSORT_GAME/Docs/CLOUD-REPAIR-20261023.md`.
+
 The adapter authenticates with `X-AIO-Key` and uses a finite timeout. Keep the key in a local `.env` file; never put it in Unity, source control, screenshots, or chat. Start from the sample:
 
 ```powershell

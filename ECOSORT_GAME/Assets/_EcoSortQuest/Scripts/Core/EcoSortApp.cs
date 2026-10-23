@@ -111,7 +111,7 @@ namespace EcoSortQuest
             if (round != null && !round.Finished && !paused && !resolving && sessionLimit > 0)
             {
                 remaining = Mathf.Max(0, remaining - Time.deltaTime);
-                timeText.text = "THỜI GIAN\n" + Mathf.CeilToInt(remaining) + "s";
+                timeText.text = Mathf.CeilToInt(remaining) + "s";
                 if (remaining <= 0) { round.Expire(); FinishRound(); }
             }
             if (webcam != null && webcam.isPlaying && scanPreview != null && webcam.didUpdateThisFrame)
@@ -139,7 +139,10 @@ namespace EcoSortQuest
         void SetStatus(string message) { if (status != null) status.text = message; }
         void Footer(string message)
         {
-            var panel = view.Panel(view.Root, 0, 0, 1, .065f, ViewFactory.Cream);
+            bool playing = screen == ClientScreen.Game;
+            var panel = view.Panel(view.Root, playing ? .015f : 0, 0, playing ? .97f : 1, playing ? .035f : .065f,
+                playing ? ViewFactory.HudSurface : ViewFactory.Cream);
+            if (playing) panel.GetComponent<Image>().raycastTarget = false;
             status = view.Text(panel, message, .035f, .1f, .93f, .8f, 19, ViewFactory.Muted);
         }
         WasteItem SpawnItem(WasteType type, Vector3 position)
@@ -168,13 +171,15 @@ namespace EcoSortQuest
             sceneCamera.transform.LookAt(new Vector3(-3, .5f, 0)); sceneCamera.orthographicSize = 7;
             view.Header("HỌC PHÂN LOẠI QUA TỪNG LƯỢT CHƠI", Mode, null);
             var card = view.Panel(view.Root, .025f, .09f, .48f, .74f, ViewFactory.Cream, "Menu card");
-            view.Text(card, "SMALL ACTIONS.\nGREENER TOMORROW.", .06f, .73f, .88f, .22f, 44);
-            view.Text(card, "Kéo vật phẩm. Thả vào đúng thùng.\nBa cấp độ, một thói quen tốt hơn.", .06f, .58f, .88f, .12f, 24, ViewFactory.Muted);
+            view.Text(card, "SMALL ACTIONS.\nGREENER TOMORROW.", .06f, .78f, .88f, .16f, 44);
+            view.Text(card, "Nhặt rác. Chuẩn bị đúng. Hồi sinh khu vực.\nHoặc luyện phân loại qua ba cấp độ.", .06f, .68f, .88f, .09f, 23, ViewFactory.Muted);
+            view.Button(card,"PHỤC HỒI CÔNG VIÊN →",.06f,.56f,.88f,.095f,()=>
+            {SelectedContext=LearningContext.Park;SelectedLearningMode=LearningMode.Explore;Navigate("GameScene");},true);
             for (int i = 1; i <= 3; i++)
             {
                 int n = i; bool unlocked = progress.unlocked_level >= n;
                 var button = view.Button(card, "LEVEL " + n + (unlocked ? "  →" : "  / KHÓA"), .06f + (n - 1) * .30f, .45f, .28f, .085f,
-                    () => { SelectedLearningMode = LearningMode.Campaign; SelectedLevel = n; Navigate("GameScene"); }, n == 1);
+                    () => { SelectedLearningMode = LearningMode.Campaign; SelectedLevel = n; Navigate("GameScene"); });
                 button.interactable = unlocked;
             }
             var challenge = view.Button(card, "Real-World Challenge" + (progress.ChallengeUnlocked ? "  →" : " / Sau Level 3"), .06f, .32f, .88f, .09f,
@@ -185,7 +190,7 @@ namespace EcoSortQuest
             view.Button(card, "Kết nối backend", .52f, .095f, .42f, .075f, ShowConnection);
             view.Button(card, "Học tập / AI / Thống kê", .06f, .005f, .64f, .065f, ShowLearningHub, true);
             view.Button(card, "Thoát", .73f, .005f, .21f, .065f, Quit);
-            Footer("36 vật phẩm • Kéo thả trên băng chuyền • AI qua FastAPI • Thử thách 3D mô phỏng trên PC");
+            Footer("Phục hồi khu vực • Chuẩn bị và tách vật liệu • Phân loại 36 vật phẩm • Học tập và AI qua FastAPI");
             if (!progress.player_id.StartsWith("test-") && PlayerPrefs.GetInt("EcoSortQuest.TutorialSeen", 0) == 0)
             { PlayerPrefs.SetInt("EcoSortQuest.TutorialSeen", 1); PlayerPrefs.Save(); ShowHelp(); }
         }
@@ -226,13 +231,15 @@ namespace EcoSortQuest
             if (SelectedLearningMode != LearningMode.Campaign)
                 roundItems = LearningDeck.Build(SelectedContext, level.itemCount, UnityEngine.Random.Range(0,int.MaxValue),
                     SelectedLearningMode == LearningMode.Review ? LearningStore.Mistakes(learning) : null);
-            view.Header(LearningLabel + " / " + ContextLabel, Mode, Home);
-            var hud = view.Panel(view.Root, .02f, .80f, .96f, .09f, ViewFactory.Cream);
-            scoreText = view.Text(hud, "", .025f, .1f, .2f, .8f, 27);
-            correctText = view.Text(hud, "", .25f, .1f, .29f, .8f, 24);
-            timeText = view.Text(hud, sessionLimit > 0 ? "THỜI GIAN\n" + remaining + "s" : "THỜI GIAN\nKhông giới hạn", .56f, .1f, .23f, .8f, 24);
-            view.Button(hud, "Pause / ESC", .81f, .2f, .17f, .6f, TogglePause);
-            var lower = view.Panel(view.Root, .02f, .065f, .96f, .135f, ViewFactory.Cream);
+            view.Header(LearningLabel + " / " + ContextLabel, Mode, Home, true);
+            var hud = view.Panel(view.Root, .015f, .87f, .58f, .055f, ViewFactory.HudSurface, "Compact score HUD");
+            hud.GetComponent<Image>().raycastTarget = false;
+            scoreText = view.Text(hud, "", .025f, .1f, .18f, .8f, 23);
+            correctText = view.Text(hud, "", .22f, .1f, .46f, .8f, 20);
+            timeText = view.Text(hud, sessionLimit > 0 ? remaining + "s" : "Không giới hạn", .70f, .1f, .28f, .8f, 20);
+            view.Button(view.Root, "Pause / ESC", .86f, .875f, .125f, .045f, TogglePause);
+            var lower = view.Panel(view.Root, .015f, .045f, .63f, .105f, ViewFactory.HudSurface, "Item hint card");
+            lower.GetComponent<Image>().raycastTarget = false;
             itemName = view.Text(lower, "", .015f, .64f, .97f, .3f, 25, ViewFactory.Ink);
             instruction = view.Text(lower, "", .015f, .34f, .97f, .3f, 23, ViewFactory.Accent);
             lessonText = view.Text(lower, "", .015f, .02f, .97f, .3f, 20, ViewFactory.Muted);
@@ -242,7 +249,7 @@ namespace EcoSortQuest
         }
         void RefreshRound()
         {
-            scoreText.text = SelectedLearningMode == LearningMode.Test && !round.Finished ? "KIỂM TRA\nẨn điểm" : "ĐIỂM\n" + round.Score;
+            scoreText.text = SelectedLearningMode == LearningMode.Test && !round.Finished ? "Ẩn điểm" : "ĐIỂM " + round.Score;
             correctText.text = (SelectedLearningMode == LearningMode.Test && !round.Finished ? "ẨN ĐÁP ÁN" : "ĐÚNG " + round.Correct + "/" + round.Total) + "   •   ĐÃ CHỌN " + round.Answered + "/" + round.Total;
         }
         void NextItem()
@@ -329,11 +336,16 @@ namespace EcoSortQuest
             RecordLearningRound();
             if (SelectedLearningMode == LearningMode.Campaign) { progress.RecordRound(SelectedLevel, round); LocalProgress.Save(progress); }
             var overlay = view.Panel(view.Root, .15f, .18f, .70f, .58f, ViewFactory.Cream, "Round result");
-            view.Text(overlay, SelectedLearningMode != LearningMode.Campaign ? "KẾT QUẢ " + LearningLabel : round.Passed ? "HOÀN THÀNH LEVEL " + SelectedLevel : "THỬ LẠI NHÉ!", .07f, .72f, .86f, .18f, 40);
-            view.Text(overlay, "Điểm: " + round.Score + "   •   Đúng: " + round.Correct + "/" + round.Total +
+            view.Text(overlay, explorer != null ? "KHU VỰC ĐÃ HỒI SINH" : SelectedLearningMode != LearningMode.Campaign ? "KẾT QUẢ " + LearningLabel : round.Passed ? "HOÀN THÀNH LEVEL " + SelectedLevel : "THỬ LẠI NHÉ!", .07f, .72f, .86f, .18f, 40);
+            view.Text(overlay, explorer != null ? RestorationSummary() : "Điểm: " + round.Score + "   •   Đúng: " + round.Correct + "/" + round.Total +
                 "\n" + (SelectedLearningMode != LearningMode.Campaign ? "Đã lưu lịch sử. Xem giải thích hoặc ôn lại câu sai." : round.Passed ? (SelectedLevel == 3 ? "Real-World Challenge đã mở khóa." : "Level tiếp theo đã mở khóa.") : "Cần ít nhất " + round.Required + " đáp án đúng. Các câu chưa trả lời không tính đúng."), .07f, .39f, .86f, .29f, 26);
             view.Button(overlay, "Chơi lại", .07f, .12f, .25f, .15f, () => Navigate("GameScene"));
             view.Button(overlay, "Menu", .37f, .12f, .25f, .15f, Home);
+            if(explorer!=null)
+            {
+                view.Button(overlay,"Ngắm thành quả",.67f,.12f,.26f,.15f,()=>{overlay.gameObject.SetActive(false);viewingRestoration=true;},true);
+                view.Button(view.Root,"Xem kết quả",.80f,.79f,.18f,.055f,()=>{overlay.gameObject.SetActive(true);viewingRestoration=false;});
+            }
             if (round.Passed && SelectedLearningMode == LearningMode.Campaign) view.Button(overlay, SelectedLevel < 3 ? "Level tiếp →" : "Thử thách →", .67f, .12f, .26f, .15f, () =>
             { if (busy) return; if (SelectedLevel < 3) { SelectedLevel++; Navigate("GameScene"); } else Navigate("ScanScene"); }, true);
             view.Button(overlay, "Xem đáp án", .07f, .01f, .40f, .09f, () => ShowAnswerReview());
@@ -354,6 +366,8 @@ namespace EcoSortQuest
         void TogglePause()
         {
             if(settingsRoot!=null){CloseSettings();return;}
+            if(preparationPanel!=null){ClosePreparation();return;}
+            if(missionBrief!=null)return;
             if (screen != ClientScreen.Game || round == null || resultShown || (round.Finished && explorer == null)) return;
             CancelDrag();
             paused = !paused; Time.timeScale = paused ? 0 : 1;

@@ -13,6 +13,7 @@ services:
       ECOSORT_DATA_FILE: /app/data/ecosort.json
       AIO_USERNAME: ${AIO_USERNAME:-}
       AIO_KEY: ${AIO_KEY:-}
+      AIO_FEED_PREFIX: ${AIO_FEED_PREFIX:-}
       ECOSORT_AI_THRESHOLD: ${ECOSORT_AI_THRESHOLD:-0.75}
     volumes:
       - ecosort-data:/app/data

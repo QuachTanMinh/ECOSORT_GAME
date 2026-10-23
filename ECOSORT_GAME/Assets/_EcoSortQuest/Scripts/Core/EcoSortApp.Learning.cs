@@ -45,7 +45,7 @@ namespace EcoSortQuest
                 string label=i==0?"Nhà ở":i==1?"Trường học":"Công viên";
                 view.Button(panel,label,.04f+i*.31f,.65f,.29f,.09f,()=>{SelectedContext=context;ShowLearningHub();},SelectedContext==context);
             }
-            view.Text(panel,"Học: có gợi ý và giải thích. Kiểm tra: ẩn đáp án đến cuối lượt.\nÔn tập: luyện lại vật phẩm sai gần đây; trả lời đúng sẽ gỡ khỏi danh sách cần ôn.",.04f,.46f,.92f,.14f,24);
+            view.Text(panel,"Học: có giải thích. Kiểm tra: ẩn đáp án. Ôn tập: luyện lỗi gần đây.\nKhám phá 3D: nhận nhiệm vụ phục hồi, chuẩn bị rác, tách vật liệu và hồi sinh khu vực.",.04f,.46f,.92f,.14f,23);
             void Begin(LearningMode mode)
             {
                 if(busy)return;

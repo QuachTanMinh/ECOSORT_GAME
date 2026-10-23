@@ -12,6 +12,7 @@ namespace EcoSortQuest
         public static readonly Color Muted = new Color(.30f, .43f, .43f);
         public static readonly Color Accent = new Color(.08f, .46f, .37f);
         public static readonly Color Cream = new Color(.96f, .96f, .91f);
+        public static readonly Color HudSurface = new Color(.96f, .97f, .93f, .88f);
         public RectTransform Root { get; }
         public Action SettingsRequested { get; set; }
         readonly Font font;
@@ -84,8 +85,24 @@ namespace EcoSortQuest
             input.placeholder = Text(rect, placeholder, .025f, .08f, .95f, .84f, 21, Muted);
             input.characterLimit = 1024; return input;
         }
-        public RectTransform Header(string subtitle, string mode, Action home)
+        public RectTransform Header(string subtitle, string mode, Action home, bool compact = false)
         {
+            if (compact)
+            {
+                var strip = Rect("Compact header", Root, .015f, .94f, .97f, .045f);
+                var title = Panel(strip, 0, 0, .49f, 1, HudSurface, "Location chip");
+                title.GetComponent<Image>().raycastTarget = false;
+                Text(title, subtitle, .035f, .08f, .93f, .84f, 21);
+                var connection = Panel(strip, .65f, 0, .20f, 1, HudSurface, "Connection chip");
+                connection.GetComponent<Image>().raycastTarget = false;
+                Text(connection, mode, .03f, .08f, .94f, .84f, 17, Accent, TextAnchor.MiddleCenter);
+                if (home != null) Button(strip, "Menu", .865f, 0, .075f, 1, home);
+                var settings = Button(strip, "", .95f, 0, .05f, 1, () => SettingsRequested?.Invoke());
+                settings.name = "Settings gear";
+                var symbol = Rect("Gear icon", settings.transform, .25f, .18f, .5f, .64f);
+                symbol.gameObject.AddComponent<GearIcon>().color = Ink;
+                return strip;
+            }
             var header = Panel(Root, 0, .91f, 1, .09f, Cream, "Header");
             Text(header, "ECOSORT / QUEST", .035f, .3f, .30f, .45f, 28);
             Text(header, subtitle, .36f, .3f, .29f, .45f, 23, Muted);

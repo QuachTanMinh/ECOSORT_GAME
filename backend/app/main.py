@@ -29,7 +29,8 @@ async def lifespan(app: FastAPI):
         raise RuntimeError("AI model could not be loaded; verify backend/app/ai_model/artifacts") from exc
     if settings.storage == "adafruit_io":
         store: Store = AdafruitIOStore(settings.aio_username, settings.aio_key,
-                                       settings.aio_base_url, settings.aio_timeout_seconds)
+                                       settings.aio_base_url, settings.aio_timeout_seconds,
+                                       feed_prefix=settings.aio_feed_prefix)
     else:
         store = LocalJsonStore(settings.data_file)
     app.state.settings = settings

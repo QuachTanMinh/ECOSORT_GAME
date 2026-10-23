@@ -13,6 +13,7 @@ class Settings:
     aio_key: str = ""
     aio_base_url: str = "https://io.adafruit.com/api/v2"
     aio_timeout_seconds: float = 8.0
+    aio_feed_prefix: str = ""
     ai_threshold: float | None = None
     max_upload_bytes: int = 4 * 1024 * 1024
 
@@ -26,6 +27,7 @@ class Settings:
             aio_key=os.getenv("AIO_KEY", "").strip(),
             aio_base_url=os.getenv("AIO_BASE_URL", "https://io.adafruit.com/api/v2").rstrip("/"),
             aio_timeout_seconds=float(os.getenv("AIO_TIMEOUT_SECONDS", "8")),
+            aio_feed_prefix=os.getenv("AIO_FEED_PREFIX", "").strip(),
             ai_threshold=float(threshold) if threshold else None,
             max_upload_bytes=int(os.getenv("ECOSORT_MAX_UPLOAD_BYTES", str(4 * 1024 * 1024))),
         )

@@ -1,5 +1,7 @@
 # EcoSort Quest — Unity client
 
+**23/10/2026 — vòng chơi phục hồi:** nút **PHỤC HỒI CÔNG VIÊN** trên menu chính mở nhiệm vụ 12 vật phẩm, ba mốc hồi sinh cảnh quan, quyết định chuẩn bị rác, tách túi giấy / cốc nhựa, sửa sai và sao hoàn thành. Có thể chọn Nhà ở / Trường học qua Học tập → Khám phá 3D. Xem [hướng dẫn](Docs/RESTORATION-GAMEPLAY.md) và [kiểm thử](Docs/TESTING.md).
+
 Bản Windows / Unity Editor 6000.6.2f1. Xem [README repo](../README.md) và [hướng dẫn chạy đầy đủ](../HUONG-DAN-CHAY-PROJECT.md) để cài backend, Docker và Adafruit IO trên máy mới.
 
 ## Chạy game

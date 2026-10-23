@@ -69,7 +69,6 @@ namespace EcoSortQuest.Tests
         [UnityTearDown] public IEnumerator Cleanup()
         {
             Time.timeScale = 1;
-            yield return SceneManager.LoadSceneAsync("SampleScene");
             SceneManager.sceneLoaded -= ConfigureMock;
             typeof(EcoSortApp).GetField("SessionMode",StaticFields).SetValue(null,originalSessionMode);
             typeof(EcoSortApp).GetField("SessionUrl",StaticFields).SetValue(null,originalSessionUrl);
@@ -81,6 +80,8 @@ namespace EcoSortQuest.Tests
             testSettings.Clear();
             if (hadSave) PlayerPrefs.SetString(SaveKey, originalSave); else PlayerPrefs.DeleteKey(SaveKey);
             PlayerPrefs.DeleteKey(LearningStore.Key(testId));
+            foreach(LearningContext context in System.Enum.GetValues(typeof(LearningContext)))
+                PlayerPrefs.DeleteKey(RestorationSave.Key(testId,context));
             PlayerPrefs.DeleteKey("EcoSort.MockCloud." + testId); PlayerPrefs.Save();
             EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null;
             EcoSortApp.SelectedLearningMode = LearningMode.Campaign; EcoSortApp.SelectedContext = LearningContext.Home; EcoSortApp.AiMission = false;
@@ -89,6 +90,11 @@ namespace EcoSortQuest.Tests
             #if UNITY_EDITOR
             InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorBehavior;
             #endif
+            // Restore preferences before any scene operation can throw, including skipped tests.
+            var previousScene=SceneManager.GetActiveScene();
+            var cleanupScene=SceneManager.CreateScene("EcoSort test cleanup "+System.Guid.NewGuid().ToString("N"));
+            SceneManager.SetActiveScene(cleanupScene);
+            if(previousScene.IsValid() && previousScene.isLoaded)yield return SceneManager.UnloadSceneAsync(previousScene);
         }
         IEnumerator Open(string scene)
         { yield return SceneManager.LoadSceneAsync(scene); yield return null; yield return null; Assert.IsNotNull(App); }
@@ -334,8 +340,13 @@ namespace EcoSortQuest.Tests
         }
         [UnityTest] public IEnumerator ExplorationRequiresProximitySupportsCorrectionAndSavesCompleteRound()
         {
-            EcoSortApp.SelectedLearningMode=LearningMode.Explore;EcoSortApp.SelectedContext=LearningContext.Park;
-            yield return Open("GameScene");
+            yield return Open("MainMenu");yield return Capture("restoration-main-menu");
+            ButtonNamed("PHỤC HỒI CÔNG VIÊN →").onClick.Invoke();yield return null;yield return null;
+            Assert.AreEqual(LearningMode.Explore,EcoSortApp.SelectedLearningMode);
+            Assert.AreEqual(LearningContext.Park,EcoSortApp.SelectedContext);
+            Assert.IsNotNull(Field<RectTransform>(App,"missionBrief"));
+            yield return Capture("restoration-briefing");
+            Call(App,"AcceptRestorationMission");yield return null;
             var actor=Field<ExplorerController>(App,"explorer");
             Assert.IsFalse(Camera.main.orthographic);
             var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
@@ -365,6 +376,13 @@ namespace EcoSortQuest.Tests
             Assert.AreSame(first,Field<WasteItem>(App,"carried"));
             Call(App,"InteractExploration");Assert.AreEqual(0,Field<SortingRound>(App,"round").Answered);
             var wrong=bins.First(b=>b.type!=first.type);MoveTo(wrong.transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");
+            Assert.AreEqual(0,Field<SortingRound>(App,"round").Answered,"Unprepared containers cannot be scored.");
+            Assert.IsNotNull(Field<RectTransform>(App,"preparationPanel"));
+            typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationAction.Ready});
+            Assert.AreEqual(1,Field<RestorationMission>(App,"restoration").PreparationMistakes);
+            yield return Capture("restoration-preparation");
+            typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationAction.EmptyContents});yield return null;
+            Call(App,"InteractExploration");
             Assert.AreSame(first,Field<WasteItem>(App,"carried"));Assert.AreEqual(1,Field<SortingRound>(App,"round").Answered);
             Call(App,"PutDownExploration");Assert.IsNull(Field<WasteItem>(App,"carried"));Call(App,"InteractExploration");
             var right=bins.Single(b=>b.type==first.type);MoveTo(right.transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");
@@ -374,13 +392,40 @@ namespace EcoSortQuest.Tests
             {
                 MoveTo(item.transform.position+Vector3.back*.6f);Call(App,"InteractExploration");
                 Assert.AreSame(item,Field<WasteItem>(App,"carried"));
+                if(item==Field<WasteItem>(App,"wrappedCup"))
+                {
+                    int beforeSeparation=Field<int>(App,"cleaned");
+                    Assert.IsFalse(Field<WasteItem>(App,"paperSleeve").gameObject.activeSelf);
+                    Call(App,"ShowPreparation");
+                    typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationAction.SeparateSleeve});
+                    Assert.IsTrue(Field<WasteItem>(App,"paperSleeve").gameObject.activeSelf);
+                    Assert.AreEqual(beforeSeparation,Field<int>(App,"cleaned"),"Separation cannot count as sorted waste.");
+                    yield return Capture("restoration-separated-materials");
+                    typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationAction.EmptyContents});
+                    yield return null;
+                }
+                else if(PreparationRules.Required(item.Definition.Id)!=PreparationAction.Ready)
+                {
+                    Call(App,"ShowPreparation");
+                    typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationRules.Required(item.Definition.Id)});
+                    yield return null;
+                }
                 var bin=bins.Single(b=>b.type==item.type);MoveTo(bin.transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");yield return null;
             }
             yield return new WaitForSeconds(.2f);
             var session=LearningStore.Load(testId).sessions.Single();
             Assert.AreEqual("Explore",session.mode);Assert.AreEqual(12,session.answers.Length);Assert.AreEqual(110,session.score);
             Assert.AreEqual(11,session.answers.Count(a=>a.correct));Assert.IsFalse(session.expired);
+            Assert.IsTrue(Field<RestorationMission>(App,"restoration").Complete);
+            Assert.IsTrue(Field<GameObject[]>(App,"restorationStages").All(s=>s.activeSelf));
+            var reward=RestorationSave.Load(testId,LearningContext.Park);
+            Assert.AreEqual(2,reward.bestStars);Assert.AreEqual(1,reward.completions);
+            ButtonNamed("Ngắm thành quả").onClick.Invoke();yield return null;
+            Assert.IsTrue(actor.CanMove);
+            yield return Capture("restoration-finished-world");
+            ButtonNamed("Xem kết quả").onClick.Invoke();yield return null;
             yield return Capture("exploration-result");
+            PlayerPrefs.DeleteKey(RestorationSave.Key(testId,LearningContext.Park));PlayerPrefs.Save();
         }
         [Serializable] sealed class LearningApiCount { public int total_sessions; public int test_unanswered; }
         [UnityTest] public IEnumerator LearningRestRoundTripDoesNotDuplicate()

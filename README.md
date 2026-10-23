@@ -1,5 +1,7 @@
 # EcoSort Quest
 
+**Nhiệm vụ phục hồi khu vực (23/10/2026):** trong Khám phá 3D, nhận nhiệm vụ 12 vật phẩm với ba mốc hồi sinh cảnh quan; quan sát tình trạng, làm rỗng vật chứa, chuẩn bị giấy sạch và tách cốc nhựa khỏi túi giấy trước khi phân loại. Có sửa sai, sao hoàn thành và ngắm thành quả. Xem [hướng dẫn nhiệm vụ](ECOSORT_GAME/Docs/RESTORATION-GAMEPLAY.md).
+
 **Bản bốn nhóm rác và Khám phá 3D (15/10/2026):** 36 vật phẩm theo Nhà ở/Trường học/Công viên; thêm Organic, nhân vật đi nhặt rác và bốn thùng. Vào **Học tập / AI / Thống kê → chọn bối cảnh → Khám phá 3D**. Mô hình bốn lớp đã huấn luyện và tích hợp vào backend. Xem [cách chơi, kết quả AI và cập nhật Docker](ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md).
 
 **Nâng cấp học tập 15/10/2026:** Menu → Học tập / AI / Thống kê để chọn Học, Kiểm tra, Ôn câu sai, ba bối cảnh và nhiệm vụ vật thật. Có lịch sử từng đáp án và API riêng; xem [hướng dẫn nâng cấp](ECOSORT_GAME/Docs/LEARNING-UPGRADE.md). Cập nhật backend cùng client để dùng `/learning/sessions`.

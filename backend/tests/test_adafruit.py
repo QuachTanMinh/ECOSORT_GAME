@@ -8,6 +8,21 @@ from datetime import datetime, timezone
 from app.schemas import ArResultSubmission, Progress
 
 
+def test_grouped_feed_keys_are_used_for_reads_and_writes():
+    seen = []
+    def handler(request):
+        seen.append(request.url.path)
+        return httpx.Response(200, json=[])
+    store = AdafruitIOStore("demo", "key", "https://io.adafruit.com/api/v2",
+                            transport=httpx.MockTransport(handler), feed_prefix="ecosort")
+    store.get_progress("demo")
+    store.record_prediction({"class_name": "Paper", "confidence": 0.9, "accepted": True})
+    assert seen == ["/api/v2/demo/feeds/ecosort.player-progress/data",
+                    "/api/v2/demo/feeds/ecosort.detected-waste/data",
+                    "/api/v2/demo/feeds/ecosort.ai-confidence/data"]
+    store.close()
+
+
 def test_adafruit_uses_secret_header_and_json_feed_values():
     seen = []
 

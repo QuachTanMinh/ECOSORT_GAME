@@ -20,11 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_EcoSortQuest/Scenes/ProgressScene.unity
     guid: d2642bc93ce060c449ddc4ad03cbe7ba
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 9a40b7d3264551e41b0a0066b8ce27f4, type: 2}
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: fc6c33c05a9f675469885af240c2984d, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 45e394ec13c499f4fb6df5262d359cb8, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: e29e52d9ea8d5024c893330cb6d6078a, type: 2}

@@ -1,5 +1,24 @@
 # Kiểm thử Unity Client
 
+## Nhiệm vụ phục hồi và chuẩn bị rác — 23/10/2026
+
+- EditMode: **26/26 passed**, `TestResults/Restoration-EditMode-20261023.xml`. Có ca mốc phục hồi, điều kiện xử lý theo vật phẩm, sao chỉ cấp khi dọn đủ và lưu thưởng không lặp / không hạ kỷ lục.
+- PlayMode hồi quy: **16 passed, 0 failed, 1 skipped**, `TestResults/Restoration-PlayMode-20261023.xml`. Bài REST yêu cầu backend test riêng nên được bỏ qua; các test dùng mock cô lập, không ghi thành tích vào Adafruit.
+- Sau khi đưa nút nhiệm vụ lên menu chính: kiểm thử trọn luồng riêng **1/1 passed**, `TestResults/Restoration-Focused-20261023.xml`. Từ menu → nhận nhiệm vụ → di chuyển / pause → chuẩn bị sai / đúng → sai thùng / sửa lại → tách cốc và túi giấy → thu gom riêng → đủ 12 → lưu 2 sao đúng một lần → ngắm cảnh / mở lại kết quả.
+- Các ảnh `restoration-main-menu`, `restoration-briefing`, `restoration-preparation`, `restoration-separated-materials`, `restoration-finished-world` đã được xem để kiểm tra bố cục và chữ.
+- Windows x64 build thành công, **108525429 bytes**, `Logs/Restoration-WindowsBuild-20261023.log`, exit code 0. Đã mở bản standalone thật, đóng hướng dẫn ban đầu và bấm nút Phục hồi công viên; bảng nhận nhiệm vụ hiển thị đúng. Ảnh `Evidence/restoration-windows-20261023.png`. Chưa chơi lại toàn bộ 12 vật phẩm bằng tay trong standalone.
+- Fixture cũ phụ thuộc `SampleScene` đã bị bỏ khỏi build profile. Đã thay bằng scene trống có tên duy nhất và khôi phục PlayerPrefs trước thao tác dọn scene, kể cả khi test bị bỏ qua. Lượt lỗi đầu để lại player thử; đã khôi phục player thật `demo-fb98729b88e9` từ snapshot local có sẵn (ngày 13/10), giữ nguyên lịch sử học tập; bản sao phục hồi ở `backend/data/player-local-recovery-20261023.json`. Không đưa thành tích AR mô phỏng trong snapshot này lên cloud.
+- AR/mobile, camera mới và chất lượng model AI không nằm trong phạm vi thay đổi này. Kỷ lục phục hồi lưu trên máy; lịch sử Explore gửi qua API học tập hiện có.
+
+Hướng dẫn: [RESTORATION-GAMEPLAY](RESTORATION-GAMEPLAY.md).
+
+## HUD gọn — 23/10/2026
+
+- Campaign và Khám phá 3D dùng header theo cụm sát mép, HUD nhỏ, thẻ hướng dẫn góc dưới; nền HUD trong nhẹ, panel trang trí không chặn raycast.
+- Điểm và thời gian campaign hiển thị một dòng, footer giảm chiều cao trong màn chơi.
+- Đã nạp lại script và chạy level 1 trong Unity Editor; quan sát bố cục, nhấn Pause và Tiếp tục thành công. Ảnh: `Evidence/compact-hud-20261023.png`.
+- Chưa chạy lại bộ kiểm thử tự động, chưa build Windows mới và chưa kiểm tra đầy đủ mọi tỉ lệ màn hình. Ảnh minh chứng thuộc phiên Editor đang chạy Online; không hoàn thành thêm một lượt để tạo điểm cloud.
+
 ## Organic và Khám phá 3D — 15/10/2026
 
 - EditMode: **23 passed, 0 failed**, `TestResults/Organic-EditMode-20261015.xml`.
