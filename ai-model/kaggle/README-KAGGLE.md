@@ -1,5 +1,9 @@
 # Chạy lại EcoSort trên Kaggle GPU
 
+> **Bản mới T4 ×2 / 4 hoặc12 nhóm:** dùng `EcoSort_Kaggle_T4x2_Advanced.ipynb`
+> và đọc [HUONG-DAN-T4x2.md](HUONG-DAN-T4x2.md).
+> Phần dưới mô tả notebook cũ; không áp dụng giới hạn chỉ dùng GPU đầu cho bản mới.
+
 File cần import: **`EcoSort_Kaggle_GPU.ipynb`**, notebook tự chứa toàn bộ source. Không cần chép từng cell hoặc upload code riêng.
 
 ## Chuẩn bị

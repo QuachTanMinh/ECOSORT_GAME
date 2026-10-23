@@ -1,0 +1,5 @@
+# Optional LOCAL development checks only. Do not pip-install this into Kaggle.
+-r ../requirements-ai.txt
+pandas>=2.2,<4
+nbformat>=5.10,<6
+ipython>=8,<10
