@@ -1,5 +1,7 @@
 # EcoSort Quest
 
+[Báo cáo cuối kỳ cập nhật ngày 24/10/2026](BaoCao/Bao-cao-cuoi-ky-ECOSORT-GAME-QUEST-cap-nhat-20261024.docx) bao gồm AI 12 nhóm, hành trình 9 nhiệm vụ và phạm vi nghiệm thu hiện tại.
+
 **Hành trình ba khu vực (24/10/2026):** 9 nhiệm vụ cố định với Nhà ở hướng dẫn cơ bản, Trường học có câu hỏi theo khu vực, Công viên tìm kiếm rộng hơn. Có mở khóa, sao theo độ chính xác/gợi ý, huy hiệu, trang trí và sổ tay vật phẩm đã gặp. Menu → **HÀNH TRÌNH 3 KHU VỰC →**. Xem [hướng dẫn hành trình](ECOSORT_GAME/Docs/AREA-JOURNEY.md); tiến trình mới lưu trên máy.
 
 **Nhận diện AI 12 nhóm (24/10/2026):** đã tích hợp EfficientNetV2B0 mới vào backend và màn hình Scan, có sổ tay hướng dẫn 12 nhóm. Bốn nhóm cũ tiếp tục có thử thách; tám nhóm mới có nhận diện/hướng dẫn. Đã kiểm thử Unity–REST và ghi/đọc Adafruit thật; Docker mới chưa chạy. Xem [tài liệu tích hợp và bằng chứng](ECOSORT_GAME/Docs/AI12-INTEGRATION.md).

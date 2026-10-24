@@ -1,0 +1,35 @@
+{
+  "health": {
+    "status": "ok",
+    "ai_ready": true,
+    "storage_mode": "adafruit_io",
+    "class_names": [
+      "Plastic",
+      "Metal",
+      "Paper",
+      "Organic",
+      "Cardboard",
+      "GreenGlass",
+      "BrownGlass",
+      "WhiteGlass",
+      "Clothes",
+      "Shoes",
+      "Batteries",
+      "Trash"
+    ],
+    "confidence_threshold": 0.75,
+    "model_sha256": "c94553614878308bc219487c2910de23ff2dd5a686737014cdc96a540e18814f"
+  },
+  "prediction": {
+    "class_name": "Organic",
+    "confidence": 0.996063768863678,
+    "accepted": true
+  },
+  "cloud_readback": {
+    "class_name": "Organic",
+    "confidence": 0.996063768863678,
+    "created_at": "2026-10-24T11:03:43.276060+00:00",
+    "matched": true
+  },
+  "input": "Existing dataset validation image biological182.jpg; not an independent photo accuracy test."
+}
