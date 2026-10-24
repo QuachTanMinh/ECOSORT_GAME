@@ -38,10 +38,12 @@ namespace EcoSortQuest
     public sealed class RestorationMission
     {
         public const int Total = 12;
+        readonly int target;
+        public RestorationMission(int total=Total) { if(total<1)throw new ArgumentOutOfRangeException(nameof(total));target=total; }
         public int Cleaned { get; private set; }
         public int PreparationMistakes { get; private set; }
-        public int Stage => Math.Min(3, Cleaned / 4);
-        public bool Complete => Cleaned == Total;
+        public int Stage => Math.Min(3, Cleaned * 3 / target);
+        public bool Complete => Cleaned == target;
         public string Objective => Cleaned < 4 ? "MỞ LẠI LỐI ĐI • Dọn 4 vật phẩm"
             : Cleaned < 8 ? "HỒI SINH VƯỜN HOA • Dọn 8 vật phẩm"
             : Cleaned < 12 ? "HOÀN THIỆN GÓC XANH • Dọn đủ 12 vật phẩm"

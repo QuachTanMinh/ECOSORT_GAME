@@ -27,10 +27,12 @@ namespace EcoSortQuest.Tests
         static readonly BindingFlags StaticFields = BindingFlags.Static | BindingFlags.NonPublic;
         Mouse mouse;
         readonly System.Collections.Generic.List<ApiSettings> testSettings = new System.Collections.Generic.List<ApiSettings>();
+        ApiSettings nextSceneSettings;
         void ConfigureMock(Scene scene, LoadSceneMode mode)
         {
             var app = UnityEngine.Object.FindFirstObjectByType<EcoSortApp>();
             if (app == null) return;
+            if (nextSceneSettings != null) { app.apiSettings = nextSceneSettings; return; }
             var settings = ScriptableObject.CreateInstance<ApiSettings>(); settings.mode = ApiMode.Mock;
             settings.mockLatency = .05f; app.apiSettings = settings; testSettings.Add(settings);
         }
@@ -55,7 +57,7 @@ namespace EcoSortQuest.Tests
             originalConnectionUrl=PlayerPrefs.GetString("EcoSortQuest.Connection.url");
             testId = "test-" + Guid.NewGuid().ToString("N");
             LocalProgress.Save(new PlayerProgress { player_id = testId });
-            EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null;
+            EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null; EcoSortApp.SelectedAreaMission="";
             EcoSortApp.SelectedLearningMode = LearningMode.Campaign; EcoSortApp.SelectedContext = LearningContext.Home; EcoSortApp.AiMission = false;
             oldBackground = InputSystem.settings.backgroundBehavior;
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -78,12 +80,14 @@ namespace EcoSortQuest.Tests
             else PlayerPrefs.DeleteKey("EcoSortQuest.Connection.url");
             foreach(var settings in testSettings) UnityEngine.Object.Destroy(settings);
             testSettings.Clear();
+            nextSceneSettings = null;
             if (hadSave) PlayerPrefs.SetString(SaveKey, originalSave); else PlayerPrefs.DeleteKey(SaveKey);
             PlayerPrefs.DeleteKey(LearningStore.Key(testId));
+            PlayerPrefs.DeleteKey(AreaJourneyStore.Key(testId));
             foreach(LearningContext context in System.Enum.GetValues(typeof(LearningContext)))
                 PlayerPrefs.DeleteKey(RestorationSave.Key(testId,context));
             PlayerPrefs.DeleteKey("EcoSort.MockCloud." + testId); PlayerPrefs.Save();
-            EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null;
+            EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null; EcoSortApp.SelectedAreaMission="";
             EcoSortApp.SelectedLearningMode = LearningMode.Campaign; EcoSortApp.SelectedContext = LearningContext.Home; EcoSortApp.AiMission = false;
             InputSystem.RemoveDevice(mouse);
             InputSystem.settings.backgroundBehavior = oldBackground;
@@ -341,7 +345,7 @@ namespace EcoSortQuest.Tests
         [UnityTest] public IEnumerator ExplorationRequiresProximitySupportsCorrectionAndSavesCompleteRound()
         {
             yield return Open("MainMenu");yield return Capture("restoration-main-menu");
-            ButtonNamed("PHỤC HỒI CÔNG VIÊN →").onClick.Invoke();yield return null;yield return null;
+            EcoSortApp.SelectedContext=LearningContext.Park;EcoSortApp.SelectedLearningMode=LearningMode.Explore;yield return Open("GameScene");
             Assert.AreEqual(LearningMode.Explore,EcoSortApp.SelectedLearningMode);
             Assert.AreEqual(LearningContext.Park,EcoSortApp.SelectedContext);
             Assert.IsNotNull(Field<RectTransform>(App,"missionBrief"));
@@ -533,6 +537,155 @@ namespace EcoSortQuest.Tests
                 CollectionAssert.AreEqual(new[]{"pickup","drop"},sounds,"Testing mode must not reveal correctness through audio.");
             }
             finally{if(had)PlayerPrefs.SetInt("EcoSortQuest.Sound",old);else PlayerPrefs.DeleteKey("EcoSortQuest.Sound");PlayerPrefs.Save();}
+        }
+        [Serializable] sealed class RecognitionHealth { public string[] class_names; public string storage_mode; }
+        [UnityTest] public IEnumerator RecognitionRestUsesRealModelAndDisplaysResponse()
+        {
+            string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
+            string image=Environment.GetEnvironmentVariable("ECOSORT_RECOGNITION_TEST_IMAGE");
+            if(string.IsNullOrEmpty(url)||string.IsNullOrEmpty(image))
+            {Assert.Ignore("Dedicated local backend and image required for real AI integration.");yield break;}
+            Assert.AreEqual("127.0.0.1",new Uri(url).Host);
+            using(var request=UnityEngine.Networking.UnityWebRequest.Get(url+"/health"))
+            {
+                request.timeout=20;yield return request.SendWebRequest();Assert.AreEqual(200,request.responseCode);
+                var health=JsonUtility.FromJson<RecognitionHealth>(request.downloadHandler.text);
+                Assert.AreEqual("local",health.storage_mode,"Integration tests must never write to live cloud.");
+                Assert.AreEqual(12,health.class_names.Length);
+            }
+            nextSceneSettings=ScriptableObject.CreateInstance<ApiSettings>();testSettings.Add(nextSceneSettings);
+            nextSceneSettings.mode=ApiMode.Rest;nextSceneSettings.baseUrl=url;nextSceneSettings.timeoutSeconds=30;
+            typeof(EcoSortApp).GetField("SessionMode",StaticFields).SetValue(null,(ApiMode?)ApiMode.Rest);
+            typeof(EcoSortApp).GetField("SessionUrl",StaticFields).SetValue(null,url);
+            yield return Open("ScanScene");
+            var rest=Field<IEcoSortService>(App,"service");Assert.IsFalse(rest.IsMock);
+            Prediction result=null;
+            yield return rest.Predict(File.ReadAllBytes(image),WasteType.Organic,p=>result=p,e=>Assert.Fail(e));
+            Assert.IsNotNull(result);Assert.IsTrue(RecognitionInfo.TryGet(result.class_name,out var category));
+            typeof(EcoSortApp).GetMethod("ApplyPrediction",Fields).Invoke(App,new object[]{result});
+            if(result.TryRecognize(.75f,out _))StringAssert.Contains(category.display_name,Field<Text>(App,"predictionText").text);
+            else StringAssert.Contains("Chưa đủ tin cậy",Field<Text>(App,"predictionText").text);
+            // Also exercise file loading, JPEG encoding and the actual Scan UI callback.
+            Field<InputField>(App,"imagePath").text=image; Call(App,"LoadImage");
+            Assert.IsTrue(Field<RawImage>(App,"scanPreview").enabled);
+            Call(App,"RunPrediction");float deadline=Time.realtimeSinceStartup+35;
+            while(Field<bool>(App,"busy") && Time.realtimeSinceStartup<deadline)yield return null;
+            Assert.IsFalse(Field<bool>(App,"busy"),"Real inference timed out");
+            var uiResult=Field<Prediction>(App,"scanResult");
+            if(uiResult!=null) Assert.IsTrue(uiResult.TryRecognize(.75f,out _));
+            else StringAssert.Contains("Chưa đủ tin cậy",Field<Text>(App,"predictionText").text);
+            yield return Capture("recognition-real-rest-20261024");
+        }
+        [UnityTest] public IEnumerator ExtendedRecognitionShowsGuidanceAndNeverStartsWrongBinChallenge()
+        {
+            yield return Open("ScanScene");
+            var apply=typeof(EcoSortApp).GetMethod("ApplyPrediction",Fields);
+            foreach(var entry in RecognitionInfo.All)
+            {
+                apply.Invoke(App,new object[]{new Prediction{class_name=entry.class_name,confidence=.92f,accepted=true}});
+                yield return null;
+                StringAssert.Contains(entry.display_name,Field<Text>(App,"predictionText").text);
+                Assert.AreEqual(entry.guidance,Field<Text>(App,"recognitionGuidance").text);
+                Assert.AreEqual(entry.game_supported,Field<Button>(App,"challengeButton").interactable);
+            }
+            apply.Invoke(App,new object[]{new Prediction{class_name="Batteries",confidence=.92f,accepted=true}});
+            yield return Capture("recognition-battery-fixture-20261024");
+            apply.Invoke(App,new object[]{new Prediction{class_name="Paper",confidence=.92f,accepted=true}});
+            Assert.IsTrue(Field<Button>(App,"challengeButton").interactable);
+            apply.Invoke(App,new object[]{new Prediction{class_name="Batteries",confidence=.4f,accepted=false}});
+            Assert.IsFalse(Field<Button>(App,"challengeButton").interactable);
+            Assert.IsNull(Field<Prediction>(App,"scanResult"));
+            typeof(EcoSortApp).GetMethod("ShowRecognitionGuide",Fields).Invoke(App,new object[]{10});
+            yield return Capture("recognition-guide-fixture-20261024");
+            Assert.IsNotNull(GameObject.Find("AI recognition guide"));
+        }
+        [UnityTest] public IEnumerator AreaJourneyPlaysAllNineMissionsUnlocksRewardsAndRetainsDiscoveries()
+        {
+            yield return Open("MainMenu");
+            ButtonNamed("HÀNH TRÌNH 3 KHU VỰC →").onClick.Invoke();yield return null;
+            Assert.IsNotNull(GameObject.Find("Area journey"));
+            yield return Capture("areas-home-hub-20261024");
+            Assert.AreEqual(1,UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Count(b=>b.interactable && b.GetComponentInChildren<Text>().text=="Nhận nhiệm vụ"));
+            foreach(var mission in AreaMissions.All)
+            {
+                typeof(EcoSortApp).GetMethod("BeginAreaMission",Fields).Invoke(App,new object[]{mission});
+                yield return null;yield return null;yield return null;
+                Assert.AreEqual("GameScene",SceneManager.GetActiveScene().name);
+                Assert.AreEqual(mission.Context,EcoSortApp.SelectedContext);
+                Assert.IsNotNull(Field<RectTransform>(App,"missionBrief"));
+                if(mission.Context==LearningContext.School)
+                {
+                    Call(App,"AcceptRestorationMission");Assert.IsNotNull(Field<RectTransform>(App,"missionBrief"),"Question cannot be skipped.");
+                    Assert.IsFalse(ButtonNamed("Bắt đầu nhiệm vụ").interactable);
+                    if(mission.Id=="school-class")
+                    {
+                        typeof(EcoSortApp).GetMethod("AnswerAreaQuestion",Fields).Invoke(App,new object[]{(mission.Answer+1)%3});
+                        Assert.AreEqual(1,Field<int>(App,"quizMistakes"));
+                        yield return Capture("areas-school-question-20261024");
+                    }
+                    typeof(EcoSortApp).GetMethod("AnswerAreaQuestion",Fields).Invoke(App,new object[]{mission.Answer});
+                }
+                Call(App,"AcceptRestorationMission");yield return null;
+                Assert.IsNull(Field<RectTransform>(App,"missionBrief"));
+                var actor=Field<ExplorerController>(App,"explorer");
+                var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
+                Assert.AreEqual(mission.Items.Length,litter.Count);
+                Assert.AreEqual(0,Field<float>(App,"sessionLimit"));
+                if(mission.Id=="park-path")yield return Capture("areas-park-search-20261024");
+                if(mission.Id=="home-kitchen")yield return Capture("areas-home-start-20261024");
+                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);
+                foreach(var item in litter.ToArray())
+                {
+                    Assert.IsTrue(item.gameObject.activeSelf,"Separate the wrapper before collecting its paper.");
+                    var obstacles=Physics.OverlapCapsule(item.transform.position+Vector3.up*.4f,item.transform.position+Vector3.up*1.4f,.33f);
+                    Assert.IsFalse(obstacles.Any(c=>c.name=="Raised garden" || c.name=="Boundary wall" || c.name.EndsWith("facade")),item.Definition.Id+" must be reachable");
+                    var controller=actor.GetComponent<CharacterController>();controller.enabled=false;
+                    actor.transform.position=item.transform.position+Vector3.back*.6f;controller.enabled=true;
+                    Call(App,"InteractExploration");Assert.AreSame(item,Field<WasteItem>(App,"carried"));
+                    if(mission.Id=="home-kitchen" && Field<int>(App,"missionHints")==0)
+                    {Call(App,"RequestAreaHint");Assert.AreEqual(1,Field<int>(App,"missionHints"));}
+                    Call(App,"ShowPreparation");
+                    if(item==Field<WasteItem>(App,"wrappedCup"))
+                    {
+                        typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationAction.SeparateSleeve});
+                        yield return null;
+                    }
+                    typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationRules.Required(item.Definition.Id)});
+                    yield return null;
+                    var bin=bins.Single(b=>b.type==item.type);controller.enabled=false;
+                    actor.transform.position=bin.transform.position+Vector3.back*1.5f;controller.enabled=true;
+                    Call(App,"InteractExploration");yield return null;
+                }
+                Assert.IsTrue(Field<bool>(App,"resultShown"));
+                var saved=AreaJourneyStore.Load(testId);Assert.IsTrue(AreaJourneyStore.Completed(saved,mission.Id));
+                Assert.AreEqual(mission.Items.Length,saved.missions.Single(m=>m.id==mission.Id).bestCorrect);
+                if(mission.Id=="home-kitchen")
+                {
+                    Assert.AreEqual(2,saved.missions.Single().bestStars,"Using hint must not award independent-decision star.");
+                    Assert.IsNotNull(GameObject.Find("Earned green tree"));
+                    Assert.IsNull(GameObject.Find("Earned bench seat"),"Later rewards stay locked.");
+                    yield return Capture("areas-home-reward-20261024");
+                    ButtonNamed("Hành trình").onClick.Invoke();yield return null;yield return null;yield return null;
+                    Assert.IsNotNull(GameObject.Find("Area journey"),"Result should return directly to mission selection.");
+                }
+                else yield return Open("MainMenu");
+            }
+            var completed=AreaJourneyStore.Load(testId);Assert.AreEqual(9,completed.missions.Count);
+            Assert.Contains("Người giữ góc xanh",completed.badges);Assert.GreaterOrEqual(completed.discovered.Count,20);
+            Call(App,"ShowAreaRewards");yield return null;
+            yield return Capture("areas-rewards-20261024");
+            ButtonNamed("Cây: BẬT").onClick.Invoke();yield return null;
+            Assert.IsFalse(AreaJourneyStore.Load(testId).plants);
+            yield return Open("MainMenu");
+            typeof(EcoSortApp).GetMethod("BeginAreaMission",Fields).Invoke(App,new object[]{AreaMissions.All[0]});
+            yield return null;yield return null;yield return null;Call(App,"AcceptRestorationMission");yield return null;
+            Assert.IsNull(GameObject.Find("Earned green tree"));Assert.IsNotNull(GameObject.Find("Earned bench seat"));
+            yield return Capture("areas-earned-decoration-20261024");
+            yield return Open("MainMenu");
+            typeof(EcoSortApp).GetMethod("ShowCatalog",Fields).Invoke(App,new object[]{0});yield return null;
+            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="Chai nước nhựa"));
+            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
+            yield return Capture("areas-discovered-guide-20261024");
         }
         static IEnumerator Capture(string name)
         {

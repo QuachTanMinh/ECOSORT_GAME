@@ -1,0 +1,12 @@
+{
+  "readable": 15515,
+  "retained": 14951,
+  "exact_duplicates_removed": 15,
+  "conflict_groups_quarantined": 50,
+  "rejected": [],
+  "group_count": 14735,
+  "manual_grouping": false,
+  "limitation": "dHash is heuristic; without object/session IDs different photos of one object can still leak.",
+  "dataset_source": "https://www.kaggle.com/datasets/mostafaabla/garbage-classification",
+  "dataset_version": "Record attached Kaggle dataset version in the saved notebook version."
+}

@@ -11,9 +11,9 @@ from pathlib import Path
 import numpy as np
 
 if __package__:
-    from .data import CLASS_NAMES, decode_image
+    from .data import CLASS_NAMES, EXPANDED_CLASS_NAMES, decode_image
 else:
-    from data import CLASS_NAMES, decode_image
+    from data import CLASS_NAMES, EXPANDED_CLASS_NAMES, decode_image
 
 
 class Predictor:
@@ -24,7 +24,7 @@ class Predictor:
             raise RuntimeError("AI artifacts missing: need model.keras and metadata.json")
         self.metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
         self.classes = tuple(self.metadata["class_names"])
-        if self.classes not in (CLASS_NAMES, CLASS_NAMES[:3]) or self.metadata["input_shape"] != [224, 224, 3]:
+        if self.classes not in (CLASS_NAMES, CLASS_NAMES[:3], EXPANDED_CLASS_NAMES) or self.metadata["input_shape"] != [224, 224, 3]:
             raise RuntimeError("Unsupported model class mapping or input shape")
         if hashlib.sha256(model_path.read_bytes()).hexdigest() != self.metadata["model_sha256"]:
             raise RuntimeError("Model checksum does not match metadata")

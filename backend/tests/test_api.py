@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 from app.main import app
+from app.recognition import MODEL_CLASS_NAMES
 
 
 def png_bytes() -> bytes:
@@ -21,13 +22,13 @@ def test_unity_routes_and_real_model(monkeypatch, tmp_path):
     with TestClient(app) as client:
         health = client.get("/health")
         assert health.status_code == 200
-        assert health.json()["class_names"] == ["Plastic", "Metal", "Paper", "Organic"]
+        assert health.json()["class_names"] == list(MODEL_CLASS_NAMES)
         assert health.json()["confidence_threshold"] == 0.75
 
         prediction = client.post("/predict", files={"file": ("capture.jpg", png_bytes(), "image/jpeg")})
         assert prediction.status_code == 200, prediction.text
         assert set(prediction.json()) == {"class_name", "confidence", "accepted"}
-        assert prediction.json()["class_name"] in {"Plastic", "Metal", "Paper", "Organic"}
+        assert prediction.json()["class_name"] in MODEL_CLASS_NAMES
         assert 0 <= prediction.json()["confidence"] <= 1
 
         initial = client.get("/progress/demo-player-1")

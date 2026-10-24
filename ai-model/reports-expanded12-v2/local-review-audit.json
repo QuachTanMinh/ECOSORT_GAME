@@ -1,0 +1,379 @@
+{
+  "bundle_sha256": "fe089e10d5e984fd4a5dfbcc089ef5e870cec7e1e456aafdd88f3a4c3d0d8014",
+  "model_sha256": "c94553614878308bc219487c2910de23ff2dd5a686737014cdc96a540e18814f",
+  "checksum_and_zip_ok": true,
+  "saved_metrics_recomputed_ok": true,
+  "manifest_paths_unique": true,
+  "pixel_and_group_split_leakage": 0,
+  "near_hash_cross_split_pairs": 0,
+  "split_counts": {
+    "validation": 2229,
+    "test": 2248,
+    "train": 10474
+  },
+  "metrics": {
+    "test": {
+      "images": 2248,
+      "correct": 2182,
+      "accuracy": 0.9706405693950177,
+      "macro_f1": 0.9588042982609589,
+      "accepted": 2168,
+      "coverage": 0.9644128113879004,
+      "accepted_correct": 2136,
+      "accepted_accuracy": 0.985239852398524,
+      "per_class": {
+        "Plastic": {
+          "precision": 0.9166666666666666,
+          "recall": 0.9166666666666666,
+          "f1-score": 0.9166666666666666,
+          "support": 120.0
+        },
+        "Metal": {
+          "precision": 0.8709677419354839,
+          "recall": 0.9391304347826087,
+          "f1-score": 0.9037656903765691,
+          "support": 115.0
+        },
+        "Paper": {
+          "precision": 0.9419354838709677,
+          "recall": 0.948051948051948,
+          "f1-score": 0.9449838187702265,
+          "support": 154.0
+        },
+        "Organic": {
+          "precision": 1.0,
+          "recall": 0.9931972789115646,
+          "f1-score": 0.9965870307167235,
+          "support": 147.0
+        },
+        "Cardboard": {
+          "precision": 0.9761904761904762,
+          "recall": 0.9461538461538461,
+          "f1-score": 0.9609375,
+          "support": 130.0
+        },
+        "GreenGlass": {
+          "precision": 0.9753086419753086,
+          "recall": 0.9875,
+          "f1-score": 0.9813664596273292,
+          "support": 80.0
+        },
+        "BrownGlass": {
+          "precision": 0.9512195121951219,
+          "recall": 0.975,
+          "f1-score": 0.9629629629629629,
+          "support": 80.0
+        },
+        "WhiteGlass": {
+          "precision": 0.9134615384615384,
+          "recall": 0.9047619047619048,
+          "f1-score": 0.9090909090909091,
+          "support": 105.0
+        },
+        "Clothes": {
+          "precision": 0.9949431099873578,
+          "recall": 0.989937106918239,
+          "f1-score": 0.9924337957124842,
+          "support": 795.0
+        },
+        "Shoes": {
+          "precision": 0.9764309764309764,
+          "recall": 0.9863945578231292,
+          "f1-score": 0.9813874788494078,
+          "support": 294.0
+        },
+        "Batteries": {
+          "precision": 0.9851851851851852,
+          "recall": 0.9708029197080292,
+          "f1-score": 0.9779411764705882,
+          "support": 137.0
+        },
+        "Trash": {
+          "precision": 1.0,
+          "recall": 0.9560439560439561,
+          "f1-score": 0.9775280898876404,
+          "support": 91.0
+        },
+        "accuracy": 0.9706405693950177,
+        "macro avg": {
+          "precision": 0.9585257777415902,
+          "recall": 0.9594700516518243,
+          "f1-score": 0.9588042982609589,
+          "support": 2248.0
+        },
+        "weighted avg": {
+          "precision": 0.9711657831390546,
+          "recall": 0.9706405693950177,
+          "f1-score": 0.97078621618792,
+          "support": 2248.0
+        }
+      }
+    },
+    "validation": {
+      "images": 2229,
+      "correct": 2183,
+      "accuracy": 0.9793629430237775,
+      "macro_f1": 0.9675893814774992,
+      "accepted": 2162,
+      "coverage": 0.9699416778824586,
+      "accepted_correct": 2136,
+      "accepted_accuracy": 0.9879740980573543,
+      "per_class": {
+        "Plastic": {
+          "precision": 0.9256198347107438,
+          "recall": 0.9256198347107438,
+          "f1-score": 0.9256198347107438,
+          "support": 121.0
+        },
+        "Metal": {
+          "precision": 0.9396551724137931,
+          "recall": 0.9732142857142857,
+          "f1-score": 0.956140350877193,
+          "support": 112.0
+        },
+        "Paper": {
+          "precision": 0.9793103448275862,
+          "recall": 0.9466666666666667,
+          "f1-score": 0.9627118644067797,
+          "support": 150.0
+        },
+        "Organic": {
+          "precision": 0.9864864864864865,
+          "recall": 0.9931972789115646,
+          "f1-score": 0.9898305084745763,
+          "support": 147.0
+        },
+        "Cardboard": {
+          "precision": 0.9769230769230769,
+          "recall": 0.9694656488549618,
+          "f1-score": 0.9731800766283525,
+          "support": 131.0
+        },
+        "GreenGlass": {
+          "precision": 0.9642857142857143,
+          "recall": 0.9759036144578314,
+          "f1-score": 0.9700598802395209,
+          "support": 83.0
+        },
+        "BrownGlass": {
+          "precision": 0.9518072289156626,
+          "recall": 0.9875,
+          "f1-score": 0.9693251533742331,
+          "support": 80.0
+        },
+        "WhiteGlass": {
+          "precision": 0.9411764705882353,
+          "recall": 0.9142857142857143,
+          "f1-score": 0.927536231884058,
+          "support": 105.0
+        },
+        "Clothes": {
+          "precision": 0.998719590268886,
+          "recall": 0.9961685823754789,
+          "f1-score": 0.9974424552429667,
+          "support": 783.0
+        },
+        "Shoes": {
+          "precision": 0.9898648648648649,
+          "recall": 1.0,
+          "f1-score": 0.9949066213921901,
+          "support": 293.0
+        },
+        "Batteries": {
+          "precision": 0.9850746268656716,
+          "recall": 0.9924812030075187,
+          "f1-score": 0.9887640449438202,
+          "support": 133.0
+        },
+        "Trash": {
+          "precision": 0.9662921348314607,
+          "recall": 0.945054945054945,
+          "f1-score": 0.9555555555555556,
+          "support": 91.0
+        },
+        "accuracy": 0.9793629430237775,
+        "macro avg": {
+          "precision": 0.9671012954985151,
+          "recall": 0.9682964811699759,
+          "f1-score": 0.9675893814774992,
+          "support": 2229.0
+        },
+        "weighted avg": {
+          "precision": 0.9794111906076232,
+          "recall": 0.9793629430237775,
+          "f1-score": 0.9793201958175068,
+          "support": 2229.0
+        }
+      }
+    }
+  },
+  "validation_threshold": {
+    "threshold": 0.75,
+    "accepted": 2162,
+    "coverage": 0.9699416778824586,
+    "accepted_accuracy": 0.9879740980573543,
+    "wilson95_lower": 0.9824370344274166
+  },
+  "top_confusions": [
+    {
+      "true": "Clothes",
+      "predicted": "Shoes",
+      "count": 7
+    },
+    {
+      "true": "WhiteGlass",
+      "predicted": "Plastic",
+      "count": 6
+    },
+    {
+      "true": "Cardboard",
+      "predicted": "Paper",
+      "count": 5
+    },
+    {
+      "true": "Plastic",
+      "predicted": "Metal",
+      "count": 4
+    },
+    {
+      "true": "Batteries",
+      "predicted": "Metal",
+      "count": 4
+    },
+    {
+      "true": "Plastic",
+      "predicted": "Paper",
+      "count": 3
+    },
+    {
+      "true": "Plastic",
+      "predicted": "WhiteGlass",
+      "count": 3
+    },
+    {
+      "true": "Paper",
+      "predicted": "Metal",
+      "count": 3
+    },
+    {
+      "true": "WhiteGlass",
+      "predicted": "Metal",
+      "count": 3
+    },
+    {
+      "true": "Trash",
+      "predicted": "WhiteGlass",
+      "count": 3
+    },
+    {
+      "true": "Metal",
+      "predicted": "Plastic",
+      "count": 2
+    },
+    {
+      "true": "Metal",
+      "predicted": "WhiteGlass",
+      "count": 2
+    },
+    {
+      "true": "Paper",
+      "predicted": "Plastic",
+      "count": 2
+    },
+    {
+      "true": "Paper",
+      "predicted": "Cardboard",
+      "count": 2
+    },
+    {
+      "true": "BrownGlass",
+      "predicted": "Metal",
+      "count": 2
+    }
+  ],
+  "local_model": {
+    "tensorflow": "2.20.0",
+    "keras": "3.15.1",
+    "input": [
+      null,
+      224,
+      224,
+      3
+    ],
+    "output": [
+      null,
+      12
+    ],
+    "precision": "float32",
+    "validation_replay": {
+      "images": 2,
+      "paths": [
+        "biological/biological182.jpg",
+        "biological/biological475.jpg"
+      ],
+      "max_probability_difference": 1.1920928955078125e-07,
+      "label_agreement": 1.0,
+      "acceptance_agreement": 1.0
+    }
+  },
+  "audit": {
+    "readable": 15515,
+    "retained": 14951,
+    "exact_duplicates_removed": 15,
+    "conflict_groups_quarantined": 50,
+    "rejected": [],
+    "group_count": 14735,
+    "manual_grouping": false,
+    "limitation": "dHash is heuristic; without object/session IDs different photos of one object can still leak.",
+    "dataset_source": "https://www.kaggle.com/datasets/mostafaabla/garbage-classification",
+    "dataset_version": "Record attached Kaggle dataset version in the saved notebook version."
+  },
+  "environment": {
+    "python": "3.13.15 (main, Aug  6 2026, 11:06:22) [GCC 13.3.0]",
+    "tensorflow": "2.20.0",
+    "keras": "3.13.2",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "gpu_devices": [
+      "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')",
+      "PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')"
+    ],
+    "gpu_details": [
+      {
+        "compute_capability": [
+          7,
+          5
+        ],
+        "device_name": "Tesla T4"
+      },
+      {
+        "compute_capability": [
+          7,
+          5
+        ],
+        "device_name": "Tesla T4"
+      }
+    ],
+    "build": {
+      "cpu_compiler": "clang 18",
+      "cuda_compute_capabilities": [
+        "sm_60",
+        "sm_70",
+        "sm_80",
+        "sm_89",
+        "compute_90"
+      ],
+      "cuda_version": "12.5.1",
+      "cudnn_version": "9",
+      "is_cuda_build": true,
+      "is_rocm_build": false,
+      "is_tensorrt_build": false
+    },
+    "replicas": 2
+  },
+  "deployment": "Not deployed: 12 labels do not match the current 4-class backend/Unity contract.",
+  "limits": [
+    "No new independent photo accuracy measured.",
+    "No object/session IDs: dHash grouping does not guarantee object-level independence.",
+    "Saved predictions do not prove that test was never consulted during prior experiments."
+  ]
+}

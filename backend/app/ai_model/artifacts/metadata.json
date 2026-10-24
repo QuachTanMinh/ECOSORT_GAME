@@ -3,7 +3,15 @@
     "Plastic",
     "Metal",
     "Paper",
-    "Organic"
+    "Organic",
+    "Cardboard",
+    "GreenGlass",
+    "BrownGlass",
+    "WhiteGlass",
+    "Clothes",
+    "Shoes",
+    "Batteries",
+    "Trash"
   ],
   "input_shape": [
     224,
@@ -15,21 +23,29 @@
     0,
     255
   ],
-  "preprocessing_in_model": "Rescaling(1/127.5, offset=-1)",
+  "preprocessing_in_model": "EfficientNetV2 built-in preprocessing (RGB 0..255)",
   "resize": "Pillow bilinear, direct resize, EXIF transpose, RGB",
   "threshold": 0.75,
   "threshold_target_met_on_validation": true,
+  "mode": "expanded12",
+  "compatible_with_current_ecosort_label_contract": false,
+  "deployment_note": "Research only: current backend/Unity reject 12 labels. Extend enums/UI/API first.",
+  "model_sha256": "c94553614878308bc219487c2910de23ff2dd5a686737014cdc96a540e18814f",
+  "split_manifest_sha256": "50ea879a6a3d5cb28412c98f8b29fcaad6f94f53234c94b182981fe9d1f5b16a",
   "seed": 42,
-  "split_manifest_sha256": "931d02f88d91e5694a031d2f88cf89341b5b56286cc6acf8d7aef6d0860eb383",
-  "model_sha256": "6066774bbd847366db93a717e46c47dc15cac2b6f764613fe6170969d328da46",
+  "backbone": "EfficientNetV2B0",
   "tensorflow": "2.20.0",
-  "keras": "3.15.1",
-  "python": "3.12.14",
-  "epochs_requested": 35,
-  "epochs_run": 16,
-  "augmented_train_views": 2,
-  "fine_tune_epochs_requested": 0,
-  "training_seconds": 117.54,
-  "validation_accuracy": 0.967741935483871,
-  "selection": "best validation loss; test set not loaded by train.py"
+  "keras": "3.13.2",
+  "python": "3.13.15",
+  "validation_accuracy": 0.9793629430237775,
+  "selected_stage": "fine_tune",
+  "head_validation_loss": 0.11281635612249374,
+  "fine_tune_validation_loss": 0.08338512480258942,
+  "epochs_run": {
+    "head": 10,
+    "fine_tune": 30
+  },
+  "training_and_export_seconds": 4778.082749587,
+  "export_precision": "float32",
+  "selection": "validation only; test not used for checkpoint or threshold selection"
 }

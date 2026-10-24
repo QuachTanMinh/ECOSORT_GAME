@@ -13,6 +13,7 @@ from .config import Settings
 from .schemas import ArResultSubmission, Prediction, Progress, ScoreSubmission
 from .storage import LocalJsonStore, Store, default_progress
 from .learning import LearningSession, LearningStore
+from .recognition import recognition_catalog
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("ecosort.api")
@@ -75,6 +76,11 @@ def health(request: Request):
     return {"status": "ok", "ai_ready": True, "storage_mode": settings.storage,
             "class_names": list(predictor.classes), "confidence_threshold": predictor.threshold,
             "model_sha256": predictor.metadata["model_sha256"]}
+
+
+@app.get('/recognition/classes')
+def get_recognition_classes():
+    return recognition_catalog()
 
 
 @app.post("/predict", response_model=Prediction)

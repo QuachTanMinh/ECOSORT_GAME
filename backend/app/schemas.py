@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+from .recognition import RecognitionLabel
 
 
 class StrictModel(BaseModel):
@@ -11,7 +12,7 @@ class StrictModel(BaseModel):
 
 
 class Prediction(StrictModel):
-    class_name: Literal["Plastic", "Metal", "Paper", "Organic"]
+    class_name: RecognitionLabel
     confidence: float = Field(ge=0, le=1, allow_inf_nan=False)
     accepted: bool
 

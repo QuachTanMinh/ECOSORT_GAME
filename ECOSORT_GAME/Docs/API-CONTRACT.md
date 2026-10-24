@@ -1,6 +1,6 @@
 # Hợp đồng tích hợp Unity và FastAPI
 
-Đây là contract client đề xuất để thành viên backend đối chiếu. Chưa được xác nhận với server thật. Unity dùng `IEcoSortService`, không trực tiếp gọi Adafruit IO.
+Contract đã được kiểm thử Unity–FastAPI; bản nhận diện 12 lớp cập nhật ngày 24/10/2026. Unity dùng `IEcoSortService`, không trực tiếp gọi Adafruit IO.
 
 ## Quy ước
 
@@ -9,7 +9,7 @@
 - `player_id` là mã demo cục bộ, không phải token xác thực.
 - Mặc định timeout 15 giây, ảnh upload ≤4 MB.
 - Các POST/PUT thành công chấp nhận HTTP 2xx, body không bắt buộc. GET progress cần JSON đúng schema.
-- Ngưỡng confidence 0.75 là cấu hình tạm thời cần hiệu chỉnh validation.
+- Ngưỡng confidence 0.75 khớp metadata của checkpoint hiện tại; không bảo đảm phát hiện ảnh ngoài phân phối.
 
 | Method | Path | Request | Response thành công |
 |---|---|---|---|
@@ -26,7 +26,7 @@ Prediction:
 {"class_name":"Plastic","confidence":0.92,"accepted":true}
 ```
 
-Nhãn hợp lệ: Plastic, Metal, Paper (client chấp nhận không phân biệt hoa thường). confidence phải hữu hạn, trong [0,1], đạt ngưỡng cấu hình; accepted=false luôn từ chối. Ảnh lạ không được giả định sẽ bị phát hiện tin cậy chỉ bằng confidence.
+Nhãn nhận diện: Plastic, Metal, Paper, Organic, Cardboard, GreenGlass, BrownGlass, WhiteGlass, Clothes, Shoes, Batteries, Trash. Chỉ bốn nhãn đầu được chuyển sang WasteType cho thử thách. GET `/recognition/classes` trả catalog hướng dẫn; xem [AI12-INTEGRATION](AI12-INTEGRATION.md). confidence phải hữu hạn, trong [0,1], đạt ngưỡng cấu hình; accepted=false luôn từ chối. Ảnh lạ không được giả định sẽ bị phát hiện tin cậy chỉ bằng confidence.
 
 PlayerProgress:
 

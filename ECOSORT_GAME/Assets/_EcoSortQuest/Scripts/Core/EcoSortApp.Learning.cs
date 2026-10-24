@@ -51,14 +51,14 @@ namespace EcoSortQuest
                 if(busy)return;
                 if(mode==LearningMode.Review && LearningStore.Mistakes(learning).Count==0)
                 {SetStatus("Chưa có câu sai cần ôn. Hãy làm một lượt học hoặc kiểm tra.");return;}
-                SelectedLearningMode=mode; Navigate("GameScene");
+                SelectedAreaMission="";SelectedLearningMode=mode; Navigate("GameScene");
             }
             view.Button(panel,"Học có hướng dẫn",.04f,.33f,.29f,.09f,()=>Begin(LearningMode.Learn),true);
             view.Button(panel,"Kiểm tra",.35f,.33f,.29f,.09f,()=>Begin(LearningMode.Test));
             view.Button(panel,"Ôn câu sai",.66f,.33f,.29f,.09f,()=>Begin(LearningMode.Review));
             view.Button(panel,"Kết quả học tập",.04f,.19f,.44f,.09f,()=>ShowLearningStats());
             view.Button(panel,"Nhiệm vụ AI",.51f,.19f,.44f,.09f,()=>{AiMission=true;Navigate("ScanScene");});
-            view.Button(panel,"Khám phá 3D",.04f,.055f,.44f,.09f,()=>Begin(LearningMode.Explore),true);
+            view.Button(panel,"Hành trình 3 khu vực",.04f,.055f,.44f,.09f,()=>{Destroy(panel.gameObject);ShowAreaHub();},true);
             view.Button(panel,"Đóng",.51f,.055f,.44f,.09f,()=>Destroy(panel.gameObject));
         }
         void ShowLearningStats()
@@ -96,6 +96,7 @@ namespace EcoSortQuest
                 created_at=DateTime.UtcNow.ToString("O"),level=SelectedLevel,total=round.Total,score=round.Score,
                 expired=round.Answered<round.Total,answers=learningAnswers.ToArray()};
             LearningStore.Add(learning,entry);LearningStore.Save(progress.player_id,learning);
+            AreaJourneyStore.RecordReview(progress.player_id,entry);
         }
         void ShowAnswerReview(int page=0)
         {

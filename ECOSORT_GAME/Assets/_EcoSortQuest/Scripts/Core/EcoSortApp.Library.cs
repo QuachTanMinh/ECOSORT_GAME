@@ -49,14 +49,16 @@ namespace EcoSortQuest
         void ShowCatalog(int page)
         {
             var overlay=view.Panel(view.Root,.03f,.09f,.94f,.79f,ViewFactory.Cream,"Waste field guide");
-            view.Text(overlay,"SỔ TAY PHÂN LOẠI / "+WasteInfo.Label((WasteType)page),.035f,.86f,.85f,.1f,32);
+            var discovered=AreaJourneyStore.Load(progress.player_id).discovered;
+            view.Text(overlay,"SỔ TAY • "+discovered.Count+"/36 • "+WasteInfo.Label((WasteType)page),.035f,.86f,.85f,.1f,32);
             for(int i=0;i<9;i++)
             {
                 var entry=WasteCatalog.Get((WasteType)page,i);
                 float x=.035f+(i%3)*.315f, y=.60f-(i/3)*.22f;
                 var card=view.Panel(overlay,x,y,.30f,.20f,new Color(.88f,.93f,.88f));
-                view.Text(card,entry.Name,.04f,.64f,.92f,.30f,22);
-                view.Text(card,entry.Lesson,.04f,.05f,.92f,.58f,19,ViewFactory.Muted);
+                bool seen=discovered.Contains(entry.Id);
+                view.Text(card,seen?entry.Name:"VẬT PHẨM CHƯA GẶP",.04f,.64f,.92f,.30f,22);
+                view.Text(card,seen?entry.Lesson:"Gặp vật phẩm trong lượt chơi để bổ sung trang sổ tay này.",.04f,.05f,.92f,.58f,19,ViewFactory.Muted);
             }
             for(int i=0;i<4;i++)
             { int next=i; view.Button(overlay,((WasteType)i).ToString(),.035f+i*.18f,.045f,.16f,.085f,()=>{Destroy(overlay.gameObject);ShowCatalog(next);},i==page); }

@@ -13,7 +13,7 @@ namespace EcoSortQuest
         RawImage scanPreview;
         InputField imagePath;
         Button challengeButton;
-        Text predictionText, mockTypeText;
+        Text predictionText, mockTypeText, recognitionGuidance;
         WasteType mockType;
         byte[] jpeg;
         Prediction scanResult;
@@ -23,7 +23,8 @@ namespace EcoSortQuest
         {
             view.Header(AiMission ? "NHIỆM VỤ AI / 4 VẬT LIỆU" : "REAL-WORLD SCAN", Mode, Home);
             var panel = view.Panel(view.Root, .035f, .10f, .93f, .72f, ViewFactory.Cream);
-            view.Text(panel, AiMission ? "TÌM VẬT THẬT • TỰ CHỌN • ĐỐI CHIẾU AI" : "MỘT VẬT PHẨM. MỘT LỰA CHỌN TỐT.", .035f, .86f, .93f, .10f, 32);
+            view.Text(panel, AiMission ? "TÌM VẬT THẬT • TỰ CHỌN • ĐỐI CHIẾU AI" : "QUAN SÁT MỘT VẬT • NHẬN DIỆN 12 NHÓM", .035f, .86f, .72f, .10f, 28);
+            view.Button(panel, "12 nhóm AI", .79f, .87f, .17f, .08f, () => ShowRecognitionGuide());
             var previewFrame = view.Panel(panel, .035f, .30f, .44f, .52f, new Color(.80f, .87f, .83f));
             view.Text(previewFrame, "WEBCAM / ẢNH PNG, JPG\n\nĐặt một vật phẩm chính trong ảnh.\nChụp rõ, đủ sáng, nền đơn giản.", .08f, .15f, .84f, .70f, 24, ViewFactory.Muted, TextAnchor.MiddleCenter);
             var previewRect = view.Rect("Preview", previewFrame, 0, 0, 1, 1);
@@ -35,8 +36,9 @@ namespace EcoSortQuest
             imagePath = view.Input(panel, "Dán đường dẫn tuyệt đối tới ảnh JPG/PNG…", .035f, .075f, .33f, .08f);
             view.Button(panel, "Nạp ảnh", .38f, .075f, .095f, .08f, LoadImage);
             view.Text(panel, "NHẬN DIỆN VẬT PHẨM", .53f, .73f, .43f, .09f, 28);
-            predictionText = view.Text(panel, service.IsMock ? "CHẾ ĐỘ MOCK\nKết quả giả lập do bạn chọn.\nKhông thực hiện nhận diện ảnh." : "Chưa có kết quả.\nChụp hoặc nạp ảnh rồi gửi tới API.", .53f, .49f, .43f, .22f, 25);
-            mockTypeText = view.Text(panel, "Mock label: Plastic", .53f, .40f, .43f, .07f, 21, ViewFactory.Muted);
+            predictionText = view.Text(panel, service.IsMock ? "CHẾ ĐỘ MOCK\nKết quả giả lập do bạn chọn." : "Chưa có kết quả.\nChụp hoặc nạp ảnh rồi gửi tới AI.", .53f, .59f, .43f, .14f, 24);
+            recognitionGuidance = view.Text(panel, service.IsMock ? "Mock chỉ mô phỏng bốn vật liệu của màn chơi. Chọn Online để nhận diện ảnh thật với model đang phục vụ." : "AI là gợi ý. Tự kiểm tra vật liệu; nơi thu gom quyết định loại rác được tiếp nhận.", .53f, .33f, .43f, .24f, 22, ViewFactory.Muted);
+            mockTypeText = view.Text(panel, "Mock label: Plastic", .53f, .255f, .43f, .065f, 20, ViewFactory.Muted);
             mockTypeText.gameObject.SetActive(service.IsMock || AiMission);
             if (AiMission) { missionLabel = mockTypeText; missionLabel.text = "Mục tiêu 1/4: Nhựa • Chọn vật liệu trước khi gửi ảnh."; }
             if (service.IsMock || AiMission)
@@ -44,7 +46,7 @@ namespace EcoSortQuest
                 for (int i = 0; i < 4; i++)
                 {
                     var type = (WasteType)i;
-                    view.Button(panel, type.ToString(), .53f + i * .11f, .30f, .10f, .07f, () =>
+                    view.Button(panel, type.ToString(), .53f + i * .11f, .18f, .10f, .065f, () =>
                     {
                         if (busy) return;
                         if (AiMission) { ChooseMissionMaterial(type); if (service.IsMock) mockType = type; return; }
@@ -53,12 +55,12 @@ namespace EcoSortQuest
                     });
                 }
             }
-            view.Button(panel, service.IsMock ? "Chạy dự đoán MOCK" : "Gửi ảnh đến AI", .53f, .19f, .43f, .085f, RunPrediction, true);
-            challengeButton = view.Button(panel, AiMission ? "Nhiệm vụ tiếp / hoàn thành →" : "Mở thử thách AR mô phỏng →", .53f, .075f, .43f, .085f, () =>
+            view.Button(panel, service.IsMock ? "Chạy dự đoán MOCK" : "Gửi ảnh đến AI", .53f, .10f, .43f, .065f, RunPrediction, true);
+            challengeButton = view.Button(panel, AiMission ? "Nhiệm vụ tiếp / hoàn thành →" : "Mở thử thách AR mô phỏng →", .53f, .02f, .43f, .065f, () =>
             { if (busy) return; if (AiMission) { AdvanceMission(); return; } PendingPrediction = scanResult; StopCamera(); Navigate("ARChallengeScene"); });
             challengeButton.interactable = false;
             Footer(service.IsMock ? "Mock phục vụ tích hợp UI. Không phải Deep Learning thật. Có thể thử mà không cần webcam." :
-                "Ảnh gửi đến FastAPI; client không lưu ảnh trên đĩa. Chưa xác minh backend thật.");
+                "Nhận diện một vật chính. Chỉ bốn vật liệu cơ bản có thử thách 3D; các nhóm khác có hướng dẫn riêng.");
         }
         void ClearPrediction()
         {
@@ -66,6 +68,7 @@ namespace EcoSortQuest
             scanResult = null; PendingPrediction = null;
             if (challengeButton != null) challengeButton.interactable = false;
             if (predictionText != null) predictionText.text = "Chưa có kết quả cho đầu vào hiện tại.";
+            if (recognitionGuidance != null) recognitionGuidance.text = "Nạp/chụp một ảnh mới và kiểm tra vật liệu thật trước khi phân loại.";
         }
         IEnumerator OpenCamera()
         {
@@ -135,21 +138,52 @@ namespace EcoSortQuest
         void RunPrediction()
         {
             if (busy || cameraStarting) return;
-            if (AiMission && !missionChoice.HasValue) { SetStatus("Tự chọn vật liệu ở ba nút trước khi gửi ảnh."); return; }
+            if (AiMission && !missionChoice.HasValue) { SetStatus("Tự chọn một trong bốn vật liệu trước khi gửi ảnh."); return; }
             ClearPrediction();
             if (!service.IsMock && (jpeg == null || jpeg.Length == 0))
             { SetStatus("Chụp hoặc nạp ảnh trước khi gọi AI thật."); return; }
-            StartCoroutine(WithBusy(service.Predict(jpeg, mockType, result =>
+            StartCoroutine(WithBusy(service.Predict(jpeg, mockType, ApplyPrediction,
+                e => { predictionText.text = "Nhận diện thất bại. Có thể chụp lại và thử lại."; SetStatus(e); })));
+        }
+        void ApplyPrediction(Prediction result)
+        {
+            // Every response resets the previous usable result, including refused/unknown labels.
+            ClearPrediction();
+            float threshold = apiSettings != null ? apiSettings.minimumConfidence : .75f;
+            if (result == null || !result.TryRecognize(threshold, out var category))
             {
-                float threshold = apiSettings != null ? apiSettings.minimumConfidence : .75f;
-                if (AiMission) RecordMission(result);
-                if (!result.TryAccept(threshold, out WasteType type))
-                { predictionText.text = "Chưa đủ tin cậy hoặc nhãn không hợp lệ.\nHãy chụp lại vật phẩm rõ hơn."; SetStatus("Không mở thử thách cho kết quả bị từ chối."); return; }
-                scanResult = result;
-                predictionText.text = WasteInfo.Label(type) + "\nConfidence: " + result.confidence.ToString("P0") +
-                    (service.IsMock ? "\nKẾT QUẢ MOCK, KHÔNG PHẢI AI THẬT" : "\nKết quả do backend trả về");
-                challengeButton.interactable = !AiMission || missionPassed; SetStatus(AiMission ? "Đối chiếu AI đã lưu. Nếu đồng thuận mục tiêu, chọn Nhiệm vụ tiếp." : "Sẵn sàng mở thử thách mô phỏng. Nhận diện chưa cộng điểm.");
-            }, e => { predictionText.text = "Nhận diện thất bại. Có thể chụp lại và thử lại."; SetStatus(e); })));
+                predictionText.text = "Chưa đủ tin cậy hoặc nhãn không hợp lệ.\nHãy chụp lại vật phẩm rõ hơn.";
+                recognitionGuidance.text = "Không dùng kết quả bị từ chối để quyết định thùng rác.";
+                SetStatus("Không mở thử thách cho kết quả bị từ chối."); return;
+            }
+            if (AiMission) RecordMission(result);
+            scanResult = result;
+            predictionText.text = category.display_name + " / " + category.class_name + "\nConfidence: " + result.confidence.ToString("P0") +
+                (service.IsMock ? " • MOCK, KHÔNG PHẢI AI THẬT" : " • AI");
+            recognitionGuidance.text = category.guidance;
+            bool playable = result.TryAccept(threshold, out _);
+            challengeButton.interactable = playable && (!AiMission || missionPassed);
+            SetStatus(!playable ? "Đã nhận diện nhóm mở rộng. Xem hướng dẫn; nhóm này chưa có thử thách 3D và không được đổi sang thùng cũ." :
+                AiMission ? "Đối chiếu AI đã lưu. Nếu đồng thuận mục tiêu, chọn Nhiệm vụ tiếp." :
+                "Sẵn sàng mở thử thách mô phỏng. Nhận diện chưa cộng điểm.");
+        }
+        void ShowRecognitionGuide(int selected = 0)
+        {
+            if (busy) return;
+            var overlay = view.Panel(view.Root, .025f, .085f, .95f, .80f, ViewFactory.Cream, "AI recognition guide");
+            view.Text(overlay, "12 NHÓM NHẬN DIỆN • CÁCH THU GOM", .03f, .86f, .94f, .10f, 30);
+            for (int i = 0; i < RecognitionInfo.All.Count; i++)
+            {
+                int next = i; var entry = RecognitionInfo.All[i];
+                view.Button(overlay, entry.display_name, .03f + (i % 3) * .19f, .68f - (i / 3) * .15f, .18f, .12f,
+                    () => { Destroy(overlay.gameObject); ShowRecognitionGuide(next); }, selected == i);
+            }
+            var current = RecognitionInfo.All[selected];
+            view.Text(overlay, current.display_name + "\n" + current.class_name, .63f, .67f, .33f, .15f, 29);
+            view.Text(overlay, current.guidance + "\n\n" + (current.game_supported ? "Có bài phân loại trong game." :
+                "Nhóm mở rộng: hướng dẫn riêng, chưa có thử thách 3D."), .63f, .23f, .33f, .43f, 25, ViewFactory.Muted);
+            view.Text(overlay, "AI không xác định mọi loại rác. Hãy kiểm tra vật liệu và quy định nơi thu gom.", .03f, .06f, .72f, .09f, 21);
+            view.Button(overlay, "Đóng", .79f, .06f, .17f, .085f, () => Destroy(overlay.gameObject));
         }
         void ShowAR()
         {

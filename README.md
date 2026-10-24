@@ -1,5 +1,9 @@
 # EcoSort Quest
 
+**Hành trình ba khu vực (24/10/2026):** 9 nhiệm vụ cố định với Nhà ở hướng dẫn cơ bản, Trường học có câu hỏi theo khu vực, Công viên tìm kiếm rộng hơn. Có mở khóa, sao theo độ chính xác/gợi ý, huy hiệu, trang trí và sổ tay vật phẩm đã gặp. Menu → **HÀNH TRÌNH 3 KHU VỰC →**. Xem [hướng dẫn hành trình](ECOSORT_GAME/Docs/AREA-JOURNEY.md); tiến trình mới lưu trên máy.
+
+**Nhận diện AI 12 nhóm (24/10/2026):** đã tích hợp EfficientNetV2B0 mới vào backend và màn hình Scan, có sổ tay hướng dẫn 12 nhóm. Bốn nhóm cũ tiếp tục có thử thách; tám nhóm mới có nhận diện/hướng dẫn. Đã kiểm thử Unity–REST và ghi/đọc Adafruit thật; Docker mới chưa chạy. Xem [tài liệu tích hợp và bằng chứng](ECOSORT_GAME/Docs/AI12-INTEGRATION.md).
+
 **Nhiệm vụ phục hồi khu vực (23/10/2026):** trong Khám phá 3D, nhận nhiệm vụ 12 vật phẩm với ba mốc hồi sinh cảnh quan; quan sát tình trạng, làm rỗng vật chứa, chuẩn bị giấy sạch và tách cốc nhựa khỏi túi giấy trước khi phân loại. Có sửa sai, sao hoàn thành và ngắm thành quả. Xem [hướng dẫn nhiệm vụ](ECOSORT_GAME/Docs/RESTORATION-GAMEPLAY.md).
 
 **Bản bốn nhóm rác và Khám phá 3D (15/10/2026):** 36 vật phẩm theo Nhà ở/Trường học/Công viên; thêm Organic, nhân vật đi nhặt rác và bốn thùng. Vào **Học tập / AI / Thống kê → chọn bối cảnh → Khám phá 3D**. Mô hình bốn lớp đã huấn luyện và tích hợp vào backend. Xem [cách chơi, kết quả AI và cập nhật Docker](ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md).
@@ -8,7 +12,7 @@
 
 Xác minh bản nâng cấp: **23/23 EditMode, 12/12 PlayMode, 7/7 backend**, có ca Unity–FastAPI lịch sử thật trên backend local riêng; Windows build thành công. Chưa nghiệm thu webcam/loa, ảnh mới hay Docker/cloud của bản mới. Chi tiết trong [TESTING](ECOSORT_GAME/Docs/TESTING.md).
 
-Game giáo dục phân loại rác trên Windows, Unity 6000.6.2f1 + FastAPI + MobileNetV2 + Adafruit IO.
+Game giáo dục phân loại rác trên Windows, Unity 6000.6.2f1 + FastAPI + EfficientNetV2B0 + Adafruit IO.
 
 Giữ chuột để kéo vật phẩm đang chạy trên băng chuyền, thả vào thùng Nhựa / Kim loại / Giấy / Hữu cơ; hoặc chọn Khám phá 3D để điều khiển nhân vật đi nhặt rác. Có 36 mẫu vật phẩm, sổ tay kiến thức, ba level với độ khó tăng dần, pause, lưu tiến trình và thử thách AR mô phỏng sau chiến dịch.
 

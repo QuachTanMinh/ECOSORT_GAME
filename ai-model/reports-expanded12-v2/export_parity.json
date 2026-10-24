@@ -1,0 +1,6 @@
+{
+  "max_abs_probability_difference": 0.0074173808097839355,
+  "top1_agreement": 1.0,
+  "images": 8,
+  "note": "Mixed vs float32, small validation probe only"
+}

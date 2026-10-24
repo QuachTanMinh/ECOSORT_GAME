@@ -21,10 +21,11 @@ def test_organic_exploration_history_and_contract(monkeypatch,tmp_path):
         assert client.post('/learning/sessions',json=payload).status_code==422
     assert Prediction(class_name='Organic',confidence=.9,accepted=True).accepted
 
-def test_serving_model_has_four_outputs():
+def test_serving_model_has_twelve_outputs():
     predictor=Predictor()
-    assert predictor.classes==('Plastic','Metal','Paper','Organic')
-    assert predictor.model.output_shape[-1]==4
+    assert predictor.classes==('Plastic','Metal','Paper','Organic','Cardboard','GreenGlass',
+                               'BrownGlass','WhiteGlass','Clothes','Shoes','Batteries','Trash')
+    assert predictor.model.output_shape[-1]==12
 
 def test_real_organic_image_over_api(monkeypatch,tmp_path):
     root=Path(__file__).resolve().parents[2]

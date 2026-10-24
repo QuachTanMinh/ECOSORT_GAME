@@ -85,16 +85,26 @@ if len(gpus) != 2:
 
 # %% Data audit / duplicate groups / independent split
 def discover_root(base):
+    base = Path(base)
+    if not base.is_dir():
+        raise FileNotFoundError(f"Dataset directory does not exist: {base}. Attach Kaggle Input and check DATASET_ROOT.")
     candidates = []
     for folder in [base, *sorted(p for p in base.rglob("*") if p.is_dir())]:
-        labels = {FOLDER_LABEL.get(p.name.lower()) for p in folder.iterdir() if p.is_dir()}
+        labels = {FOLDER_LABEL.get(p.name.strip().lower()) for p in folder.iterdir() if p.is_dir()}
         if set(CLASSES) <= labels:
             candidates.append(folder)
     if len(candidates) != 1:
-        raise ValueError(f"Expected ONE dataset root, found {candidates}. Set DATASET_ROOT explicitly.")
+        preview = [p.name for p in sorted(base.iterdir())][:20]
+        raise ValueError(f"Expected ONE root with class folders for {MODE}, found {candidates}. "
+                         f"Required labels: {CLASSES}. Children of {base}: {preview}. "
+                         "Attach/extract the dataset and set DATASET_ROOT to the parent of its class folders.")
     return candidates[0]
 
-root = Path(DATASET_ROOT) if DATASET_ROOT else discover_root(Path("/kaggle/input"))
+base = Path(DATASET_ROOT) if DATASET_ROOT else Path("/kaggle/input")
+direct_labels = {FOLDER_LABEL.get(p.name.strip().lower()) for p in base.iterdir() if p.is_dir()} if base.is_dir() else set()
+# A user-supplied path may be a wrapper around the actual class directories.
+root = base if set(CLASSES) <= direct_labels else discover_root(base)
+print("Resolved DATASET_ROOT:", root)
 config["dataset_root"] = str(root); write_json(RUN / "config.json", config)
 IMAGE_SIZE = (224, 224)  # Keep existing FastAPI input dimensions.
 
@@ -134,11 +144,13 @@ class BKTree:
         return found
 
 records, rejected = [], []
+scan_counts = Counter()
 for folder in sorted(root.iterdir()):
-    label = FOLDER_LABEL.get(folder.name.lower())
+    label = FOLDER_LABEL.get(folder.name.strip().lower())
     if not folder.is_dir() or label not in CLASSES: continue
     for path in sorted(folder.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in (".jpg", ".jpeg", ".png", ".webp"): continue
+        scan_counts[label] += 1
         try:
             if path.stat().st_size > 4 * 1024 * 1024: raise ValueError("Exceeds current serving 4MB limit")
             rgb = read_rgb(path, resize=False)
@@ -149,7 +161,14 @@ for folder in sorted(root.iterdir()):
                             "class_name": label, "sha256_pixels": digest, "dhash": dh})
         except (OSError, ValueError, Image.DecompressionBombError) as exc:
             rejected.append({"path": str(path), "error": str(exc)})
-if not records: raise RuntimeError("No readable training images")
+write_json(REPORTS / "image_scan.json", {"root": str(root), "candidate_counts": dict(scan_counts),
+    "accepted": len(records), "rejected_count": len(rejected), "rejected": rejected})
+print("Image candidates:", dict(scan_counts), "readable:", len(records), "rejected:", len(rejected))
+if not records:
+    print("First read errors:", rejected[:5])
+    raise RuntimeError(f"No readable training images under {root}. Candidates: {dict(scan_counts)}; "
+                       f"rejected: {len(rejected)}. See first errors above and reports/image_scan.json. "
+                       "If candidates are empty, check class-folder nesting and whether images are still zipped.")
 uf = UnionFind(len(records)); tree = BKTree(); exact = {}; manual = {}
 if GROUPS_CSV:
     with open(GROUPS_CSV, encoding="utf-8-sig", newline="") as stream:

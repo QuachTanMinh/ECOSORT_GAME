@@ -10,6 +10,8 @@ import numpy as np
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 CLASS_NAMES = ("Plastic", "Metal", "Paper", "Organic")  # Serialized output order; never alphabetical.
+EXPANDED_CLASS_NAMES = CLASS_NAMES + ("Cardboard", "GreenGlass", "BrownGlass", "WhiteGlass",
+                                    "Clothes", "Shoes", "Batteries", "Trash")
 FOLDERS = ("plastic", "metal", "paper", "organic")
 IMAGE_SIZE = (224, 224)
 MAX_BYTES = 4 * 1024 * 1024

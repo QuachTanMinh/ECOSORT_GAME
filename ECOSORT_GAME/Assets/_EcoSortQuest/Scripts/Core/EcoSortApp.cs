@@ -173,8 +173,7 @@ namespace EcoSortQuest
             var card = view.Panel(view.Root, .025f, .09f, .48f, .74f, ViewFactory.Cream, "Menu card");
             view.Text(card, "SMALL ACTIONS.\nGREENER TOMORROW.", .06f, .78f, .88f, .16f, 44);
             view.Text(card, "Nhặt rác. Chuẩn bị đúng. Hồi sinh khu vực.\nHoặc luyện phân loại qua ba cấp độ.", .06f, .68f, .88f, .09f, 23, ViewFactory.Muted);
-            view.Button(card,"PHỤC HỒI CÔNG VIÊN →",.06f,.56f,.88f,.095f,()=>
-            {SelectedContext=LearningContext.Park;SelectedLearningMode=LearningMode.Explore;Navigate("GameScene");},true);
+            view.Button(card,"HÀNH TRÌNH 3 KHU VỰC →",.06f,.56f,.88f,.095f,ShowAreaHub,true);
             for (int i = 1; i <= 3; i++)
             {
                 int n = i; bool unlocked = progress.unlocked_level >= n;
@@ -186,10 +185,11 @@ namespace EcoSortQuest
                 () => { AiMission = false; Navigate("ScanScene"); }); challenge.interactable = progress.ChallengeUnlocked;
             view.Button(card, "Tiến trình", .06f, .20f, .42f, .085f, () => Navigate("ProgressScene"));
             view.Button(card, "Cách chơi", .52f, .20f, .42f, .085f, ShowHelp);
-            view.Button(card, "Sổ tay 36 vật phẩm", .06f, .095f, .42f, .075f, () => ShowCatalog(0));
+            view.Button(card, "Sổ tay khám phá", .06f, .095f, .42f, .075f, () => ShowCatalog(0));
             view.Button(card, "Kết nối backend", .52f, .095f, .42f, .075f, ShowConnection);
             view.Button(card, "Học tập / AI / Thống kê", .06f, .005f, .64f, .065f, ShowLearningHub, true);
             view.Button(card, "Thoát", .73f, .005f, .21f, .065f, Quit);
+            if(openJourneyOnMenu){openJourneyOnMenu=false;ShowAreaHub();}
             Footer("Phục hồi khu vực • Chuẩn bị và tách vật liệu • Phân loại 36 vật phẩm • Học tập và AI qua FastAPI");
             if (!progress.player_id.StartsWith("test-") && PlayerPrefs.GetInt("EcoSortQuest.TutorialSeen", 0) == 0)
             { PlayerPrefs.SetInt("EcoSortQuest.TutorialSeen", 1); PlayerPrefs.Save(); ShowHelp(); }
@@ -256,6 +256,7 @@ namespace EcoSortQuest
         {
             if (round.Finished) return;
             currentItem = world.CatalogItem(roundItems[round.Answered], new Vector3(-2.8f, .89f, 1.1f));
+            AreaJourneyStore.Discover(progress.player_id,currentItem.Definition.Id);
             itemName.text = "VẬT PHẨM " + (round.Answered + 1) + "/" + round.Total + (SelectedLearningMode == LearningMode.Test ? " • Quan sát mô hình" : "  •  " + currentItem.Definition.Name);
             lessonText.text = Hints ? "Gợi ý: " + WasteInfo.Label(currentItem.type) : SelectedLearningMode == LearningMode.Test ? "Kiểm tra: giải thích hiển thị cuối lượt." : "Quan sát chất liệu, kéo vào thùng phù hợp. Đọc kiến thức sau mỗi đáp án.";
             instruction.text = "Vật phẩm " + (round.Answered + 1) + "/" + round.Total + " — Kéo rác và thả vào thùng.";
@@ -336,11 +337,11 @@ namespace EcoSortQuest
             RecordLearningRound();
             if (SelectedLearningMode == LearningMode.Campaign) { progress.RecordRound(SelectedLevel, round); LocalProgress.Save(progress); }
             var overlay = view.Panel(view.Root, .15f, .18f, .70f, .58f, ViewFactory.Cream, "Round result");
-            view.Text(overlay, explorer != null ? "KHU VỰC ĐÃ HỒI SINH" : SelectedLearningMode != LearningMode.Campaign ? "KẾT QUẢ " + LearningLabel : round.Passed ? "HOÀN THÀNH LEVEL " + SelectedLevel : "THỬ LẠI NHÉ!", .07f, .72f, .86f, .18f, 40);
-            view.Text(overlay, explorer != null ? RestorationSummary() : "Điểm: " + round.Score + "   •   Đúng: " + round.Correct + "/" + round.Total +
+            view.Text(overlay, explorer != null ? (areaMission!=null?"HOÀN THÀNH NHIỆM VỤ":"KHU VỰC ĐÃ HỒI SINH") : SelectedLearningMode != LearningMode.Campaign ? "KẾT QUẢ " + LearningLabel : round.Passed ? "HOÀN THÀNH LEVEL " + SelectedLevel : "THỬ LẠI NHÉ!", .07f, .72f, .86f, .18f, 40);
+            view.Text(overlay, explorer != null ? (areaMission!=null?CompleteAreaMission():RestorationSummary()) : "Điểm: " + round.Score + "   •   Đúng: " + round.Correct + "/" + round.Total +
                 "\n" + (SelectedLearningMode != LearningMode.Campaign ? "Đã lưu lịch sử. Xem giải thích hoặc ôn lại câu sai." : round.Passed ? (SelectedLevel == 3 ? "Real-World Challenge đã mở khóa." : "Level tiếp theo đã mở khóa.") : "Cần ít nhất " + round.Required + " đáp án đúng. Các câu chưa trả lời không tính đúng."), .07f, .39f, .86f, .29f, 26);
             view.Button(overlay, "Chơi lại", .07f, .12f, .25f, .15f, () => Navigate("GameScene"));
-            view.Button(overlay, "Menu", .37f, .12f, .25f, .15f, Home);
+            view.Button(overlay, areaMission!=null?"Hành trình":"Menu", .37f, .12f, .25f, .15f, ()=>{openJourneyOnMenu=areaMission!=null;Home();});
             if(explorer!=null)
             {
                 view.Button(overlay,"Ngắm thành quả",.67f,.12f,.26f,.15f,()=>{overlay.gameObject.SetActive(false);viewingRestoration=true;},true);

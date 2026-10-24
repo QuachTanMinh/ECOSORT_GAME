@@ -1,3 +1,11 @@
+# Hành trình ba khu vực — 24/10/2026
+
+57/57 EditMode, 20/20 PlayMode, không bỏ qua; gồm luồng chơi đủ chín nhiệm vụ và các ca REST hiện có trên backend local riêng. [Thiết kế, cách chơi, phạm vi lưu và bằng chứng](AREA-JOURNEY.md).
+
+# Kiểm chứng mới nhất — 24/10/2026
+
+Bản nhận diện 12 lớp: backend 14/14, EditMode 44/44, PlayMode 19/19, REST UI chạy lại 1/1; Windows build thành công. Đã ghi/đọc Adafruit thật. Docker image mới chưa chạy. Xem [phạm vi và bằng chứng](AI12-INTEGRATION.md). Các mục bên dưới giữ kết quả lịch sử.
+
 # Kiểm thử Unity Client
 
 ## Nhiệm vụ phục hồi và chuẩn bị rác — 23/10/2026

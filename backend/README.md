@@ -1,3 +1,7 @@
+# Model phục vụ 12 lớp — 24/10/2026
+
+Checkpoint hiện tại là EfficientNetV2B0 với 12 lớp, ngưỡng 0.75. `/predict` giữ ba trường phản hồi; `/recognition/classes` cung cấp catalog hướng dẫn. Chỉ bốn nhóm có thử thách gameplay. Xem [tích hợp, kiểm chứng và cách khôi phục](../ECOSORT_GAME/Docs/AI12-INTEGRATION.md). Các mục ngày 15/10 và replay ba lớp bên dưới là lịch sử.
+
 # Cập nhật mô hình bốn lớp — 15/10/2026
 
 Checkpoint phục vụ hiện tại nhận Plastic, Metal, Paper, Organic; `/health` trả về bốn lớp. Schema nhận Organic trong `/predict`, kết quả AR và lịch sử học tập. Lịch sử có thêm mode `Explore`. Rebuild Docker với `docker compose up --build -d`, hoặc khởi động lại Uvicorn; không chỉ restart image cũ. Xem [tài liệu Organic / 3D](../ECOSORT_GAME/Docs/ORGANIC-EXPLORATION.md). Các thông số ba lớp ở phần lịch sử bên dưới không mô tả checkpoint mới.
@@ -6,7 +10,7 @@ Checkpoint phục vụ hiện tại nhận Plastic, Metal, Paper, Organic; `/hea
 
 ## Learning extension 2026-10-15
 
-`POST /learning/sessions` accepts session_id, player_id, mode, context, created_at, level, total, score, expired, answers. Each answer: item_id, expected, choice, correct, seconds. Modes: Campaign/Learn/Test/Review; contexts: Home/School/Park; materials: Plastic/Metal/Paper.
+`POST /learning/sessions` accepts session_id, player_id, mode, context, created_at, level, total, score, expired, answers. Each answer: item_id, expected, choice, correct, seconds. Modes: Campaign/Learn/Test/Review/Explore; contexts: Home/School/Park; materials: Plastic/Metal/Paper/Organic.
 
 Retries with same ID/content do not duplicate; changed content under same player/ID returns 409. Invalid material, correctness, score or answer count returns 422. `GET /learning/{player_id}` returns recent 100 sessions and test-only aggregate counts including unanswered. Storage is learning.json beside ECOSORT_DATA_FILE, also when progress uses Adafruit. Docker volume retains this file. No new feed required. Routes remain anonymous, for a single backend instance in a trusted local demo. Unity retains an outbox and retries from Learning results. Restart/rebuild backend after updating. See [learning guide](../ECOSORT_GAME/Docs/LEARNING-UPGRADE.md).
 
@@ -14,7 +18,7 @@ FastAPI service for the Unity Windows client. It loads the Kaggle-trained model 
 
 ## Model contract
 
-The bundled checkpoint is `app/ai_model/artifacts/model.keras`. Its SHA-256 is `5f97707c552ac491e66f720c1b9bca1eab2325622ea5328e7f9cad05eabbde38`, matching `metadata.json`. Input is RGB, resized to 224×224 with Pillow bilinear after EXIF orientation; the model itself applies `Rescaling(1/127.5, offset=-1)`. Output order is `Plastic`, `Metal`, `Paper`; confidence threshold is 0.75. The service returns Unity's prediction object: `{ "class_name": "Plastic", "confidence": 0.92, "accepted": true }`.
+The historical three-class checkpoint was `app/ai_model/artifacts/model.keras`. Its SHA-256 is `5f97707c552ac491e66f720c1b9bca1eab2325622ea5328e7f9cad05eabbde38`, matching `metadata.json`. Input is RGB, resized to 224×224 with Pillow bilinear after EXIF orientation; the model itself applies `Rescaling(1/127.5, offset=-1)`. Output order is `Plastic`, `Metal`, `Paper`; confidence threshold is 0.75. The service returns Unity's prediction object: `{ "class_name": "Plastic", "confidence": 0.92, "accepted": true }`.
 
 The 224 held-out predictions from Kaggle were replayed through this checkpoint and preprocessing on the local dataset. All class labels and accepted/rejected decisions matched; maximum confidence difference was `0.00000352`. This verifies the serving model against saved Kaggle results, not new phone-camera images.
 

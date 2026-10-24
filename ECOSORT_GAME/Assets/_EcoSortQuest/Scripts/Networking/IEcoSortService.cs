@@ -8,11 +8,17 @@ namespace EcoSortQuest
         public string class_name;
         public float confidence;
         public bool accepted;
+        public bool TryRecognize(float threshold, out RecognitionCategory category)
+        {
+            category = null;
+            return accepted && !float.IsNaN(threshold) && !float.IsInfinity(threshold) && threshold >= 0 && threshold <= 1 &&
+                !float.IsNaN(confidence) && !float.IsInfinity(confidence) && confidence >= 0 && confidence <= 1 &&
+                confidence >= threshold && RecognitionInfo.TryGet(class_name, out category);
+        }
         public bool TryAccept(float threshold, out WasteType type)
         {
             type = default;
-            return accepted && !float.IsNaN(confidence) && !float.IsInfinity(confidence) &&
-                confidence >= threshold && confidence <= 1 &&
+            return TryRecognize(threshold, out var category) && category.game_supported &&
                 Enum.TryParse(class_name, true, out type) && Enum.IsDefined(typeof(WasteType), type) &&
                 string.Equals(class_name, type.ToString(), StringComparison.OrdinalIgnoreCase);
         }

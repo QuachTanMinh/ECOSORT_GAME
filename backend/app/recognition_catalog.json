@@ -1,0 +1,76 @@
+{
+  "classes": [
+    {
+      "class_name": "Plastic",
+      "display_name": "Nhựa",
+      "guidance": "Làm rỗng phần còn lại. Kiểm tra loại nhựa được nơi thu gom tiếp nhận.",
+      "game_supported": true
+    },
+    {
+      "class_name": "Metal",
+      "display_name": "Kim loại",
+      "guidance": "Làm rỗng lon/hộp, tránh cạnh sắc. Đồ còn tốt nên ưu tiên dùng lại.",
+      "game_supported": true
+    },
+    {
+      "class_name": "Paper",
+      "display_name": "Giấy",
+      "guidance": "Giữ giấy sạch, khô; tách phần khác vật liệu nếu có.",
+      "game_supported": true
+    },
+    {
+      "class_name": "Organic",
+      "display_name": "Hữu cơ",
+      "guidance": "Tách bao bì khỏi thức ăn thừa và rác vườn; theo hướng dẫn thu gom hữu cơ địa phương.",
+      "game_supported": true
+    },
+    {
+      "class_name": "Cardboard",
+      "display_name": "Carton",
+      "guidance": "Carton sạch, khô: làm phẳng trước khi thu gom. Không mặc định carton dính dầu được tái chế.",
+      "game_supported": false
+    },
+    {
+      "class_name": "GreenGlass",
+      "display_name": "Thủy tinh xanh",
+      "guidance": "Làm rỗng chai/lọ. Kiểm tra nơi thu gom có yêu cầu tách màu; tránh chạm cạnh vỡ.",
+      "game_supported": false
+    },
+    {
+      "class_name": "BrownGlass",
+      "display_name": "Thủy tinh nâu",
+      "guidance": "Làm rỗng chai/lọ. Kiểm tra nơi thu gom có yêu cầu tách màu; không gộp gương hoặc bóng đèn.",
+      "game_supported": false
+    },
+    {
+      "class_name": "WhiteGlass",
+      "display_name": "Thủy tinh trong",
+      "guidance": "Làm rỗng chai/lọ. Thủy tinh trong dễ giống nhựa: tự kiểm tra vật liệu trước khi phân loại.",
+      "game_supported": false
+    },
+    {
+      "class_name": "Clothes",
+      "display_name": "Quần áo",
+      "guidance": "Ưu tiên dùng lại, sửa hoặc cho tặng đồ còn phù hợp. Hỏi điểm tiếp nhận vải; không bỏ vào thùng giấy.",
+      "game_supported": false
+    },
+    {
+      "class_name": "Shoes",
+      "display_name": "Giày dép",
+      "guidance": "Ưu tiên sửa, dùng lại hoặc cho tặng nếu phù hợp. Giày có thể gồm nhiều vật liệu; hỏi điểm tiếp nhận riêng.",
+      "game_supported": false
+    },
+    {
+      "class_name": "Batteries",
+      "display_name": "Pin",
+      "guidance": "Để riêng và tìm điểm tiếp nhận pin phù hợp. Không tự tháo, đập hoặc chọc thủng; không bỏ vào thùng Kim loại của game.",
+      "game_supported": false
+    },
+    {
+      "class_name": "Trash",
+      "display_name": "Rác khác",
+      "guidance": "Đây là nhãn của bộ dữ liệu, không xác định chính xác mọi loại rác. Tự kiểm tra vật phẩm và hướng dẫn địa phương.",
+      "game_supported": false
+    }
+  ]
+}

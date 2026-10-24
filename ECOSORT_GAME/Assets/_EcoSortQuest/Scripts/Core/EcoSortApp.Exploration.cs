@@ -30,12 +30,17 @@ namespace EcoSortQuest
         void StartExploration()
         {
             AiMission=false;SelectedLevel=1;sessionLimit=0;learningAnswers.Clear();answerSeconds=0;
-            round=new SortingRound(RestorationMission.Total,9);
-            restoration=new RestorationMission();
+            areaMission=AreaMissions.Find(SelectedAreaMission);
+            if(areaMission!=null && !AreaJourneyStore.Unlocked(AreaJourneyStore.Load(progress.player_id),areaMission))
+            {SelectedAreaMission="";Home();return;}
+            if(areaMission!=null)SelectedContext=areaMission.Context;
+            int total=areaMission?.Items.Length??RestorationMission.Total;
+            round=new SortingRound(total,Mathf.CeilToInt(total*.75f));
+            restoration=new RestorationMission(total);
             restorationSession=System.Guid.NewGuid().ToString("N");
             BuildLearningContext();world.PrepareWalkableWorld();
             sceneCamera.orthographic=false;sceneCamera.fieldOfView=58;sceneCamera.farClipPlane=100;
-            explorer=world.Explorer(new Vector3(0,.1f,-5),sceneCamera);
+            explorer=world.Explorer(new Vector3(0,.1f,areaMission!=null && areaMission.Context!=LearningContext.Park?-7.3f:-5),sceneCamera);
             SpawnBins(new Vector3(0,0,3.8f));
             explorationBins=worldRoot.GetComponentsInChildren<WasteBin>();
             var deck=LearningDeck.Build(SelectedContext,12,Random.Range(0,int.MaxValue));
@@ -46,14 +51,18 @@ namespace EcoSortQuest
             deck[3]=WasteCatalog.All.First(d=>d.Id=="plastic-cup");
             deck[4]=WasteCatalog.All.First(d=>d.Id=="paper-bag");
             deck[5]=WasteCatalog.All.First(d=>d.Id=="banana-peel");
+            if(areaMission!=null)deck=areaMission.Items.Select(id=>WasteCatalog.All.First(d=>d.Id==id)).ToArray();
             for(int i=0;i<deck.Length;i++)
             {
                 // Four columns inside the plaza; no item is placed inside a building or garden.
-                var item=world.CatalogItem(deck[i],new Vector3(-4.5f+(i%4)*3,.04f,-5.8f+(i/4)*2.7f));
+                var item=world.CatalogItem(deck[i],AreaItemPosition(i));
                 item.transform.localScale=Vector3.one*.65f;scattered.Add(item);
-                if(i==3)wrappedCup=item;
-                if(i==4){paperSleeve=item;paperSleeve.gameObject.SetActive(false);}
+                if(areaMission==null){if(i==3)wrappedCup=item;if(i==4)paperSleeve=item;}
+                else if(areaMission.Separate){if(deck[i].Id=="plastic-cup")wrappedCup=item;if(deck[i].Id=="paper-bag")paperSleeve=item;}
+                if(paperSleeve==item)paperSleeve.gameObject.SetActive(false);
             }
+            if(wrappedCup!=null && paperSleeve!=null)
+            {
             sleeveVisual=new GameObject("Paper bag to separate");sleeveVisual.transform.SetParent(wrappedCup.transform,false);
             foreach(float side in new[]{-1f,1f})
             {
@@ -62,7 +71,8 @@ namespace EcoSortQuest
                 world.Shape("Bag side",PrimitiveType.Cube,sleeveVisual.transform,
                     new Vector3(side*.42f,.26f,0),new Vector3(.04f,.52f,.8f),new Color(.91f,.83f,.64f),false);
             }
-            view.Header("KHÁM PHÁ 3D / "+ContextLabel,Mode,Home,true);
+            }
+            view.Header(areaMission!=null?areaMission.Zone:"KHÁM PHÁ 3D / "+ContextLabel,Mode,Home,true);
             var top=view.Panel(view.Root,.015f,.87f,.64f,.055f,ViewFactory.HudSurface);
             top.GetComponent<Image>().raycastTarget=false;
             explorationHud=view.Text(top,"",.025f,.1f,.74f,.8f,25);
@@ -74,15 +84,32 @@ namespace EcoSortQuest
             objective.GetComponent<Image>().raycastTarget=false;
             missionObjective=view.Text(objective,"",.025f,.05f,.95f,.9f,21);
             prepareButton=view.Button(view.Root,"Quan sát / xử lý • R",.73f,.055f,.255f,.055f,ShowPreparation);
-            restorationStages=world.BuildRestorationRewards();
+            restorationStages=areaMission==null?world.BuildRestorationRewards():new GameObject[0];
+            if(areaMission!=null)
+            {
+                var journey=AreaJourneyStore.Load(progress.player_id);
+                world.BuildAreaIdentity(areaMission.Context,areaMission.Zone,AreaJourneyStore.Decorations(journey,areaMission.Context),journey);
+                view.Button(view.Root,"Gợi ý vật đang cầm • H",.73f,.125f,.255f,.045f,RequestAreaHint);
+            }
             Footer("WASD: đi • Shift: chạy • Chuột phải: xoay • E: nhặt / bỏ thùng • R: quan sát / chuẩn bị • Q: đặt xuống");
             RefreshExplorationHud();explorer.CanMove=true;explorer.Tick(0);
             ShowMissionBrief();
         }
+        Vector3 AreaItemPosition(int index)
+        {
+            if(areaMission==null)return new Vector3(-4.5f+(index%4)*3,.04f,-5.8f+(index/4)*2.7f);
+            if(areaMission.Context==LearningContext.Home)return new Vector3(-2.4f+(index%2)*4.8f,.04f,-4.5f+(index/2)*2.8f);
+            if(areaMission.Context==LearningContext.School)return new Vector3(-4.5f+(index%4)*3,.04f,-5.5f+(index/4)*3.2f);
+            // Authored search route remains inside the walkable boundary and clear of scenery.
+            var route=new[]{new Vector3(-7,0,-7),new Vector3(0,0,-7),new Vector3(7,0,-7),new Vector3(7,0,-3),
+                new Vector3(0,0,-3),new Vector3(-7,0,-3),new Vector3(-8.5f,0,0),new Vector3(8.5f,0,0),
+                new Vector3(-4,0,-5),new Vector3(4,0,-5),new Vector3(-4,0,1),new Vector3(4,0,1)};
+            return route[index]+Vector3.up*.04f;
+        }
         void RefreshExplorationHud()
         {
-            explorationHud.text="ĐÃ DỌN "+cleaned+"/12   •   ĐÚNG LẦN ĐẦU "+round.Correct+"/12   •   ĐIỂM "+round.Score;
-            missionObjective.text=restoration.Objective+"   ["+cleaned+"/12]";
+            explorationHud.text="ĐÃ DỌN "+cleaned+"/"+round.Total+"   •   ĐÚNG LẦN ĐẦU "+round.Correct+"/"+round.Total+(areaMission!=null?"   •   GỢI Ý "+missionHints:"   •   ĐIỂM "+round.Score);
+            missionObjective.text=(areaMission!=null?areaMission.Title:restoration.Objective)+"   ["+cleaned+"/"+round.Total+"]";
             prepareButton.interactable=carried!=null && !resultShown;
         }
         void UpdateExploration()
@@ -106,6 +133,7 @@ namespace EcoSortQuest
             if(key.eKey.wasPressedThisFrame)InteractExploration();
             if(key.qKey.wasPressedThisFrame)PutDownExploration();
             if(key.rKey.wasPressedThisFrame)ShowPreparation();
+            if(key.hKey.wasPressedThisFrame)RequestAreaHint();
         }
         float FlatDistance(Vector3 a,Vector3 b) {a.y=b.y=0;return Vector3.Distance(a,b);}
         WasteItem NearestLitter()=>scattered.Where(i=>i!=null && i.gameObject.activeInHierarchy && i!=carried && FlatDistance(i.transform.position,explorer.transform.position)<1.8f)
@@ -117,6 +145,7 @@ namespace EcoSortQuest
             if(carried==null)
             {
                 carried=NearestLitter();if(carried==null)return;
+                AreaJourneyStore.Discover(progress.player_id,carried.Definition.Id);
                 carriedAnswered=answeredLitter.Contains(carried);
                 carried.GetComponent<Collider>().enabled=false;carried.Select(false);
                 carried.transform.SetParent(explorer.CarryAnchor,false);carried.transform.localPosition=Vector3.zero;
@@ -143,7 +172,7 @@ namespace EcoSortQuest
                 scattered.Remove(carried);preparedLitter.Remove(carried);Destroy(carried.gameObject);carried=null;cleaned++;
                 restoration.CleanOne();
                 for(int i=0;i<restorationStages.Length;i++)restorationStages[i].SetActive(i<restoration.Stage);
-                if(cleaned%4==0)
+                if(areaMission==null && cleaned%4==0)
                 {
                     explorationPrompt.text=cleaned==4?"LỐI ĐI ĐÃ MỞ • Các luống cây được hồi sinh!":
                         cleaned==8?"VƯỜN HOA ĐÃ NỞ • Tiếp tục hoàn thiện góc xanh!":"ĐÃ PHỤC HỒI KHU VỰC • Cảm ơn bạn đã giữ môi trường sạch!";

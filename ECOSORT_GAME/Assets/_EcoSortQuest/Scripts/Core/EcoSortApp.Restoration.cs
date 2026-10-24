@@ -7,6 +7,7 @@ namespace EcoSortQuest
     {
         void ShowMissionBrief()
         {
+            if(areaMission!=null){ShowAreaBrief();return;}
             missionBrief=view.Panel(view.Root,.18f,.20f,.64f,.57f,ViewFactory.Cream,"Restoration briefing");
             view.Text(missionBrief,"PHỤC HỒI "+ContextLabel,.06f,.80f,.88f,.13f,32);
             var previous=RestorationSave.Load(progress.player_id,SelectedContext);
@@ -17,9 +18,34 @@ namespace EcoSortQuest
         }
         void AcceptRestorationMission()
         {
-            if(missionBrief==null)return;
+            if(missionBrief==null || areaMission!=null && areaMission.Question.Length>0 && !quizPassed)return;
             Destroy(missionBrief.gameObject);missionBrief=null;
             RefreshExplorationHud();
+        }
+        void ShowAreaBrief()
+        {
+            missionBrief=view.Panel(view.Root,.15f,.16f,.70f,.66f,ViewFactory.Cream,"Area mission briefing");
+            view.Text(missionBrief,AreaMissions.Label(areaMission.Context)+" / "+areaMission.Title,.05f,.84f,.90f,.12f,30);
+            view.Text(missionBrief,areaMission.Brief+"\n\n1 sao: dọn đủ; 2 sao: đúng ≥75%, gợi ý ≤2.\n3 sao: đúng ≥90%, không sai chuẩn bị/câu hỏi, không gợi ý.\nKhông tính tốc độ. Sai được sửa; hoàn thành sẽ mở nhiệm vụ tiếp.",.05f,.48f,.90f,.34f,22);
+            if(areaMission.Question.Length>0)
+            {
+                hintText=view.Text(missionBrief,areaMission.Question,.05f,.34f,.90f,.12f,22,ViewFactory.Accent);
+                for(int i=0;i<areaMission.Options.Length;i++)
+                {
+                    int option=i;
+                    view.Button(missionBrief,areaMission.Options[i],.05f+i*.305f,.19f,.29f,.13f,()=>AnswerAreaQuestion(option));
+                }
+            }
+            else view.Text(missionBrief,"WASD: di chuyển • E: nhặt / bỏ thùng • R: chuẩn bị\nH: hỏi gợi ý vật đang cầm. Thao tác quan sát R không tính gợi ý.",.05f,.20f,.90f,.20f,22);
+            areaStartButton=view.Button(missionBrief,"Bắt đầu nhiệm vụ",.05f,.035f,.58f,.10f,AcceptRestorationMission,true);
+            areaStartButton.interactable=areaMission.Question.Length==0 || quizPassed;
+            view.Button(missionBrief,"Về menu",.66f,.035f,.29f,.10f,Home);
+        }
+        void AnswerAreaQuestion(int choice)
+        {
+            if(areaMission==null || missionBrief==null || quizPassed || choice<0 || choice>=areaMission.Options.Length)return;
+            if(choice!=areaMission.Answer){quizMistakes++;hintText.text="Cùng suy nghĩ lại: "+areaMission.Explanation;return;}
+            quizPassed=true;areaStartButton.interactable=true;hintText.text="ĐÚNG • "+areaMission.Explanation+" Bấm Bắt đầu nhiệm vụ.";
         }
         void ShowPreparation()
         {

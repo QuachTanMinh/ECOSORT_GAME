@@ -1,0 +1,13 @@
+class_name,test,train,validation
+Plastic,120,562,121
+Metal,115,525,112
+Paper,154,705,150
+Organic,147,691,147
+Cardboard,130,603,131
+GreenGlass,80,379,83
+BrownGlass,80,375,80
+WhiteGlass,105,497,105
+Clothes,795,3692,783
+Shoes,294,1379,293
+Batteries,137,641,133
+Trash,91,425,91

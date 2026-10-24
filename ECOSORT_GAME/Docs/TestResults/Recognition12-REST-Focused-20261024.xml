@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.9637294">
+  <test-suite type="TestSuite" id="1027" name="ECOSORT_GAME" fullname="ECOSORT_GAME" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.963729" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1048" name="EcoSortQuest.PlayModeTests.dll" fullname="E:/Document_Collage/CNM/CK/ECOSORT_GAME/Library/ScriptAssemblies/EcoSortQuest.PlayModeTests.dll" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.948071" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="2236" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1049" name="EcoSortQuest" fullname="EcoSortQuest" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.945175" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1050" name="Tests" fullname="EcoSortQuest.Tests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.943475" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1028" name="ClientFlowTests" fullname="EcoSortQuest.Tests.ClientFlowTests" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.940338" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1046" name="RecognitionRestUsesRealModelAndDisplaysResponse" fullname="EcoSortQuest.Tests.ClientFlowTests.RecognitionRestUsesRealModelAndDisplaysResponse" methodname="RecognitionRestUsesRealModelAndDisplaysResponse" classname="EcoSortQuest.Tests.ClientFlowTests" runstate="Runnable" seed="1566786616" result="Passed" start-time="2026-10-24 10:59:44Z" end-time="2026-10-24 10:59:47Z" duration="2.913514" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/tanmi/AppData/LocalLow/DefaultCompany/ECOSORT_GAME\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
