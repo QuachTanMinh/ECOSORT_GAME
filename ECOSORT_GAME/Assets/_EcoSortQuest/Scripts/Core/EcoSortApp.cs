@@ -159,15 +159,15 @@ namespace EcoSortQuest
             { var item = Instantiate(itemPrefabs[index], worldRoot); item.transform.localPosition = position; item.Select(false); return item; }
             return world.Item(type, position);
         }
-        void SpawnBins(Vector3 origin)
+        void SpawnBins(Vector3 origin,float scale=1)
         {
             for (int i = 0; i < 4; i++)
             {
                 float spacing = deviceARActive ? .95f : 2.6f;
-                var position = origin + new Vector3((i - 1.5f) * spacing, 0, 0);
+                var position = origin + new Vector3((i - 1.5f) * spacing*scale, 0, 0);
                 if (binPrefabs != null && binPrefabs.Length > i && binPrefabs[i] != null)
-                { var bin = Instantiate(binPrefabs[i], worldRoot); bin.transform.localPosition = position; }
-                else world.Bin((WasteType)i, position);
+                { var bin = Instantiate(binPrefabs[i], worldRoot); bin.transform.localPosition = position;bin.transform.localScale*=scale; }
+                else world.Bin((WasteType)i, position).transform.localScale*=scale;
             }
         }
         void ShowMenu()

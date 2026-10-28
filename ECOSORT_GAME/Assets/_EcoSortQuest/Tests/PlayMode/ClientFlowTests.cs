@@ -794,8 +794,8 @@ namespace EcoSortQuest.Tests
                 if(mission.Id=="home-kitchen")
                 {
                     Assert.AreEqual(2,saved.missions.Single().bestStars,"Using hint must not award independent-decision star.");
-                    Assert.IsNotNull(GameObject.Find("Earned green tree"));
-                    Assert.IsNull(GameObject.Find("Earned bench seat"),"Later rewards stay locked.");
+                    Assert.IsNotNull(GameObject.Find("Earned green plant"));
+                    Assert.IsNull(GameObject.Find("Earned reading stool"),"Later rewards stay locked.");
                     yield return Capture("areas-home-reward-20261024");
                     ButtonNamed("Hành trình").onClick.Invoke();yield return null;yield return null;yield return null;
                     Assert.IsNotNull(GameObject.Find("Area journey"),"Result should return directly to mission selection.");
@@ -811,7 +811,7 @@ namespace EcoSortQuest.Tests
             yield return Open("MainMenu");
             typeof(EcoSortApp).GetMethod("BeginAreaMission",Fields).Invoke(App,new object[]{AreaMissions.All[0]});
             yield return null;yield return null;yield return null;Call(App,"AcceptRestorationMission");yield return null;
-            Assert.IsNull(GameObject.Find("Earned green tree"));Assert.IsNotNull(GameObject.Find("Earned bench seat"));
+            Assert.IsNull(GameObject.Find("Earned green plant"));Assert.IsNotNull(GameObject.Find("Earned reading stool"));
             yield return Capture("areas-earned-decoration-20261024");
             yield return Open("MainMenu");
             typeof(EcoSortApp).GetMethod("ShowCatalog",Fields).Invoke(App,new object[]{0});yield return null;
@@ -819,9 +819,57 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
+        [UnityTest] public IEnumerator MissionSceneryHasReachableItemsAndDistinctRooms()
+        {
+            foreach(var mission in AreaMissions.All)
+            {
+                EcoSortApp.SelectedAreaMission=mission.Id;EcoSortApp.SelectedLearningMode=LearningMode.Explore;
+                yield return Open("GameScene");
+                var layout=Field<AreaSceneryLayout>(App,"sceneryLayout");Assert.IsNotNull(layout);
+                Assert.AreEqual(mission.Items.Length,layout.Items.Length);
+                Assert.IsNotNull(GameObject.Find("Mission scenery • "+mission.Id));
+                if(mission.Context==LearningContext.School)typeof(EcoSortApp).GetMethod("AnswerAreaQuestion",Fields).Invoke(App,new object[]{mission.Answer});
+                Call(App,"AcceptRestorationMission");yield return null;Physics.SyncTransforms();
+                var actor=Field<ExplorerController>(App,"explorer");
+                Assert.Less(Vector2.Distance(new Vector2(actor.transform.position.x,actor.transform.position.z),new Vector2(layout.Spawn.x,layout.Spawn.z)),.35f,mission.Id+" character must start at the authored entry");
+                bool Blocked(Vector3 point)
+                {
+                    return Physics.OverlapCapsule(point+Vector3.up*.42f,point+Vector3.up*1.50f,.34f).Any(c=>
+                        c.bounds.max.y>.12f && c.GetComponentInParent<WasteItem>()==null && c.GetComponentInParent<ExplorerController>()==null);
+                }
+                const float step=.65f;var bounds=layout.WalkBounds;
+                int cols=Mathf.FloorToInt(bounds.width/step)+1,rows=Mathf.FloorToInt(bounds.height/step)+1;
+                var free=new bool[cols,rows];var seen=new bool[cols,rows];
+                Vector3 Cell(int x,int z)=>new Vector3(bounds.xMin+x*step,.04f,bounds.yMin+z*step);
+                for(int x=0;x<cols;x++)for(int z=0;z<rows;z++)free[x,z]=!Blocked(Cell(x,z));
+                int sx=Mathf.Clamp(Mathf.RoundToInt((layout.Spawn.x-bounds.xMin)/step),0,cols-1),sz=Mathf.Clamp(Mathf.RoundToInt((layout.Spawn.z-bounds.yMin)/step),0,rows-1);
+                Assert.IsTrue(free[sx,sz],mission.Id+" spawn blocked");
+                var queue=new System.Collections.Generic.Queue<Vector2Int>();queue.Enqueue(new Vector2Int(sx,sz));seen[sx,sz]=true;
+                var reachable=new System.Collections.Generic.List<Vector3>();
+                while(queue.Count>0)
+                {
+                    var cell=queue.Dequeue();reachable.Add(Cell(cell.x,cell.y));
+                    foreach(var dir in new[]{Vector2Int.left,Vector2Int.right,Vector2Int.up,Vector2Int.down})
+                    {var n=cell+dir;if(n.x>=0&&n.x<cols&&n.y>=0&&n.y<rows&&free[n.x,n.y]&&!seen[n.x,n.y]){seen[n.x,n.y]=true;queue.Enqueue(n);}}
+                }
+                foreach(var position in layout.Items)
+                {
+                    Assert.IsFalse(Blocked(position),mission.Id+" item in furniture at "+position);
+                    Assert.IsTrue(reachable.Any(p=>Vector2.Distance(new Vector2(p.x,p.z),new Vector2(position.x,position.z))<1.5f),mission.Id+" unreachable item "+position);
+                }
+                foreach(var bin in UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None))
+                    Assert.IsTrue(reachable.Any(p=>Vector2.Distance(new Vector2(p.x,p.z),new Vector2(bin.transform.position.x,bin.transform.position.z))<1.8f),mission.Id+" unreachable bin");
+                yield return Capture("scenery-"+mission.Id+"-play");
+                typeof(EcoSortApp).GetField("paused",Fields).SetValue(App,true);
+                var camera=actor.FollowCamera;camera.transform.position=new Vector3(16,22,-24);camera.transform.LookAt(new Vector3(0,0,-1));
+                yield return Capture("scenery-"+mission.Id+"-overview");
+                int total=mission.Items.Length;
+                AreaJourneyStore.Complete(testId,mission,"scenery-"+mission.Id,total,total,0,0,new[]{"Plastic","Metal","Paper","Organic"});
+            }
+        }
         static IEnumerator Capture(string name,int width=1600,int height=900)
         {
-            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/Evidence/Menu-20261028"));
+            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/Evidence/Scenery-20261028"));
             Directory.CreateDirectory(dir);
             var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
             var canvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();

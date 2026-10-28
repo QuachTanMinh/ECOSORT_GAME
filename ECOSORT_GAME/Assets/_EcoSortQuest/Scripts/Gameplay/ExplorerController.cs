@@ -9,6 +9,9 @@ namespace EcoSortQuest
         public Transform Visual, LeftArm, RightArm, LeftLeg, RightLeg, CarryAnchor;
         public bool CanMove;
         public Camera FollowCamera;
+        public Rect WalkBounds=Rect.MinMaxRect(-11,-8,11,5);
+        public Rect CameraFocusBounds=Rect.MinMaxRect(-100,-100,100,100);
+        public Vector3 CameraOffset=new Vector3(0,6,-8);
         CharacterController controller;
         float gait, yaw, verticalSpeed;
         void Awake()
@@ -31,13 +34,14 @@ namespace EcoSortQuest
             float speed=CanMove && keyboard!=null && keyboard.leftShiftKey.isPressed?5.4f:3.6f;
             if(controller.isGrounded)verticalSpeed=-2;else verticalSpeed=Mathf.Max(-15,verticalSpeed-20*dt);
             controller.Move((direction*speed+Vector3.up*verticalSpeed)*dt);
-            var p=transform.position;p.x=Mathf.Clamp(p.x,-11,11);p.z=Mathf.Clamp(p.z,-8,5);transform.position=p;
+            var p=transform.position;p.x=Mathf.Clamp(p.x,WalkBounds.xMin,WalkBounds.xMax);p.z=Mathf.Clamp(p.z,WalkBounds.yMin,WalkBounds.yMax);transform.position=p;
             if(direction.sqrMagnitude>.01f)Visual.rotation=Quaternion.Slerp(Visual.rotation,Quaternion.LookRotation(direction),dt*14);
             gait+=dt*speed*2.5f;float swing=input.magnitude*Mathf.Sin(gait)*25;
             LeftLeg.localRotation=Quaternion.Euler(swing,0,0);RightLeg.localRotation=Quaternion.Euler(-swing,0,0);
             LeftArm.localRotation=Quaternion.Euler(-swing*.7f,0,0);RightArm.localRotation=Quaternion.Euler(swing*.7f,0,0);
-            FollowCamera.transform.position=transform.position+Quaternion.Euler(0,yaw,0)*new Vector3(0,6,-8);
-            FollowCamera.transform.LookAt(transform.position+Vector3.up*.9f);
+            var focus=transform.position;focus.x=Mathf.Clamp(focus.x,CameraFocusBounds.xMin,CameraFocusBounds.xMax);focus.z=Mathf.Clamp(focus.z,CameraFocusBounds.yMin,CameraFocusBounds.yMax);
+            FollowCamera.transform.position=focus+Quaternion.Euler(0,yaw,0)*CameraOffset;
+            FollowCamera.transform.LookAt(focus+Vector3.up*.9f);
         }
     }
 }

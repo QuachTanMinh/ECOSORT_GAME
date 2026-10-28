@@ -1,6 +1,8 @@
 # EcoSort Quest
 
-[Báo cáo cuối kỳ cập nhật ngày 24/10/2026](BaoCao/Bao-cao-cuoi-ky-ECOSORT-GAME-QUEST-cap-nhat-20261024.docx) bao gồm AI 12 nhóm, hành trình 9 nhiệm vụ và phạm vi nghiệm thu hiện tại.
+[Báo cáo đồ án hoàn chỉnh ngày 28/10/2026](BaoCao/Bao-cao-do-an-EcoSort-Quest-hoan-chinh-20261028.docx) — 23 trang, trình bày mục tiêu giáo dục, thiết kế, cảnh game mới, kết quả kiểm thử và giới hạn của bản demo.
+
+**Bản demo hiện tại (28/10/2026):** chín nhiệm vụ có cảnh riêng: bếp, phòng ngủ có góc học tập, phòng thu gom, lớp học, căng tin, sân trường, lối đi công viên, bãi dã ngoại và vườn cộng đồng. Menu tách theo hoạt động; nhận diện ảnh có bước tự dự đoán và xác nhận kiến thức. Xem [cảnh quan và kiểm chứng](ECOSORT_GAME/Docs/MISSION-SCENERY-20261028.md). Các ghi chú theo ngày dưới đây mô tả những đợt phát triển trước.
 
 **Hành trình ba khu vực (24/10/2026):** 9 nhiệm vụ cố định với Nhà ở hướng dẫn cơ bản, Trường học có câu hỏi theo khu vực, Công viên tìm kiếm rộng hơn. Có mở khóa, sao theo độ chính xác/gợi ý, huy hiệu, trang trí và sổ tay vật phẩm đã gặp. Menu → **HÀNH TRÌNH 3 KHU VỰC →**. Xem [hướng dẫn hành trình](ECOSORT_GAME/Docs/AREA-JOURNEY.md); tiến trình mới lưu trên máy.
 

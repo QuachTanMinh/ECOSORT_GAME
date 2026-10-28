@@ -8,6 +8,7 @@ namespace EcoSortQuest
     {
         readonly Transform root;
         readonly List<Material> materials = new List<Material>();
+        readonly List<Mesh> generatedMeshes=new List<Mesh>();
         readonly Dictionary<Color,Material> palette = new Dictionary<Color,Material>();
         Shader surfaceShader;
         public WorldFactory(Transform root) { this.root = root; }
@@ -112,6 +113,9 @@ namespace EcoSortQuest
             item.Select(false); return item;
         }
         public void Dispose()
-        { foreach (var material in materials) if (material != null) Object.Destroy(material); materials.Clear();palette.Clear(); }
+        {
+            foreach (var material in materials) if (material != null) Object.Destroy(material);materials.Clear();palette.Clear();
+            foreach(var mesh in generatedMeshes)if(mesh!=null)Object.Destroy(mesh);generatedMeshes.Clear();
+        }
     }
 }

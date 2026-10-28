@@ -27,6 +27,7 @@ namespace EcoSortQuest
         WasteItem wrappedCup, paperSleeve;
         GameObject sleeveVisual;
         bool sleeveSeparated;
+        AreaSceneryLayout sceneryLayout;
         void StartExploration()
         {
             AiMission=false;SelectedLevel=1;sessionLimit=0;learningAnswers.Clear();answerSeconds=0;
@@ -38,10 +39,18 @@ namespace EcoSortQuest
             round=new SortingRound(total,Mathf.CeilToInt(total*.75f));
             restoration=new RestorationMission(total);
             restorationSession=System.Guid.NewGuid().ToString("N");
-            BuildLearningContext();world.PrepareWalkableWorld();
+            if(areaMission!=null)sceneryLayout=world.BuildMissionEnvironment(areaMission);
+            else {BuildLearningContext();world.PrepareWalkableWorld();}
             sceneCamera.orthographic=false;sceneCamera.fieldOfView=58;sceneCamera.farClipPlane=100;
-            explorer=world.Explorer(new Vector3(0,.1f,areaMission!=null && areaMission.Context!=LearningContext.Park?-7.3f:-5),sceneCamera);
-            SpawnBins(new Vector3(0,0,3.8f));
+            explorer=world.Explorer(sceneryLayout!=null?sceneryLayout.Spawn:new Vector3(0,.1f,-5),sceneCamera);
+            if(sceneryLayout!=null)
+            {
+                explorer.WalkBounds=sceneryLayout.WalkBounds;
+                explorer.CameraOffset=sceneryLayout.Indoor?new Vector3(0,8.2f,-10):new Vector3(0,7,-9);
+                explorer.CameraFocusBounds=Rect.MinMaxRect(-4.5f,-4,4.5f,2);
+                sceneCamera.backgroundColor=sceneryLayout.Indoor?new Color(.71f,.78f,.79f):new Color(.64f,.81f,.90f);
+            }
+            SpawnBins(sceneryLayout!=null?sceneryLayout.Collection:new Vector3(0,0,3.8f),sceneryLayout!=null?sceneryLayout.BinScale:1);
             explorationBins=worldRoot.GetComponentsInChildren<WasteBin>();
             var deck=LearningDeck.Build(SelectedContext,12,Random.Range(0,int.MaxValue));
             // Ensure every mission teaches both container preparation and dry-paper handling.
@@ -100,6 +109,7 @@ namespace EcoSortQuest
         }
         Vector3 AreaItemPosition(int index)
         {
+            if(sceneryLayout!=null)return sceneryLayout.Items[index];
             if(areaMission==null)return new Vector3(-4.5f+(index%4)*3,.04f,-5.8f+(index/4)*2.7f);
             if(areaMission.Context==LearningContext.Home)return new Vector3(-2.4f+(index%2)*4.8f,.04f,-4.5f+(index/2)*2.8f);
             if(areaMission.Context==LearningContext.School)return new Vector3(-4.5f+(index%4)*3,.04f,-5.5f+(index/4)*3.2f);
@@ -129,7 +139,7 @@ namespace EcoSortQuest
                 else
                 {
                     var near=NearestLitter();
-                    explorationPrompt.text=near!=null?"E • Nhặt "+near.Definition.Name:"Đi tìm rác quanh sân. Đến gần vật phẩm để nhặt.";
+                    explorationPrompt.text=near!=null?"E • Nhặt "+near.Definition.Name:sceneryLayout!=null && sceneryLayout.Indoor?"Quan sát quanh phòng. Đến gần vật phẩm rồi nhấn E để nhặt.":"Quan sát quanh khu vực. Đến gần vật phẩm rồi nhấn E để nhặt.";
                 }
             }
             var key=Keyboard.current;if(key==null)return;

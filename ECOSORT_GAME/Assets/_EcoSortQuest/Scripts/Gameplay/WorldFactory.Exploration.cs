@@ -7,6 +7,7 @@ namespace EcoSortQuest
         public ExplorerController Explorer(Vector3 position, Camera camera)
         {
             var actor=new GameObject("Eco Ranger",typeof(CharacterController),typeof(ExplorerController));
+            var body=actor.GetComponent<CharacterController>();body.enabled=false;
             actor.transform.SetParent(root,false);actor.transform.position=position;
             var controller=actor.GetComponent<ExplorerController>();controller.FollowCamera=camera;
             var visual=new GameObject("Block character").transform;visual.SetParent(actor.transform,false);controller.Visual=visual;
@@ -24,6 +25,7 @@ namespace EcoSortQuest
             controller.LeftLeg=Limb("Left leg",new Vector3(-.18f,.82f,0),new Vector3(0,-.38f,0),new Vector3(.27f,.75f,.3f),jeans);
             controller.RightLeg=Limb("Right leg",new Vector3(.18f,.82f,0),new Vector3(0,-.38f,0),new Vector3(.27f,.75f,.3f),jeans);
             controller.CarryAnchor=new GameObject("Carried item").transform;controller.CarryAnchor.SetParent(visual,false);controller.CarryAnchor.localPosition=new Vector3(0,.8f,.65f);
+            body.enabled=true;
             return controller;
         }
         public void PrepareWalkableWorld()

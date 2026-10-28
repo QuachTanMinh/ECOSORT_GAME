@@ -5,6 +5,7 @@ namespace EcoSortQuest
     {
         public void BuildAreaIdentity(LearningContext context,string zone,int rewards,AreaJourney data)
         {
+            if(activeLayout!=null){RefreshAreaDecorations(rewards,data);return;}
             Color color=context==LearningContext.Home?new Color(.83f,.71f,.52f):context==LearningContext.School?new Color(.41f,.64f,.77f):new Color(.37f,.61f,.34f);
             var sign=new GameObject("Area identity sign",typeof(TextMesh));sign.transform.SetParent(root,false);
             sign.transform.localPosition=new Vector3(0,2.8f,5.3f);
@@ -34,6 +35,20 @@ namespace EcoSortQuest
             foreach(var child in root.GetComponentsInChildren<Transform>())
                 if(child.name.StartsWith("Earned ")){child.gameObject.SetActive(false);Object.Destroy(child.gameObject);}
             var color=new Color(.24f,.53f,.43f);
+            if(activeLayout!=null && activeLayout.Indoor)
+            {
+                for(int side=-1;side<=1;side+=2)
+                {
+                    if(rewards>=1 && data.plants)
+                    {
+                        Shape("Earned plant pot",PrimitiveType.Cylinder,root,new Vector3(side*8.5f,.25f,-6.7f),new Vector3(.7f,.25f,.7f),new Color(.64f,.37f,.23f),false);
+                        Shape("Earned green plant",PrimitiveType.Sphere,root,new Vector3(side*8.5f,.85f,-6.7f),new Vector3(.8f,1.0f,.8f),color,false);
+                    }
+                    if(rewards>=2 && data.flowers)for(int i=0;i<3;i++)Shape("Earned flower",PrimitiveType.Sphere,root,new Vector3(side*8.5f+i*.22f,.8f,-6.7f),Vector3.one*.18f,new Color(1,.69f,.30f),false);
+                    if(rewards>=3 && data.benches)Shape("Earned reading stool",PrimitiveType.Cube,root,new Vector3(side*7.2f,.3f,-6.7f),new Vector3(.8f,.6f,.8f),PaleWood,false);
+                }
+                return;
+            }
             for(int side=-1;side<=1;side+=2)
             {
                 if(rewards>=1 && data.plants)

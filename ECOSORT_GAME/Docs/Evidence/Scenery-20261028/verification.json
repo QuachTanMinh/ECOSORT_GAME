@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-28",
+  "results": {
+    "EditMode": {
+      "id": "2",
+      "testcasecount": "59",
+      "result": "Passed",
+      "total": "59",
+      "passed": "59",
+      "failed": "0",
+      "inconclusive": "0",
+      "skipped": "0",
+      "asserts": "0",
+      "engine-version": "3.5.0.0",
+      "clr-version": "4.0.30319.42000",
+      "start-time": "2026-10-28 06:34:11Z",
+      "end-time": "2026-10-28 06:34:11Z",
+      "duration": "0.1690508"
+    },
+    "PlayMode": {
+      "id": "2",
+      "testcasecount": "26",
+      "result": "Skipped:Ignored",
+      "total": "26",
+      "passed": "24",
+      "failed": "0",
+      "inconclusive": "0",
+      "skipped": "2",
+      "asserts": "0",
+      "engine-version": "3.5.0.0",
+      "clr-version": "4.0.30319.42000",
+      "start-time": "2026-10-28 06:58:31Z",
+      "end-time": "2026-10-28 06:59:57Z",
+      "duration": "86.2805638"
+    },
+    "Backend": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "14",
+        "time": "33.477",
+        "timestamp": "2026-10-28T13:38:16.786538+07:00",
+        "hostname": "Minh"
+      }
+    ]
+  },
+  "windows_build_bytes": 108600421,
+  "runtime_sha256": "3b6df245eaa525ff70d4122289360ab80d7aeb0c25b73709cca51127911ee015",
+  "limitations": [
+    "Two Unity service integration tests skipped",
+    "No new Docker, live cloud or physical AR acceptance",
+    "No controlled child-user study"
+  ]
+}
