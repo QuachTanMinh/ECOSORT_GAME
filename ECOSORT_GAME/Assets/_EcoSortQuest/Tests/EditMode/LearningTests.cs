@@ -40,5 +40,30 @@ namespace EcoSortQuest.Tests
             LearningStore.Add(h,session);LearningStore.Add(h,session);
             Assert.AreEqual(1,h.sessions.Count);Assert.AreEqual(1,h.pending.Count);
         }
+        [Test] public void InsightsCompareSameContextAndIncludeUnansweredItems()
+        {
+            var h=new LearningHistory();
+            h.sessions.Add(new LearningSession{mode="Test",context="Home",total=10,answers=Enumerable.Repeat(new LearningAnswer{correct=true},5).ToArray()});
+            h.sessions.Add(new LearningSession{mode="Test",context="Park",total=10,answers=Enumerable.Repeat(new LearningAnswer{correct=true},10).ToArray()});
+            h.sessions.Add(new LearningSession{mode="Learn",context="Home",total=10,answers=Enumerable.Repeat(new LearningAnswer{correct=true},10).ToArray()});
+            h.sessions.Add(new LearningSession{mode="Test",context="Home",total=10,answers=Enumerable.Repeat(new LearningAnswer{correct=true},7).ToArray()});
+            StringAssert.Contains("+20 điểm %",LearningInsights.ContextProgress(h,LearningContext.Home));
+            Assert.AreEqual(2,LearningInsights.Tests(h,LearningContext.Home).Length);
+            Assert.AreEqual(0,LearningInsights.Rate(new LearningSession{total=0}));
+            Assert.AreEqual(LearningMode.Test,LearningInsights.Recommend(h,LearningContext.Home).Mode);
+        }
+        [Test] public void RecentMistakesChooseCompatibleContextAndResolvedItemsDisappear()
+        {
+            var h=new LearningHistory();
+            h.sessions.Add(new LearningSession{mode="Test",answers=new[]{
+                new LearningAnswer{item_id="water-bottle",expected="Plastic",choice="Metal"},
+                new LearningAnswer{item_id="detergent-bottle",expected="Plastic",choice="Paper"}}});
+            Assert.AreEqual("detergent-bottle",LearningStore.Mistakes(h)[0].Id);
+            var next=LearningInsights.Recommend(h,LearningContext.Park);
+            Assert.AreEqual(LearningMode.Review,next.Mode);Assert.AreEqual(LearningContext.Home,next.Context);
+            h.sessions.Add(new LearningSession{mode="Review",answers=new[]{new LearningAnswer{item_id="detergent-bottle",correct=true}}});
+            Assert.AreEqual("water-bottle",LearningStore.Mistakes(h).Single().Id);
+            StringAssert.Contains("→",LearningInsights.Confusions(h));
+        }
     }
 }

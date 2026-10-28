@@ -17,12 +17,12 @@ namespace EcoSortQuest
                 settingsRoot=view.Panel(view.Root,0,0,1,1,new Color(.02f,.10f,.12f,.80f),"Settings modal");
             }
             if(settingsBody!=null)Destroy(settingsBody.gameObject);
-            settingsBody=view.Panel(settingsRoot,.13f,.11f,.74f,.78f,ViewFactory.Cream,"Settings content");
+            settingsBody=view.Card(settingsRoot,.20f,.14f,.60f,.72f,ViewFactory.Cream,"Settings content");
             var panel=settingsBody;
             view.Text(panel,"CÀI ĐẶT",.05f,.88f,.76f,.08f,33);
             view.Button(panel,"Đóng",.80f,.88f,.15f,.08f,CloseSettings);
-            string[] tabs={"Âm thanh","Hình ảnh","Lối chơi"};
-            for(int i=0;i<3;i++){int n=i;view.Button(panel,tabs[i],.05f+i*.31f,.75f,.28f,.09f,()=>ShowSettings(n),i==tab);}
+            string[] tabs={"Âm thanh","Hình ảnh","Lối chơi","Kết nối"};
+            for(int i=0;i<4;i++){int n=i;view.Button(panel,tabs[i],.05f+i*.23f,.75f,.21f,.09f,()=>ShowSettings(n),i==tab);}
             if(tab==0)
             {
                 var label=view.Text(panel,"",.05f,.64f,.90f,.07f,22);
@@ -46,16 +46,25 @@ namespace EcoSortQuest
                 shadow.onClick.AddListener(()=>{int enabled=1-PlayerPrefs.GetInt("EcoSortQuest.Shadows",1);PlayerPrefs.SetInt("EcoSortQuest.Shadows",enabled);PlayerPrefs.Save();ApplyVisualSettings();shadow.GetComponentInChildren<Text>().text=enabled==1?"Bóng đổ: Bật":"Bóng đổ: Tắt";});
                 view.Text(panel,"Bóng đổ áp dụng ngay. Chế độ cửa sổ áp dụng cho bản Windows; Editor dùng Game view.",.05f,.06f,.90f,.10f,20,ViewFactory.Muted);
             }
-            else
+            else if(tab==2)
             {
                 view.Text(panel,"TỐC ĐỘ BĂNG CHUYỀN KHI LUYỆN TẬP",.05f,.60f,.90f,.08f,25);
                 var label=view.Text(panel,"",.05f,.46f,.90f,.09f,23);
                 System.Action refresh=()=>label.text="Hiện tại: "+PlayerPrefs.GetFloat("EcoSortQuest.BeltSpeed",1).ToString("F1")+"×";
                 refresh();
                 for(int i=0;i<3;i++){float speed=.6f+i*.4f;view.Button(panel,speed.ToString("F1")+"×",.05f+i*.31f,.32f,.28f,.10f,()=>{PlayerPrefs.SetFloat("EcoSortQuest.BeltSpeed",speed);PlayerPrefs.Save();refresh();});}
-                view.Text(panel,"Kiểm tra giữ tốc độ chuẩn để so sánh kết quả.\nESC: đóng cài đặt và trở về đúng trạng thái trước đó.\nKhi mở cài đặt trong lượt chơi, timer và băng chuyền tạm dừng.",.05f,.08f,.90f,.19f,23,ViewFactory.Muted);
+                view.Text(panel,"Kiểm tra giữ tốc độ chuẩn để so sánh kết quả.\nESC: đóng cài đặt và trở về đúng trạng thái trước đó.\nKhi mở cài đặt trong lượt chơi, đồng hồ và băng chuyền tạm dừng.",.05f,.08f,.90f,.19f,23,ViewFactory.Muted);
+            }
+            else
+            {
+                view.Text(panel,"NHẬN DIỆN ẢNH VÀ LƯU KẾT QUẢ",.05f,.57f,.90f,.11f,26);
+                view.Text(panel,service.IsMock?"Bạn đang chơi trên máy. Phần phân loại bằng ảnh chỉ hiển thị ví dụ có sẵn, không phân tích ảnh của bạn.":"Đã bật kết nối để nhận diện ảnh và lưu kết quả trực tuyến.",.05f,.35f,.90f,.18f,23);
+                var connection=view.Button(panel,"Thiết lập kết nối",.05f,.20f,.90f,.09f,()=>{CloseSettings();ShowConnection();},true);
+                connection.interactable=screen!=ClientScreen.Game;
+                view.Text(panel,screen==ClientScreen.Game?"Về menu chính sau lượt chơi để thay đổi kết nối.":"Cần địa chỉ dịch vụ nhận diện do người cài đặt game cung cấp.",.05f,.06f,.90f,.10f,20,ViewFactory.Muted);
             }
         }
+
         void CloseSettings()
         {
             if(settingsRoot==null)return;

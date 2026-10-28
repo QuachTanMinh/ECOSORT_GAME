@@ -134,6 +134,88 @@ namespace EcoSortQuest.Tests
         static Button ButtonNamed(string name) => UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
             .First(button => button.GetComponentInChildren<Text>().text == name);
 
+        [UnityTest] public IEnumerator SharedPaletteAndDropCueDoNotRevealTheAnswer()
+        {
+            yield return Open("GameScene");
+            var factory=Field<WorldFactory>(App,"world");
+            Assert.AreSame(factory.Material(Color.cyan),factory.Material(Color.cyan));
+            Assert.IsTrue(factory.Material(Color.cyan).enableInstancing);
+            var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);
+            foreach(var bin in bins) { bin.Highlight(true);Assert.IsTrue(bin.transform.Find("Drop target outline").gameObject.activeSelf);bin.Highlight(false); }
+            var item=Field<WasteItem>(App,"currentItem");
+            var camera=UnityEngine.Object.FindFirstObjectByType<Camera>();
+            var start=(Vector2)camera.WorldToScreenPoint(item.GetComponentsInChildren<Collider>().First(c=>c.enabled).bounds.center);
+            InputSystem.QueueStateEvent(mouse,new MouseState{position=start}.WithButton(MouseButton.Left));yield return null;yield return null;
+            var wrong=bins.First(b=>b.type!=item.type);
+            var end=(Vector2)camera.WorldToScreenPoint(wrong.GetComponentsInChildren<Collider>().First(c=>c.enabled).bounds.center);
+            InputSystem.QueueStateEvent(mouse,new MouseState{position=end}.WithButton(MouseButton.Left));yield return null;yield return null;
+            Assert.AreSame(wrong,Field<WasteBin>(App,"hoveredBin"));
+            Assert.IsTrue(wrong.transform.Find("Drop target outline").gameObject.activeSelf);
+            Assert.AreEqual(0,Field<SortingRound>(App,"round").Answered);
+            // Capture renders at a fixed aspect; freeze input so the old screen pointer
+            // cannot move the held object while that temporary camera aspect is active.
+            App.GetComponent<PointerInput>().enabled=false;
+            yield return Capture("gameplay-drop-cue-20261028");
+            App.GetComponent<PointerInput>().enabled=true;
+            Call(App,"TogglePause");Assert.IsFalse(wrong.transform.Find("Drop target outline").gameObject.activeSelf);
+        }
+        [UnityTest] public IEnumerator MenuSeparatesActivitiesAndUsesPlainLanguage()
+        {
+            yield return Open("MainMenu");
+            var labels=UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Select(b=>b.GetComponentInChildren<Text>().text).ToArray();
+            Assert.AreEqual(1,labels.Count(t=>t=="Phân loại bằng ảnh"));
+            Assert.IsFalse(labels.Any(t=>t.Contains(" / AI")||t.Contains("Thống kê")||t=="Tiến trình"));
+            foreach(var label in new[]{"Học có hướng dẫn","Kiểm tra","Ôn câu sai","Thử thách phân loại","Kết quả học tập"})Assert.Contains(label,labels);
+            yield return Capture("menu-separated-functions",1920,1000);
+            ButtonNamed("Kiểm tra").onClick.Invoke();yield return null;
+            Assert.IsFalse(UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Any(b=>b.transform.IsChildOf(GameObject.Find("Practice context").transform) && b.GetComponentInChildren<Text>().text.Contains("ảnh")));
+            ButtonNamed("Công viên").onClick.Invoke();yield return null;yield return Capture("menu-test-context");
+            ButtonNamed("Bắt đầu").onClick.Invoke();yield return null;yield return null;yield return null;
+            Assert.AreEqual(LearningMode.Test,EcoSortApp.SelectedLearningMode);Assert.AreEqual(LearningContext.Park,EcoSortApp.SelectedContext);
+            yield return Open("MainMenu");ButtonNamed("Thử thách phân loại").onClick.Invoke();yield return null;
+            Assert.IsTrue(ButtonNamed("Cấp độ 1").interactable);Assert.IsFalse(ButtonNamed("Cấp độ 2 • Chưa mở").interactable);
+            ButtonNamed("Đóng").onClick.Invoke();yield return null;
+            ButtonNamed("Kết quả học tập").onClick.Invoke();yield return null;ButtonNamed("Thành tích").onClick.Invoke();yield return null;
+            Assert.AreEqual(1,GameObject.Find("Learning statistics").GetComponentsInChildren<Button>().Count(b=>b.GetComponentInChildren<Text>().text.StartsWith("Lưu")));
+            yield return Capture("menu-achievements");
+            ButtonNamed("Đóng").onClick.Invoke();yield return null;
+            Call(App,"ShowExperienceSettings");ButtonNamed("Kết nối").onClick.Invoke();yield return null;ButtonNamed("Thiết lập kết nối").onClick.Invoke();yield return null;yield return Capture("menu-connection");
+            ButtonNamed("Đóng").onClick.Invoke();yield return null;
+            ButtonNamed("Phân loại bằng ảnh").onClick.Invoke();yield return null;yield return null;yield return null;
+            var texts=UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Select(t=>t.text).ToArray();
+            foreach(var text in texts)Assert.IsFalse(System.Text.RegularExpressions.Regex.IsMatch(text,@"(?i)\b(mock|api|backend|fastapi|json|confidence)\b"),text);
+            ButtonNamed("Chưa biết / cần kiểm tra").onClick.Invoke();ButtonNamed("Xem kết quả ví dụ").onClick.Invoke();yield return new WaitForSecondsRealtime(.3f);
+            StringAssert.Contains("KHÔNG PHÂN TÍCH ẢNH",Field<Text>(App,"predictionText").text);
+            yield return Capture("menu-photo-example");
+        }
+        [UnityTest] public IEnumerator CompactUiFitsChangingTextAndLeavesTheSceneVisible()
+        {
+            yield return Open("MainMenu");yield return Capture("ui-main-menu-wide",1920,1000);
+            yield return Open("GameScene");yield return null;
+            var canvas=UnityEngine.Object.FindFirstObjectByType<Canvas>().GetComponent<RectTransform>();
+            var card=GameObject.Find("Item hint card").GetComponent<RectTransform>();
+            Assert.LessOrEqual(card.rect.width,canvas.rect.width*.44f);
+            float originalHeight=card.rect.height;
+            string originalLesson=Field<Text>(App,"lessonText").text;
+            Field<Text>(App,"lessonText").text="Tách bìa nhựa và gáy kim loại nếu có. Giữ phần giấy sạch, khô; đọc hướng dẫn nơi thu gom trước khi phân loại. Mỗi phần vật liệu cần được xử lý phù hợp.";
+            yield return null;yield return null;
+            Assert.Greater(card.rect.height,originalHeight,"Long feedback must grow the card instead of shrinking the font.");
+            foreach(var text in card.GetComponentsInChildren<Text>())
+                Assert.GreaterOrEqual(text.rectTransform.rect.height+2,text.preferredHeight,"Feedback must fit its text box.");
+            yield return Capture("ui-gameplay-long-feedback-720p",1280,720);
+            Field<Text>(App,"lessonText").text=originalLesson;yield return null;yield return null;
+            Call(App,"TogglePause");yield return null;yield return Capture("ui-pause");
+            var dialog=GameObject.Find("Pause dialog").GetComponent<RectTransform>();
+            Assert.Less(dialog.rect.width*dialog.rect.height,canvas.rect.width*canvas.rect.height*.12f);
+            ButtonNamed("Tiếp tục / ESC").onClick.Invoke();yield return null;
+            yield return Capture("ui-gameplay");
+            Call(App,"ShowExperienceSettings");yield return null;yield return Capture("ui-settings");
+            ButtonNamed("Đóng").onClick.Invoke();yield return null;
+            EcoSortApp.SelectedLearningMode=LearningMode.Explore;
+            yield return Open("GameScene");Call(App,"AcceptRestorationMission");yield return null;yield return null;
+            yield return Capture("ui-exploration");
+            LogAssert.NoUnexpectedReceived();
+        }
         [UnityTest] public IEnumerator ClickAndDropOutsideDoNotScore()
         {
             yield return Open("GameScene");
@@ -171,14 +253,14 @@ namespace EcoSortQuest.Tests
         {
             yield return Open("MainMenu"); Call(App,"ShowConnection");
             var input=UnityEngine.Object.FindObjectsByType<InputField>(FindObjectsSortMode.None).Single();
-            input.text="not-a-url"; ButtonNamed("Kết nối Online").onClick.Invoke();
+            input.text="not-a-url"; ButtonNamed("Bật kết nối").onClick.Invoke();
             Assert.IsTrue(Field<IEcoSortService>(App,"service").IsMock);
-            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text.StartsWith("Nhập URL HTTP")));
-            input.text="http://127.0.0.1:8000"; ButtonNamed("Kết nối Online").onClick.Invoke();
+            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text.StartsWith("Địa chỉ chưa đúng")));
+            input.text="http://127.0.0.1:8000"; ButtonNamed("Bật kết nối").onClick.Invoke();
             yield return null; yield return null; yield return null;
             Assert.IsFalse(Field<IEcoSortService>(App,"service").IsMock);
             Assert.AreEqual("http://127.0.0.1:8000",App.apiSettings.baseUrl);
-            Call(App,"ShowConnection"); ButtonNamed("Chơi ngoại tuyến").onClick.Invoke();
+            Call(App,"ShowConnection"); ButtonNamed("Chơi trên máy").onClick.Invoke();
             yield return null; yield return null; yield return null;
             Assert.IsTrue(Field<IEcoSortService>(App,"service").IsMock);
         }
@@ -223,10 +305,12 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(LocalProgress.Load().ChallengeUnlocked);
             yield return Capture("03-level-complete");
             yield return Open("ScanScene");
-            ButtonNamed("Chạy dự đoán MOCK").onClick.Invoke();
+            ButtonNamed(RecognitionInfo.All[0].display_name).onClick.Invoke();
+            ButtonNamed("Xem kết quả ví dụ").onClick.Invoke();
             yield return new WaitForSecondsRealtime(.6f);
             Assert.IsNotNull(Field<Prediction>(App, "scanResult")); yield return Capture("04-mock-scan");
-            ButtonNamed("Mở thử thách AR mô phỏng →").onClick.Invoke();
+            EcoSortApp.PendingPrediction=Field<Prediction>(App,"scanResult");
+            yield return Open("ARChallengeScene");
             yield return null; yield return null; yield return null;
             Assert.AreEqual("ARChallengeScene", SceneManager.GetActiveScene().name);
             ButtonNamed("Đặt ở giữa").onClick.Invoke(); yield return null;
@@ -237,7 +321,7 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(Field<bool>(App, "arComplete")); Assert.IsTrue(LocalProgress.Load().HasBadge);
             yield return new WaitForSecondsRealtime(1);
             yield return Open("ProgressScene"); yield return Capture("06-progress");
-            ButtonNamed("Tải từ mock").onClick.Invoke(); yield return new WaitForSecondsRealtime(.6f);
+            ButtonNamed("Khôi phục tiến trình").onClick.Invoke(); yield return new WaitForSecondsRealtime(.6f);
             Assert.IsTrue(LocalProgress.Load().HasBadge);
             PlayerProgress remote = null;
             yield return new MockEcoSortService(0).GetProgress(testId, p => remote = p, e => Assert.Fail(e));
@@ -316,9 +400,10 @@ namespace EcoSortQuest.Tests
         }
         [UnityTest] public IEnumerator LearningHubThemesAndStatisticsAreReachable()
         {
-            yield return Open("MainMenu");Call(App,"ShowLearningHub");
+            yield return Open("MainMenu");ButtonNamed("Học có hướng dẫn").onClick.Invoke();
             ButtonNamed("Công viên").onClick.Invoke();yield return null;
             yield return Capture("learning-hub");
+            ButtonNamed("Đóng").onClick.Invoke();yield return null;
             ButtonNamed("Kết quả học tập").onClick.Invoke();yield return null;
             yield return Capture("learning-statistics");
             foreach(var context in new[]{LearningContext.Home,LearningContext.School,LearningContext.Park})
@@ -328,19 +413,65 @@ namespace EcoSortQuest.Tests
                 Assert.AreEqual(0,Field<float>(App,"sessionLimit"));
             }
         }
-        [UnityTest] public IEnumerator AiMissionRequiresOwnChoiceAndSeparatesMockFromReal()
+        [UnityTest] public IEnumerator LabRequiresOwnChoiceAndConfirmsKnowledgeIndependentlyOfAi()
         {
-            EcoSortApp.AiMission=true;yield return Open("ScanScene");
-            ButtonNamed("Chạy dự đoán MOCK").onClick.Invoke();
+            yield return Open("ScanScene");
+            ButtonNamed("Xem kết quả ví dụ").onClick.Invoke();
             Assert.IsNull(Field<Prediction>(App,"scanResult"));
-            ButtonNamed("Plastic").onClick.Invoke();
-            ButtonNamed("Chạy dự đoán MOCK").onClick.Invoke();yield return new WaitForSecondsRealtime(.3f);
-            Assert.IsTrue(Field<bool>(App,"missionPassed"));
+            ButtonNamed("Chưa biết / cần kiểm tra").onClick.Invoke();
+            ButtonNamed("Xem kết quả ví dụ").onClick.Invoke();yield return new WaitForSecondsRealtime(.3f);
             Assert.IsTrue(LearningStore.Load(testId).missions.Single().mock);
-            yield return Capture("learning-ai-mission-mock");
-            ButtonNamed("Nhiệm vụ tiếp / hoàn thành →").onClick.Invoke();
+            Assert.IsFalse(LearningStore.Load(testId).missions.Single().agrees);
+            Assert.IsTrue(Field<Button>(App,"challengeButton").interactable);
+            yield return Capture("lab-prediction-20261028");
+            ButtonNamed("Xác nhận kiến thức →").onClick.Invoke();yield return null;
+            ButtonNamed("Luôn tin AI vì độ tin cậy cao").onClick.Invoke();
+            Assert.IsFalse(LearningStore.Load(testId).missions.Single().knowledge_confirmed);
+            ButtonNamed("Tự kiểm tra vật liệu và quy định nơi thu gom").onClick.Invoke();yield return null;
+            ButtonNamed(WasteInfo.Label(WasteType.Metal)).onClick.Invoke();
+            Assert.IsFalse(LearningStore.Load(testId).missions.Single().knowledge_confirmed);
+            ButtonNamed(WasteInfo.Label(WasteType.Plastic)).onClick.Invoke();
+            Assert.IsTrue(LearningStore.Load(testId).missions.Single().knowledge_confirmed);
+            Assert.AreEqual(0,LearningStore.Load(testId).sessions.Count);
+            yield return Capture("lab-confirmed-20261028");
+            ButtonNamed("Thí nghiệm mới →").onClick.Invoke();yield return null;
             Assert.IsNull(Field<byte[]>(App,"jpeg"));Assert.IsNull(Field<Prediction>(App,"scanResult"));
-            Assert.AreEqual(1,Field<int>(App,"missionStep"));
+            Assert.IsNull(Field<string>(App,"labChoice"));
+        }
+        [UnityTest] public IEnumerator StatisticsPagesAndRecommendationUseRecordedAnswers()
+        {
+            var h=new LearningHistory();
+            for(int i=0;i<2;i++)h.sessions.Add(new LearningSession { mode="Test",context="Home",total=10, answers=new[]{
+                new LearningAnswer{item_id="water-bottle",expected="Plastic",choice="Metal",correct=false},
+                new LearningAnswer{item_id="drink-can",expected="Metal",choice="Metal",correct=true},
+                new LearningAnswer{item_id="paper-bag",expected="Paper",choice="Paper",correct=true},
+                new LearningAnswer{item_id="banana-peel",expected="Organic",choice="Organic",correct=true} } });
+            LearningStore.Save(testId,h);
+            yield return Open("MainMenu");Call(App,"ShowLearningStats");yield return null;
+            yield return Capture("learning-insights-20261028");
+            ButtonNamed("Kỹ năng vật liệu").onClick.Invoke();yield return null;
+            yield return Capture("learning-skills-20261028");
+            ButtonNamed("Danh sách ôn").onClick.Invoke();yield return null;
+            yield return Capture("learning-review-20261028");
+            ButtonNamed("Bắt đầu gợi ý →").onClick.Invoke();yield return null;yield return null;yield return null;
+            Assert.AreEqual(LearningMode.Review,EcoSortApp.SelectedLearningMode);
+            Assert.IsTrue(Field<WasteDefinition[]>(App,"roundItems").All(d=>d.Id=="water-bottle"));
+        }
+        [UnityTest] public IEnumerator UncertainAiStillAllowsVerifiedKnowledgeCompletion()
+        {
+            yield return Open("ScanScene");
+            ButtonNamed("Chưa biết / cần kiểm tra").onClick.Invoke();
+            typeof(EcoSortApp).GetMethod("ApplyPrediction",Fields).Invoke(App,new object[]{new Prediction{class_name="Paper",confidence=.4f,accepted=false}});
+            Assert.IsNull(Field<Prediction>(App,"scanResult"));
+            Assert.IsFalse(LearningStore.Load(testId).missions.Single().accepted);
+            ButtonNamed("Xác nhận kiến thức →").onClick.Invoke();yield return null;
+            ButtonNamed("Tự kiểm tra vật liệu và quy định nơi thu gom").onClick.Invoke();yield return null;
+            ButtonNamed(WasteInfo.Label(WasteType.Plastic)).onClick.Invoke();
+            Assert.IsTrue(LearningStore.Load(testId).missions.Single().knowledge_confirmed);
+            yield return Capture("lab-uncertain-confirmed-20261028");
+            ButtonNamed("Luyện 3D mẫu").onClick.Invoke();yield return null;yield return null;yield return null;
+            Assert.AreEqual("ARChallengeScene",SceneManager.GetActiveScene().name);
+            Assert.AreEqual("Plastic",EcoSortApp.PendingPrediction.class_name,"3D uses the verified lesson item, not AI's uncertain Paper label.");
         }
         [UnityTest] public IEnumerator ExplorationRequiresProximitySupportsCorrectionAndSavesCompleteRound()
         {
@@ -564,16 +695,17 @@ namespace EcoSortQuest.Tests
             Assert.IsNotNull(result);Assert.IsTrue(RecognitionInfo.TryGet(result.class_name,out var category));
             typeof(EcoSortApp).GetMethod("ApplyPrediction",Fields).Invoke(App,new object[]{result});
             if(result.TryRecognize(.75f,out _))StringAssert.Contains(category.display_name,Field<Text>(App,"predictionText").text);
-            else StringAssert.Contains("Chưa đủ tin cậy",Field<Text>(App,"predictionText").text);
+            else StringAssert.Contains("chưa đủ chắc chắn",Field<Text>(App,"predictionText").text);
             // Also exercise file loading, JPEG encoding and the actual Scan UI callback.
             Field<InputField>(App,"imagePath").text=image; Call(App,"LoadImage");
             Assert.IsTrue(Field<RawImage>(App,"scanPreview").enabled);
+            ButtonNamed("Chưa biết / cần kiểm tra").onClick.Invoke();
             Call(App,"RunPrediction");float deadline=Time.realtimeSinceStartup+35;
             while(Field<bool>(App,"busy") && Time.realtimeSinceStartup<deadline)yield return null;
             Assert.IsFalse(Field<bool>(App,"busy"),"Real inference timed out");
             var uiResult=Field<Prediction>(App,"scanResult");
             if(uiResult!=null) Assert.IsTrue(uiResult.TryRecognize(.75f,out _));
-            else StringAssert.Contains("Chưa đủ tin cậy",Field<Text>(App,"predictionText").text);
+            else StringAssert.Contains("chưa đủ chắc chắn",Field<Text>(App,"predictionText").text);
             yield return Capture("recognition-real-rest-20261024");
         }
         [UnityTest] public IEnumerator ExtendedRecognitionShowsGuidanceAndNeverStartsWrongBinChallenge()
@@ -585,15 +717,15 @@ namespace EcoSortQuest.Tests
                 apply.Invoke(App,new object[]{new Prediction{class_name=entry.class_name,confidence=.92f,accepted=true}});
                 yield return null;
                 StringAssert.Contains(entry.display_name,Field<Text>(App,"predictionText").text);
-                Assert.AreEqual(entry.guidance,Field<Text>(App,"recognitionGuidance").text);
-                Assert.AreEqual(entry.game_supported,Field<Button>(App,"challengeButton").interactable);
+                StringAssert.Contains(entry.guidance,Field<Text>(App,"recognitionGuidance").text);
+                Assert.IsTrue(Field<Button>(App,"challengeButton").interactable);
             }
             apply.Invoke(App,new object[]{new Prediction{class_name="Batteries",confidence=.92f,accepted=true}});
             yield return Capture("recognition-battery-fixture-20261024");
             apply.Invoke(App,new object[]{new Prediction{class_name="Paper",confidence=.92f,accepted=true}});
             Assert.IsTrue(Field<Button>(App,"challengeButton").interactable);
             apply.Invoke(App,new object[]{new Prediction{class_name="Batteries",confidence=.4f,accepted=false}});
-            Assert.IsFalse(Field<Button>(App,"challengeButton").interactable);
+            Assert.IsTrue(Field<Button>(App,"challengeButton").interactable);
             Assert.IsNull(Field<Prediction>(App,"scanResult"));
             typeof(EcoSortApp).GetMethod("ShowRecognitionGuide",Fields).Invoke(App,new object[]{10});
             yield return Capture("recognition-guide-fixture-20261024");
@@ -687,24 +819,24 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
-        static IEnumerator Capture(string name)
+        static IEnumerator Capture(string name,int width=1600,int height=900)
         {
-            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/Evidence"));
+            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/Evidence/Menu-20261028"));
             Directory.CreateDirectory(dir);
             var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
             var canvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();
-            var target = new RenderTexture(1600, 900, 24);
+            var target = new RenderTexture(width, height, 24);
             var oldTarget = camera.targetTexture; var oldActive = RenderTexture.active;
             var oldMode = canvas.renderMode; float oldAspect = camera.aspect;
-            camera.targetTexture = target; camera.aspect = 1600f / 900;
+            camera.targetTexture = target; camera.aspect = (float)width / height;
             canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera; canvas.planeDistance = 1;
             Canvas.ForceUpdateCanvases(); yield return null;
             try
             {
                 RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
                 RenderTexture.active = target;
-                var texture = new Texture2D(1600, 900, TextureFormat.RGB24, false);
-                texture.ReadPixels(new Rect(0, 0, 1600, 900), 0, 0); texture.Apply();
+                var texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+                texture.ReadPixels(new Rect(0, 0, width, height), 0, 0); texture.Apply();
                 File.WriteAllBytes(Path.Combine(dir, name + ".png"), texture.EncodeToPNG());
                 UnityEngine.Object.Destroy(texture);
             }

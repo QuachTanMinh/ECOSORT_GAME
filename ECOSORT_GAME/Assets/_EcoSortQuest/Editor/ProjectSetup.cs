@@ -91,16 +91,21 @@ namespace EcoSortQuest.Editor
         }
         static void PersistMaterials(GameObject root)
         {
+            var replacements=new System.Collections.Generic.Dictionary<Material,Material>();
             foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
             {
                 var material = renderer.sharedMaterial;
+                if(material!=null && replacements.TryGetValue(material,out var replacement))
+                { renderer.sharedMaterial=replacement;continue; }
                 if (material == null || AssetDatabase.Contains(material) || !material.HasProperty("_BaseColor")) continue;
                 string hex = ColorUtility.ToHtmlStringRGBA(material.color);
                 string path = Root + "/Art/Materials/Color_" + hex + ".mat";
                 var existing = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (existing == null) { material.name = "EcoSort " + hex; AssetDatabase.CreateAsset(material, path); }
-                else { renderer.sharedMaterial = existing; UnityEngine.Object.DestroyImmediate(material); }
+                else { renderer.sharedMaterial = existing; replacements[material]=existing; }
             }
+            // Shared runtime palette entries can be referenced by several renderers.
+            foreach(var material in replacements.Keys)UnityEngine.Object.DestroyImmediate(material);
         }
         [MenuItem("EcoSort/Open Main Menu")]
         public static void OpenMenu()
@@ -111,10 +116,23 @@ namespace EcoSortQuest.Editor
         [MenuItem("EcoSort/Build Windows")]
         public static void BuildWindows()
         {
-            Build(); Directory.CreateDirectory("Builds/Windows");
+            Build(); BuildWindowsCurrent();
+        }
+        [MenuItem("EcoSort/Build Windows (current scenes)")]
+        public static void BuildWindowsCurrent()
+        {
+            BuildWindowsTo("Builds/Windows/EcoSortQuest.exe");
+        }
+        public static void BuildWindowsUI()
+        {
+            BuildWindowsTo("Builds/Windows-UI/EcoSortQuest.exe");
+        }
+        static void BuildWindowsTo(string output)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
                 scenes = SceneNames.Select(n => Root + "/Scenes/" + n + ".unity").ToArray(),
-                locationPathName = "Builds/Windows/EcoSortQuest.exe", target = BuildTarget.StandaloneWindows64,
+                locationPathName = output, target = BuildTarget.StandaloneWindows64,
                 options = BuildOptions.None });
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
                 throw new Exception("Windows build failed: " + report.summary.result);

@@ -73,23 +73,26 @@ namespace EcoSortQuest
             }
             }
             view.Header(areaMission!=null?areaMission.Zone:"KHÁM PHÁ 3D / "+ContextLabel,Mode,Home,true);
-            var top=view.Panel(view.Root,.015f,.87f,.64f,.055f,ViewFactory.HudSurface);
+            var top=view.Panel(view.Root,.015f,.877f,.48f,.044f,ViewFactory.HudSurface,"Exploration score");
             top.GetComponent<Image>().raycastTarget=false;
-            explorationHud=view.Text(top,"",.025f,.1f,.74f,.8f,25);
-            view.Button(view.Root,"Pause / ESC",.86f,.875f,.125f,.045f,TogglePause);
-            var bottom=view.Panel(view.Root,.015f,.045f,.68f,.075f,ViewFactory.HudSurface);
+            explorationHud=view.Text(top,"",.025f,.1f,.95f,.8f,19);
+            view.FitContent(top,.48f,240,explorationHud);
+            view.Button(view.Root,"Tạm dừng / ESC",.86f,.877f,.125f,.044f,TogglePause);
+            var bottom=view.Card(view.Root,.015f,.105f,.50f,.075f,ViewFactory.HudSurface,"Exploration prompt");
             bottom.GetComponent<Image>().raycastTarget=false;
-            explorationPrompt=view.Text(bottom,"",.02f,.12f,.96f,.8f,24);
-            var objective=view.Panel(view.Root,.015f,.80f,.64f,.055f,ViewFactory.HudSurface,"Restoration objective");
+            explorationPrompt=view.Text(bottom,"",.02f,.12f,.96f,.8f,20);
+            view.FitContent(bottom,.50f,260,explorationPrompt);
+            var objective=view.Panel(view.Root,.015f,.812f,.48f,.044f,ViewFactory.HudSurface,"Restoration objective");
             objective.GetComponent<Image>().raycastTarget=false;
-            missionObjective=view.Text(objective,"",.025f,.05f,.95f,.9f,21);
-            prepareButton=view.Button(view.Root,"Quan sát / xử lý • R",.73f,.055f,.255f,.055f,ShowPreparation);
+            missionObjective=view.Text(objective,"",.025f,.05f,.95f,.9f,19);
+            view.FitContent(objective,.48f,220,missionObjective);
+            prepareButton=view.Button(view.Root,"Quan sát / xử lý • R",.76f,.04f,.225f,.05f,ShowPreparation);
             restorationStages=areaMission==null?world.BuildRestorationRewards():new GameObject[0];
             if(areaMission!=null)
             {
                 var journey=AreaJourneyStore.Load(progress.player_id);
                 world.BuildAreaIdentity(areaMission.Context,areaMission.Zone,AreaJourneyStore.Decorations(journey,areaMission.Context),journey);
-                view.Button(view.Root,"Gợi ý vật đang cầm • H",.73f,.125f,.255f,.045f,RequestAreaHint);
+                view.Button(view.Root,"Gợi ý vật đang cầm • H",.76f,.105f,.225f,.05f,RequestAreaHint);
             }
             Footer("WASD: đi • Shift: chạy • Chuột phải: xoay • E: nhặt / bỏ thùng • R: quan sát / chuẩn bị • Q: đặt xuống");
             RefreshExplorationHud();explorer.CanMove=true;explorer.Tick(0);

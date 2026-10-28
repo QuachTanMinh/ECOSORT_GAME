@@ -32,51 +32,104 @@ namespace EcoSortQuest
             { if(bin==null)yield break; bin.transform.localScale=original*(1+.08f*Mathf.Sin(elapsed/.35f*Mathf.PI));yield return null; }
             if(bin!=null)bin.transform.localScale=original;
         }
-        void ShowLearningHub()
+        void ShowCampaignLevels()
         {
-            if (learningOverlay != null) Destroy(learningOverlay.gameObject);
-            learningOverlay = view.Panel(view.Root,.04f,.08f,.92f,.80f,ViewFactory.Cream,"Learning hub");
+            if(learningOverlay!=null)Destroy(learningOverlay.gameObject);
+            learningOverlay=view.ModalCard(.23f,.27f,.54f,.46f,"Campaign selection");
             var panel=learningOverlay;
-            view.Text(panel,"HỌC • KIỂM TRA • ÔN TẬP",.04f,.87f,.92f,.09f,34);
-            view.Text(panel,"Bối cảnh: "+ContextLabel+" • Mỗi lượt 10 câu • Kiểm tra 75 giây, không gợi ý",.04f,.77f,.92f,.07f,23);
+            view.Text(panel,"THỬ THÁCH PHÂN LOẠI",.06f,.77f,.88f,.13f,30);
+            view.Text(panel,"Kéo rác vào thùng. Đúng ít nhất 7/10 để mở cấp độ tiếp theo.",.06f,.55f,.88f,.16f,23);
+            for(int i=1;i<=3;i++)
+            {
+                int n=i;bool unlocked=progress.unlocked_level>=n;
+                var button=view.Button(panel,"Cấp độ "+n+(unlocked?"":" • Chưa mở"),.06f+(i-1)*.30f,.31f,.28f,.15f,()=>
+                {SelectedAreaMission="";SelectedLearningMode=LearningMode.Campaign;SelectedLevel=n;Navigate("GameScene");});
+                button.interactable=unlocked;
+            }
+            view.Button(panel,"Đóng",.35f,.07f,.30f,.13f,()=>Destroy(panel.gameObject));
+        }
+        void ShowPracticePicker(LearningMode mode)
+        {
+            if(learningOverlay!=null)Destroy(learningOverlay.gameObject);
+            learningOverlay=view.ModalCard(.18f,.22f,.64f,.56f,"Practice context");
+            var panel=learningOverlay;
+            string title=mode==LearningMode.Test?"KIỂM TRA":mode==LearningMode.Review?"ÔN CÂU SAI":"HỌC CÓ HƯỚNG DẪN";
+            view.Text(panel,title,.06f,.78f,.88f,.13f,32);
+            view.Text(panel,mode==LearningMode.Test?"10 câu trong 75 giây. Xem đáp án sau khi hoàn thành.":mode==LearningMode.Review?
+                "Luyện lại những vật phẩm bạn còn nhầm. Trả lời đúng để xóa lỗi cần ôn.":"10 câu, không giới hạn thời gian. Có gợi ý và giải thích từng câu.",.06f,.55f,.88f,.17f,23);
             for(int i=0;i<3;i++)
             {
                 var context=(LearningContext)i;
-                string label=i==0?"Nhà ở":i==1?"Trường học":"Công viên";
-                view.Button(panel,label,.04f+i*.31f,.65f,.29f,.09f,()=>{SelectedContext=context;ShowLearningHub();},SelectedContext==context);
+                view.Button(panel,LearningInsights.ContextName(context),.06f+i*.30f,.35f,.28f,.13f,()=>{SelectedContext=context;ShowPracticePicker(mode);},SelectedContext==context);
             }
-            view.Text(panel,"Học: có giải thích. Kiểm tra: ẩn đáp án. Ôn tập: luyện lỗi gần đây.\nKhám phá 3D: nhận nhiệm vụ phục hồi, chuẩn bị rác, tách vật liệu và hồi sinh khu vực.",.04f,.46f,.92f,.14f,23);
-            void Begin(LearningMode mode)
+            view.Button(panel,"Bắt đầu",.06f,.10f,.55f,.13f,()=>
             {
                 if(busy)return;
                 if(mode==LearningMode.Review && LearningStore.Mistakes(learning).Count==0)
-                {SetStatus("Chưa có câu sai cần ôn. Hãy làm một lượt học hoặc kiểm tra.");return;}
-                SelectedAreaMission="";SelectedLearningMode=mode; Navigate("GameScene");
-            }
-            view.Button(panel,"Học có hướng dẫn",.04f,.33f,.29f,.09f,()=>Begin(LearningMode.Learn),true);
-            view.Button(panel,"Kiểm tra",.35f,.33f,.29f,.09f,()=>Begin(LearningMode.Test));
-            view.Button(panel,"Ôn câu sai",.66f,.33f,.29f,.09f,()=>Begin(LearningMode.Review));
-            view.Button(panel,"Kết quả học tập",.04f,.19f,.44f,.09f,()=>ShowLearningStats());
-            view.Button(panel,"Nhiệm vụ AI",.51f,.19f,.44f,.09f,()=>{AiMission=true;Navigate("ScanScene");});
-            view.Button(panel,"Hành trình 3 khu vực",.04f,.055f,.44f,.09f,()=>{Destroy(panel.gameObject);ShowAreaHub();},true);
-            view.Button(panel,"Đóng",.51f,.055f,.44f,.09f,()=>Destroy(panel.gameObject));
+                {SetStatus("Chưa có câu sai cần ôn. Hãy học hoặc làm một bài kiểm tra trước.");return;}
+                SelectedAreaMission="";SelectedLearningMode=mode;Navigate("GameScene");
+            },true);
+            view.Button(panel,"Đóng",.66f,.10f,.28f,.13f,()=>Destroy(panel.gameObject));
         }
-        void ShowLearningStats()
+        void ShowLearningStats() => ShowLearningStatsPage(0);
+        void ShowLearningStatsPage(int page)
         {
             if(learningOverlay!=null)Destroy(learningOverlay.gameObject);
-            learningOverlay=view.Panel(view.Root,.04f,.08f,.92f,.80f,ViewFactory.Cream,"Learning statistics");
+            learningOverlay=view.ModalCard(.04f,.08f,.92f,.80f,"Learning statistics");
             var panel=learningOverlay;
-            view.Text(panel,"KẾT QUẢ HỌC TẬP",.04f,.87f,.92f,.09f,34);
-            view.Text(panel,LearningStore.Summary(learning),.04f,.48f,.92f,.36f,24);
-            var recent=learning.sessions.Skip(Math.Max(0,learning.sessions.Count-4)).Reverse();
-            string history=string.Join("\n",recent.Select(s=>s.created_at+" • "+s.mode+" / "+s.context+" • "+s.answers.Count(a=>a.correct)+"/"+s.total+" • "+s.score+" điểm"));
-            view.Text(panel,"4 LƯỢT GẦN NHẤT\n"+(history.Length==0?"Chưa có lượt hoàn thành.":history),.04f,.22f,.92f,.23f,21);
-            view.Button(panel,"Ôn tập / chọn chế độ",.04f,.06f,.44f,.10f,ShowLearningHub,true);
-            view.Button(panel,"Gửi các lượt còn chờ",.51f,.06f,.44f,.10f,()=>{if(!busy)StartCoroutine(WithBusy(SyncLearning()));});
+            view.Text(panel,"HỌC TỪ KẾT QUẢ CỦA BẠN",.04f,.88f,.92f,.08f,32);
+            string[] tabs={"Tiến bộ", "Kỹ năng vật liệu", "Danh sách ôn", "Thành tích"};
+            for(int i=0;i<tabs.Length;i++) { int tab=i; view.Button(panel,tabs[i],.04f+i*.235f,.77f,.215f,.075f,()=>ShowLearningStatsPage(tab),page==i); }
+            var recommendation=LearningInsights.Recommend(learning,SelectedContext);
+            if(page==0)
+            {
+                var contextCard=view.Panel(panel,.04f,.32f,.45f,.42f,new Color(.88f,.93f,.88f),"Context progress card");
+                foreach(LearningContext context in Enum.GetValues(typeof(LearningContext)))
+                {
+                    float y=.78f-(int)context*.29f;
+                    view.Text(contextCard,LearningInsights.ContextProgress(learning,context),.045f,y,.91f,.18f,22);
+                    var track=view.Panel(contextCard,.045f,y-.04f,.91f,.025f,new Color(.72f,.81f,.75f));
+                    var tests=LearningInsights.Tests(learning,context);
+                    if(tests.Length>0)view.Panel(track,0,0,Mathf.Clamp01(LearningInsights.Rate(tests.Last())/100),1,ViewFactory.Accent);
+                }
+                var confusionCard=view.Panel(panel,.52f,.32f,.43f,.42f,new Color(.92f,.90f,.80f),"Confusion card");
+                view.Text(confusionCard,"HAY NHẦM",.06f,.76f,.88f,.16f,27);
+                view.Text(confusionCard,"Đáp án → lựa chọn của bạn\n"+LearningInsights.Confusions(learning),.06f,.16f,.88f,.56f,24);
+                view.Text(panel,"So với lần kiểm tra trước cùng bối cảnh. Câu bỏ trống tính vào tổng.\nCác bộ câu có thể khác nhau; chênh lệch chỉ để tham khảo tiến bộ.",.04f,.23f,.92f,.08f,21);
+            }
+            else if(page==1)
+            {
+                foreach(LearningContext context in Enum.GetValues(typeof(LearningContext)))
+                {
+                    var card=view.Panel(panel,.04f+(int)context*.31f,.34f,.29f,.39f,new Color(.88f,.93f,.88f));
+                    view.Text(card,LearningInsights.ContextName(context),.05f,.77f,.90f,.18f,26);
+                    view.Text(card,LearningInsights.MaterialProgress(learning,context),.05f,.08f,.90f,.65f,23);
+                }
+                view.Text(panel,"Kỹ năng đo được: nhận biết / phân loại vật liệu trong kiểm tra.\nChưa chấm riêng kỹ năng chuẩn bị và tách vật liệu. Không gộp lượt có gợi ý.",.04f,.23f,.92f,.10f,21);
+            }
+            else if(page==2)
+            {
+                var mistakes=LearningStore.Mistakes(learning);
+                string rows=string.Join("\n",mistakes.Take(5).Select(d=>d.Name+" • "+WasteInfo.Label(d.Type)+" • "+string.Join(", ",d.Contexts.Select(LearningInsights.ContextName))));
+                view.Text(panel,"LỖI CHƯA SỬA • MỚI NHẤT TRƯỚC\n"+(mistakes.Count==0?"Không còn lỗi cần ôn.":rows)+
+                    (mistakes.Count>5?"\nCòn "+(mistakes.Count-5)+" vật phẩm trong danh sách.":""),.04f,.39f,.92f,.34f,23);
+                view.Text(panel,"Đúng lại vật phẩm sẽ xóa lỗi đang chờ ôn.\nPhân loại bằng ảnh: "+learning.missions.Count(m=>m.knowledge_confirmed)+" bài xác nhận kiến thức, lưu riêng khỏi kiểm tra.",.04f,.23f,.92f,.14f,21);
+            }
+            else BuildAchievements(panel);
+            view.Text(panel,"GỢI Ý: "+recommendation.Reason,.04f,.13f,.92f,.09f,22,ViewFactory.Accent);
+            view.Button(panel,"Bắt đầu gợi ý →",.04f,.025f,.29f,.08f,()=>BeginRecommendedLearning(recommendation),true);
+            view.Button(panel,"Đóng",.35f,.025f,.29f,.08f,()=>Destroy(panel.gameObject));
+            view.Button(panel,"Lưu kết quả trực tuyến",.66f,.025f,.29f,.08f,()=>{if(!busy)StartCoroutine(WithBusy(SyncLearning(true)));});
         }
-        IEnumerator SyncLearning()
+        void BeginRecommendedLearning(LearningRecommendation recommendation)
         {
-            if(service.IsMock){SetStatus("Lịch sử được lưu trên máy. Chọn Online để gửi backend thật.");yield break;}
+            if(busy)return;
+            SelectedAreaMission="";SelectedContext=recommendation.Context;SelectedLearningMode=recommendation.Mode;
+            Navigate("GameScene");
+        }
+        IEnumerator SyncLearning(bool includeProgress=false)
+        {
+            if(service.IsMock){SetStatus("Kết quả đã lưu trên máy. Bật kết nối trong Cài đặt nếu muốn lưu trực tuyến.");yield break;}
             var rest=service as RestEcoSortService;
             if(rest==null)yield break;
             int sent=0;
@@ -88,7 +141,8 @@ namespace EcoSortQuest
                 if(!ok){SetStatus("Còn chờ gửi: "+error+" • Có thể thử lại từ Kết quả học tập.");yield break;}
                 learning.pending.Remove(id);LearningStore.Save(progress.player_id,learning);sent++;
             }
-            SetStatus("Đã gửi "+sent+" lượt. Lịch sử chi tiết nằm ở backend local, không ghi thêm feed Adafruit.");
+            SetStatus("Đã lưu trực tuyến "+sent+" lượt học.");
+            if(includeProgress)yield return service.PutProgress(progress,()=>SetStatus("Đã lưu lịch sử học và tiến trình trực tuyến."),e=>SetStatus("Lịch sử học đã lưu; tiến trình chưa gửi được: "+e));
         }
         void RecordLearningRound()
         {

@@ -1,0 +1,374 @@
+{
+  "Menu-EditMode-20261028": {
+    "total": 59,
+    "passed": 59,
+    "failed": 0,
+    "skipped": 0,
+    "tests": [
+      {
+        "name": "CompletionUnlocksInOrderAndIsIdempotentAcrossReloadAndWorseReplay",
+        "result": "Passed"
+      },
+      {
+        "name": "DiscoveryBadgesImprovementReviewAndCosmeticSettingsPersist",
+        "result": "Passed"
+      },
+      {
+        "name": "NineAuthoredMissionsAreValidContextualAndHaveDistinctLearningGoals",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,3,4,0,0,0)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,0,3)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,3,0,0,2)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,1,0,2)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,1,2)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,3,1)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(12,12,11,0,0,3)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(12,12,8,0,0,1)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,5,0,0,0)",
+        "result": "Passed"
+      },
+      {
+        "name": "StarsRewardCompletionAccuracyAndIndependentDecisions(0,0,0,0,0,0)",
+        "result": "Passed"
+      },
+      {
+        "name": "CampaignUnlockRequiresPassingThirdLevel",
+        "result": "Passed"
+      },
+      {
+        "name": "CloudMergeNeverRegressesLocalProgress",
+        "result": "Passed"
+      },
+      {
+        "name": "CorrectThenWrongGivesFivePoints",
+        "result": "Passed"
+      },
+      {
+        "name": "NonFiniteConfidenceIsRejected",
+        "result": "Passed"
+      },
+      {
+        "name": "PassThresholdAndFinishAreEnforced(6,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "PassThresholdAndFinishAreEnforced(7,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "PassThresholdAndFinishAreEnforced(10,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"Plastic\",0.92f,True,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"Paper\",0.5f,True,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"Metal\",0.95f,False,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"Unknown\",0.99f,True,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"99\",0.99f,True,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"0\",0.99f,True,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "PredictionsMustBeAcceptedConfidentAndKnown(\"Plastic\",1.1f,True,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "TimeoutDoesNotAwardUnansweredItems",
+        "result": "Passed"
+      },
+      {
+        "name": "WrongAnswerAtZeroCannotMakeScoreNegative",
+        "result": "Passed"
+      },
+      {
+        "name": "ContextDecksAreDistinctDeterministicAndReviewTargetsMistakes",
+        "result": "Passed"
+      },
+      {
+        "name": "DuplicateSessionDoesNotDuplicateHistoryOrOutbox",
+        "result": "Passed"
+      },
+      {
+        "name": "InsightsCompareSameContextAndIncludeUnansweredItems",
+        "result": "Passed"
+      },
+      {
+        "name": "RecentMistakesChooseCompatibleContextAndResolvedItemsDisappear",
+        "result": "Passed"
+      },
+      {
+        "name": "ReviewResolvesLatestMistakeAndSummaryExcludesGuidedLearning",
+        "result": "Passed"
+      },
+      {
+        "name": "NonFiniteConfidenceOrThresholdIsRefused",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Plastic\",True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Metal\",True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Paper\",True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Organic\",True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Cardboard\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"GreenGlass\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"BrownGlass\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"WhiteGlass\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Clothes\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Shoes\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Batteries\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognizeTwelveLabelsWithoutForcingExtendedWasteIntoExistingBins(\"Trash\",False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RefusedOrInvalidResponsesCannotStartTasks(\"Unknown\",0.9f,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RefusedOrInvalidResponsesCannotStartTasks(\"4\",0.9f,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RefusedOrInvalidResponsesCannotStartTasks(\"Batteries\",0.74f,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "RefusedOrInvalidResponsesCannotStartTasks(\"Batteries\",0.9f,False)",
+        "result": "Passed"
+      },
+      {
+        "name": "RefusedOrInvalidResponsesCannotStartTasks(\"Plastic\",1.1f,True)",
+        "result": "Passed"
+      },
+      {
+        "name": "PreparationDecisionUsesConditionRatherThanMaterialAlone",
+        "result": "Passed"
+      },
+      {
+        "name": "RewardsRequireActualCleanupAndStopAtTwelve",
+        "result": "Passed"
+      },
+      {
+        "name": "SavedRewardIsIdempotentAndKeepsBestResultPerContext",
+        "result": "Passed"
+      },
+      {
+        "name": "CatalogHasThirtySixUniqueEducationalItems",
+        "result": "Passed"
+      },
+      {
+        "name": "ConveyorWrapPreservesTravelAcrossEitherEdge",
+        "result": "Passed"
+      },
+      {
+        "name": "DeckKeepsRequestedCategoriesAndAvoidsEarlyRepeats",
+        "result": "Passed"
+      },
+      {
+        "name": "EveryModelHasUsablePickupColliderAndSelection",
+        "result": "Passed"
+      }
+    ]
+  },
+  "Menu-PlayMode-20261028": {
+    "total": 25,
+    "passed": 23,
+    "failed": 0,
+    "skipped": 2,
+    "tests": [
+      {
+        "name": "AreaJourneyPlaysAllNineMissionsUnlocksRewardsAndRetainsDiscoveries",
+        "result": "Passed"
+      },
+      {
+        "name": "AudioAssetsAndTwoDimensionalRoutingAreReady",
+        "result": "Passed"
+      },
+      {
+        "name": "AudioVolumeControlsPersistAndMixChannels",
+        "result": "Passed"
+      },
+      {
+        "name": "CampaignScanAndSimulatedChallengeWorkEndToEnd",
+        "result": "Passed"
+      },
+      {
+        "name": "ClickAndDropOutsideDoNotScore",
+        "result": "Passed"
+      },
+      {
+        "name": "CompactUiFitsChangingTextAndLeavesTheSceneVisible",
+        "result": "Passed"
+      },
+      {
+        "name": "ConnectionMenuValidatesUrlAndKeepsChoiceAcrossScenes",
+        "result": "Passed"
+      },
+      {
+        "name": "ConveyorCarriesWasteAndPauseStopsBoth",
+        "result": "Passed"
+      },
+      {
+        "name": "DragAndBinDropPlayDistinctInteractionAndOutcomeClips",
+        "result": "Passed"
+      },
+      {
+        "name": "ExplorationRequiresProximitySupportsCorrectionAndSavesCompleteRound",
+        "result": "Passed"
+      },
+      {
+        "name": "ExtendedRecognitionShowsGuidanceAndNeverStartsWrongBinChallenge",
+        "result": "Passed"
+      },
+      {
+        "name": "FieldGuideShowsAllCategoriesAndModelsRender",
+        "result": "Passed"
+      },
+      {
+        "name": "ImageFileLoadsAndInvalidPathDoesNotCrash",
+        "result": "Passed"
+      },
+      {
+        "name": "LabRequiresOwnChoiceAndConfirmsKnowledgeIndependentlyOfAi",
+        "result": "Passed"
+      },
+      {
+        "name": "LearningHubThemesAndStatisticsAreReachable",
+        "result": "Passed"
+      },
+      {
+        "name": "LearningRestRoundTripDoesNotDuplicate",
+        "result": "Skipped"
+      },
+      {
+        "name": "LearningTestHidesAnswersSavesHistoryAndDoesNotUnlockCampaign",
+        "result": "Passed"
+      },
+      {
+        "name": "MenuSeparatesActivitiesAndUsesPlainLanguage",
+        "result": "Passed"
+      },
+      {
+        "name": "PauseStopsTimerAndExpiryEndsRound",
+        "result": "Passed"
+      },
+      {
+        "name": "RecognitionRestUsesRealModelAndDisplaysResponse",
+        "result": "Skipped"
+      },
+      {
+        "name": "RestWithoutUrlReportsErrorAndKeepsLocalSave",
+        "result": "Passed"
+      },
+      {
+        "name": "SettingsGearPausesAndRestoresRoundAcrossTabs",
+        "result": "Passed"
+      },
+      {
+        "name": "SharedPaletteAndDropCueDoNotRevealTheAnswer",
+        "result": "Passed"
+      },
+      {
+        "name": "StatisticsPagesAndRecommendationUseRecordedAnswers",
+        "result": "Passed"
+      },
+      {
+        "name": "UncertainAiStillAllowsVerifiedKnowledgeCompletion",
+        "result": "Passed"
+      }
+    ]
+  },
+  "Menu-Final-20261028": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "tests": [
+      {
+        "name": "CampaignScanAndSimulatedChallengeWorkEndToEnd",
+        "result": "Passed"
+      },
+      {
+        "name": "MenuSeparatesActivitiesAndUsesPlainLanguage",
+        "result": "Passed"
+      },
+      {
+        "name": "StatisticsPagesAndRecommendationUseRecordedAnswers",
+        "result": "Passed"
+      }
+    ]
+  }
+}

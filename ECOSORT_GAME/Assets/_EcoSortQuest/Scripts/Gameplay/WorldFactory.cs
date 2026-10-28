@@ -8,14 +8,17 @@ namespace EcoSortQuest
     {
         readonly Transform root;
         readonly List<Material> materials = new List<Material>();
+        readonly Dictionary<Color,Material> palette = new Dictionary<Color,Material>();
+        Shader surfaceShader;
         public WorldFactory(Transform root) { this.root = root; }
         public Material Material(Color color)
         {
-            var shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (shader == null) shader = Shader.Find("Standard");
-            var mat = new Material(shader) { color = color };
+            if(palette.TryGetValue(color,out var shared) && shared!=null)return shared;
+            if(surfaceShader==null)surfaceShader=Shader.Find("Universal Render Pipeline/Lit");
+            if(surfaceShader==null)surfaceShader=Shader.Find("Standard");
+            var mat = new Material(surfaceShader) { color = color, enableInstancing = true };
             if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", .22f);
-            materials.Add(mat); return mat;
+            materials.Add(mat);palette[color]=mat; return mat;
         }
         public GameObject Shape(string name, PrimitiveType shape, Transform parent, Vector3 position, Vector3 scale, Color color, bool collider = true)
         {
@@ -109,6 +112,6 @@ namespace EcoSortQuest
             item.Select(false); return item;
         }
         public void Dispose()
-        { foreach (var material in materials) if (material != null) Object.Destroy(material); materials.Clear(); }
+        { foreach (var material in materials) if (material != null) Object.Destroy(material); materials.Clear();palette.Clear(); }
     }
 }

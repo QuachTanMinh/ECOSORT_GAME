@@ -23,25 +23,25 @@ namespace EcoSortQuest
         void ShowConnection()
         {
             var overlay = view.Panel(view.Root, .08f, .14f, .84f, .69f, ViewFactory.Cream, "Backend connection");
-            view.Text(overlay, "KẾT NỐI BACKEND", .05f,.82f,.9f,.12f,34);
-            view.Text(overlay, "Ngoại tuyến: chơi phân loại; Scan dùng nhãn luyện tập, không phải AI.\nOnline: nhận diện ảnh và đồng bộ qua FastAPI. Không nhập Adafruit Key vào game.", .05f,.61f,.9f,.18f,24);
+            view.Text(overlay, "KẾT NỐI NHẬN DIỆN ẢNH", .05f,.82f,.9f,.12f,34);
+            view.Text(overlay, "Chơi trên máy: học và xem ví dụ có sẵn.\nBật kết nối: nhận diện ảnh của bạn và lưu kết quả trực tuyến.", .05f,.61f,.9f,.18f,24);
             var url = view.Input(overlay,"http://127.0.0.1:8000",.05f,.45f,.9f,.1f);
             url.text = apiSettings.baseUrl;
-            var message = view.Text(overlay,"URL backend chỉ dùng khi chọn Online.",.05f,.32f,.9f,.1f,21,ViewFactory.Muted);
+            var message = view.Text(overlay,"Địa chỉ dịch vụ nhận diện do người cài đặt game cung cấp.",.05f,.32f,.9f,.1f,21,ViewFactory.Muted);
             void Apply(ApiMode mode)
             {
                 string address = url.text.Trim().TrimEnd('/');
                 if (mode == ApiMode.Rest && (!Uri.TryCreate(address,UriKind.Absolute,out var uri) ||
                     (uri.Scheme != "http" && uri.Scheme != "https") || !string.IsNullOrEmpty(uri.UserInfo) || !string.IsNullOrEmpty(uri.Query)))
-                { message.text="Nhập URL HTTP(S) của backend, không kèm tài khoản hoặc API key."; return; }
+                { message.text="Địa chỉ chưa đúng. Dùng địa chỉ bắt đầu bằng http:// hoặc https://, không kèm tài khoản hay thông tin bí mật."; return; }
                 PlayerPrefs.SetInt(ConnectionKey+"mode",(int)mode); PlayerPrefs.SetString(ConnectionKey+"url",address); PlayerPrefs.Save();
                 apiSettings.mode=mode; apiSettings.baseUrl=address;
                 // Persist only connection choice in Editor; service can change without editing ApiSettings.asset.
                 SessionMode=mode; SessionUrl=address;
                 Destroy(overlay.gameObject); Navigate("MainMenu");
             }
-            view.Button(overlay,"Chơi ngoại tuyến",.05f,.15f,.28f,.12f,()=>Apply(ApiMode.Mock));
-            view.Button(overlay,"Kết nối Online",.36f,.15f,.28f,.12f,()=>Apply(ApiMode.Rest),true);
+            view.Button(overlay,"Chơi trên máy",.05f,.15f,.28f,.12f,()=>Apply(ApiMode.Mock));
+            view.Button(overlay,"Bật kết nối",.36f,.15f,.28f,.12f,()=>Apply(ApiMode.Rest),true);
             view.Button(overlay,"Đóng",.67f,.15f,.28f,.12f,()=>Destroy(overlay.gameObject));
         }
         static ApiMode? SessionMode;

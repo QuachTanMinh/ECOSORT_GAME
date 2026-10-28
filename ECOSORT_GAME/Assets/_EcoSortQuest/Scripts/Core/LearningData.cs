@@ -22,9 +22,10 @@ namespace EcoSortQuest
     }
     [Serializable] public sealed class AiMissionRecord
     {
-        public string created_at, target, choice, predicted;
+        public string created_at, target, choice, predicted, knowledge_item_id;
         public float confidence;
         public bool accepted, mock, agrees;
+        public bool knowledge_confirmed;
     }
     [Serializable] public sealed class LearningHistory
     {
@@ -60,11 +61,12 @@ namespace EcoSortQuest
         public static List<WasteDefinition> Mistakes(LearningHistory h)
         {
             // Latest response per item: a successful review resolves an earlier mistake.
-            var wrong = new HashSet<string>();
+            var wrong = new List<string>();
             foreach (var s in h.sessions)
                 foreach (var a in s.answers ?? Array.Empty<LearningAnswer>())
-                    if (a.correct) wrong.Remove(a.item_id); else wrong.Add(a.item_id);
-            return WasteCatalog.All.Where(d => wrong.Contains(d.Id)).ToList();
+                { wrong.Remove(a.item_id); if (!a.correct) wrong.Add(a.item_id); }
+            wrong.Reverse();
+            return wrong.Select(id => WasteCatalog.All.FirstOrDefault(d => d.Id == id)).Where(d => d != null).ToList();
         }
         public static string Summary(LearningHistory h)
         {
@@ -78,12 +80,12 @@ namespace EcoSortQuest
             }
             if (tests.Length > 0)
             {
-                Func<LearningSession, string> rate = s => ((s.answers ?? Array.Empty<LearningAnswer>()).Count(a => a.correct) * 100f / s.total).ToString("F0") + "%";
+                Func<LearningSession, string> rate = s => LearningInsights.Rate(s).ToString("F0") + "%";
                 lines.Add("Lượt kiểm tra đầu: " + rate(tests[0]) + " • Gần nhất: " + rate(tests[tests.Length - 1]) + " (câu chưa trả lời tính vào tổng)");
             }
-            lines.Add("Cần ôn lại: " + Mistakes(h).Count + " vật phẩm • Chờ gửi backend: " + h.pending.Count);
+            lines.Add("Cần ôn lại: " + Mistakes(h).Count + " vật phẩm • Chờ lưu trực tuyến: " + h.pending.Count);
             var real = h.missions.Where(m => !m.mock).ToArray();
-            lines.Add("Nhiệm vụ AI thật: " + real.Length + " lần • Đồng thuận mục tiêu: " + real.Count(m => m.agrees) + " (không phải accuracy AI)");
+            lines.Add("Quan sát AI thật: " + real.Length + " lần • Đồng thuận lựa chọn: " + real.Count(m => m.agrees) + " (không phải độ chính xác của nhận diện)");
             return string.Join("\n", lines);
         }
     }

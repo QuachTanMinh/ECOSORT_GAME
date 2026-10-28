@@ -14,7 +14,7 @@ namespace EcoSortQuest
         public RestEcoSortService(ApiSettings settings) { this.settings = settings; }
         bool ValidUrl(out string error)
         {
-            error = "Hãy cấu hình baseUrl HTTP(S) trong API Settings.";
+            error = "Mở Cài đặt → Kết nối và nhập địa chỉ dịch vụ nhận diện.";
             return Uri.TryCreate(settings.baseUrl, UriKind.Absolute, out var uri) &&
                 (uri.Scheme == "http" || uri.Scheme == "https");
         }
@@ -33,16 +33,16 @@ namespace EcoSortQuest
                 }
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
-                    failure("API " + method + " " + path + " (" + request.responseCode + "): " + request.error);
+                    failure("Chưa kết nối được dịch vụ. Kiểm tra kết nối hoặc thử lại sau.");
                 else success(request.downloadHandler.text);
             }
         }
-        public IEnumerator Health(Action<string> success, Action<string> failure) => Send("GET", "/health", null, success, failure);
+        public IEnumerator Health(Action<string> success, Action<string> failure) => Send("GET", "/health", null, _=>success("Kết nối nhận diện ảnh đang hoạt động."), failure);
         public IEnumerator Predict(byte[] image, WasteType mockClass, Action<Prediction> success, Action<string> failure)
         {
             if (!ValidUrl(out string error)) { failure(error); yield break; }
             if (image == null || image.Length == 0 || image.Length > settings.maxUploadBytes)
-            { failure("Ảnh trống hoặc vượt giới hạn upload."); yield break; }
+            { failure("Ảnh chưa có nội dung hoặc quá lớn. Hãy chọn ảnh nhỏ hơn."); yield break; }
             var sections = new List<IMultipartFormSection> {
                 new MultipartFormFileSection("file", image, "capture.jpg", "image/jpeg") };
             using (var request = UnityWebRequest.Post(settings.baseUrl.TrimEnd('/') + "/predict", sections))
@@ -50,12 +50,12 @@ namespace EcoSortQuest
                 request.timeout = settings.timeoutSeconds;
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
-                { failure("Predict (" + request.responseCode + "): " + request.error); yield break; }
+                { failure("Chưa phân tích được ảnh. Kiểm tra kết nối rồi thử lại."); yield break; }
                 Prediction prediction;
                 try { prediction = JsonUtility.FromJson<Prediction>(request.downloadHandler.text); }
-                catch (Exception) { failure("Phản hồi AI không phải JSON hợp lệ."); yield break; }
+                catch (Exception) { failure("Chưa đọc được kết quả nhận diện. Hãy thử lại."); yield break; }
                 if (prediction == null || string.IsNullOrWhiteSpace(prediction.class_name))
-                { failure("Phản hồi AI thiếu class_name."); yield break; }
+                { failure("Kết quả chưa xác định được nhóm vật liệu. Hãy chụp lại."); yield break; }
                 success(prediction);
             }
         }
@@ -65,9 +65,9 @@ namespace EcoSortQuest
             {
                 PlayerProgress progress;
                 try { progress = JsonUtility.FromJson<PlayerProgress>(json); }
-                catch (Exception) { failure("Progress JSON không hợp lệ."); return; }
+                catch (Exception) { failure("Chưa đọc được tiến trình đã lưu."); return; }
                 if (progress == null || progress.player_id != id || progress.unlocked_level < 1 || progress.unlocked_level > 3)
-                { failure("Progress trả về thiếu dữ liệu hoặc sai player_id."); return; }
+                { failure("Tiến trình nhận được chưa phù hợp với người chơi này."); return; }
                 success(progress);
             }, failure);
         }

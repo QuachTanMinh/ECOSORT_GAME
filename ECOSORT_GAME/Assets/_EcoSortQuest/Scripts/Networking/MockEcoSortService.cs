@@ -12,7 +12,7 @@ namespace EcoSortQuest
         public MockEcoSortService(float latency) { this.latency = latency; }
         IEnumerator Delay() { yield return new WaitForSecondsRealtime(latency); }
         public IEnumerator Health(Action<string> success, Action<string> failure)
-        { yield return Delay(); success("Mock service hoạt động — không phải backend thật."); }
+        { yield return Delay(); success("Bạn đang chơi trên máy; nhận diện ảnh thật chưa được bật."); }
         public IEnumerator Predict(byte[] image, WasteType mockClass, Action<Prediction> success, Action<string> failure)
         { yield return Delay(); success(new Prediction { class_name = mockClass.ToString(), confidence = .92f, accepted = true }); }
         public IEnumerator GetProgress(string id, Action<PlayerProgress> success, Action<string> failure)
@@ -20,7 +20,7 @@ namespace EcoSortQuest
             yield return Delay();
             try { success(JsonUtility.FromJson<PlayerProgress>(PlayerPrefs.GetString("EcoSort.MockCloud." + id,
                 JsonUtility.ToJson(new PlayerProgress { player_id = id })))); }
-            catch (Exception e) { failure("Mock save lỗi: " + e.Message); }
+            catch (Exception e) { failure("Chưa đọc được bản lưu trên máy: " + e.Message); }
         }
         public IEnumerator PutProgress(PlayerProgress progress, Action success, Action<string> failure)
         {
