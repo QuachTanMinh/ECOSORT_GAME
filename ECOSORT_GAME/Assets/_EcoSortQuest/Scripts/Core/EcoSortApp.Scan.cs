@@ -14,10 +14,12 @@ namespace EcoSortQuest
         InputField imagePath;
         Button challengeButton;
         Text predictionText, mockTypeText, recognitionGuidance;
+        Text scanPlaceholder;
         WasteType mockType;
         byte[] jpeg;
         Prediction scanResult;
         bool cameraStarting;
+        int cameraIndex;
 
         string labChoice;
         Text labChoiceText;
@@ -30,15 +32,17 @@ namespace EcoSortQuest
             var panel=view.Panel(view.Root,.035f,.09f,.93f,.78f,ViewFactory.Cream);
             view.Text(panel,"01  ẢNH VẬT THẬT    →    02  TỰ DỰ ĐOÁN    →    03  ĐỐI CHIẾU    →    04  XÁC NHẬN",.035f,.91f,.93f,.06f,24);
             var frame=view.Panel(panel,.035f,.31f,.40f,.56f,new Color(.80f,.87f,.83f));
-            view.Text(frame,"WEBCAM / ẢNH PNG, JPG\nMột vật chính, đủ sáng, nền đơn giản.",.08f,.15f,.84f,.70f,24,ViewFactory.Muted,TextAnchor.MiddleCenter);
+            scanPlaceholder=view.Text(frame,"WEBCAM / ẢNH PNG, JPG\nMột vật chính, đủ sáng, nền đơn giản.",.08f,.15f,.84f,.70f,24,ViewFactory.Muted,TextAnchor.MiddleCenter);
             var rect=view.Rect("Preview",frame,0,0,1,1);
             scanPreview=rect.gameObject.AddComponent<RawImage>();scanPreview.raycastTarget=false;scanPreview.enabled=false;
             var aspect=rect.gameObject.AddComponent<AspectRatioFitter>();aspect.aspectMode=AspectRatioFitter.AspectMode.FitInParent;aspect.aspectRatio=4f/3;
-            view.Button(panel,"Mở webcam",.035f,.21f,.19f,.075f,()=>{if(!busy&&!cameraStarting)StartCoroutine(OpenCamera());});
-            view.Button(panel,"Chụp ảnh",.245f,.21f,.19f,.075f,CaptureCamera);
+            view.Button(panel,"Mở / chụp lại",.035f,.21f,.13f,.075f,()=>{if(!busy&&!cameraStarting)StartCoroutine(OpenCamera());});
+            view.Button(panel,"Đổi camera",.172f,.21f,.13f,.075f,ChangeCamera);
+            view.Button(panel,"Chụp ảnh",.31f,.21f,.125f,.075f,CaptureCamera);
             imagePath=view.Input(panel,"Đường dẫn tuyệt đối JPG / PNG…",.035f,.115f,.29f,.075f);
             view.Button(panel,"Nạp ảnh",.335f,.115f,.10f,.075f,LoadImage);
-            view.Button(panel,"Sổ tay 12 nhóm",.035f,.025f,.40f,.065f,()=>ShowRecognitionGuide());
+            view.Button(panel,"Sổ tay 12 nhóm",.035f,.025f,.195f,.065f,()=>ShowRecognitionGuide());
+            view.Button(panel,"Lưu ảnh kiểm tra",.24f,.025f,.195f,.065f,SaveReviewPhoto);
             labChoiceText=view.Text(panel,"TỰ DỰ ĐOÁN TRƯỚC KHI GỬI ẢNH",.48f,.81f,.48f,.06f,24);
             labChoices=new Button[RecognitionInfo.All.Count+1];
             for(int i=0;i<RecognitionInfo.All.Count;i++)
@@ -85,12 +89,14 @@ namespace EcoSortQuest
         IEnumerator OpenCamera()
         {
             cameraStarting = true; ResetLabInput(); jpeg = null; StopCamera();
+            scanPreview.enabled=false;scanPlaceholder.gameObject.SetActive(true);
             yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
             if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
             { SetStatus("Không có quyền webcam. Có thể nạp ảnh từ file."); cameraStarting = false; yield break; }
             if (WebCamTexture.devices.Length == 0)
             { SetStatus("Không tìm thấy webcam. Có thể nạp ảnh JPG/PNG."); cameraStarting = false; yield break; }
-            webcam = new WebCamTexture(WebCamTexture.devices[0].name, 640, 480, 15);
+            cameraIndex%=WebCamTexture.devices.Length;
+            webcam = new WebCamTexture(WebCamTexture.devices[cameraIndex].name, 640, 480, 15);
             webcam.Play();
             float deadline = Time.realtimeSinceStartup + 8;
             while (webcam != null && webcam.width <= 16 && Time.realtimeSinceStartup < deadline) yield return null;
@@ -98,9 +104,33 @@ namespace EcoSortQuest
             if (webcam == null || webcam.width <= 16)
             { StopCamera(); SetStatus("Webcam không sẵn sàng. Kiểm tra quyền camera hoặc nạp ảnh."); yield break; }
             scanPreview.texture = webcam; scanPreview.enabled = true;
+            scanPlaceholder.gameObject.SetActive(false);
             scanPreview.GetComponent<AspectRatioFitter>().aspectRatio = webcam.videoRotationAngle % 180 == 0 ?
                 (float)webcam.width / webcam.height : (float)webcam.height / webcam.width;
-            SetStatus("Webcam sẵn sàng. Nhấn Chụp ảnh để giữ khung hình.");
+            SetStatus("Camera "+(cameraIndex+1)+"/"+WebCamTexture.devices.Length+" sẵn sàng. Đưa một vật vào khung, giữ yên rồi chụp.");
+        }
+        void ChangeCamera()
+        {
+            if(busy||cameraStarting)return;
+            var devices=WebCamTexture.devices;
+            if(devices.Length==0){SetStatus("Không tìm thấy webcam. Có thể nạp ảnh từ file.");return;}
+            cameraIndex=(cameraIndex+1)%devices.Length;StartCoroutine(OpenCamera());
+        }
+        void SaveReviewPhoto()
+        {
+            if(busy||cameraStarting)return;
+            if(jpeg==null || imageTexture==null){SetStatus("Chụp hoặc nạp ảnh trước. Chỉ lưu ảnh khi bạn bấm nút này.");return;}
+            try
+            {
+                string directory=Path.Combine(Application.persistentDataPath,"PhotoReview");Directory.CreateDirectory(directory);
+                string name="photo-"+DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff")+"-"+Guid.NewGuid().ToString("N").Substring(0,6)+".jpg";
+                File.WriteAllBytes(Path.Combine(directory,name),jpeg);
+                string manifest=Path.Combine(directory,"manifest.csv");
+                if(!File.Exists(manifest))File.WriteAllText(manifest,"path,label,object_id,condition\n",System.Text.Encoding.UTF8);
+                File.AppendAllText(manifest,name+",,,\n",System.Text.Encoding.UTF8);
+                SetStatus("Đã lưu ảnh tại "+directory+". Người kiểm tra điền vật liệu thật, mã vật và điều kiện trong manifest.csv; không lấy nhãn AI làm đáp án.");
+            }
+            catch(Exception e){SetStatus("Chưa lưu được ảnh: "+e.Message);}
         }
         void StopCamera()
         {
@@ -143,9 +173,10 @@ namespace EcoSortQuest
             imageTexture = ImageCapture.Resize(texture, 1024); Destroy(texture);
             jpeg = imageTexture.EncodeToJPG(85);
             scanPreview.texture = imageTexture; scanPreview.enabled = true;
+            scanPlaceholder.gameObject.SetActive(false);
             scanPreview.uvRect = new Rect(0, 0, 1, 1); scanPreview.rectTransform.localEulerAngles = Vector3.zero;
             scanPreview.GetComponent<AspectRatioFitter>().aspectRatio = (float)imageTexture.width / imageTexture.height;
-            SetStatus("Ảnh sẵn sàng: " + imageTexture.width + "×" + imageTexture.height + " • " + jpeg.Length / 1024 + " KB.");
+            SetStatus(PhotoQuality.Advice(imageTexture.GetPixels32(),imageTexture.width,imageTexture.height));
         }
         void RunPrediction()
         {

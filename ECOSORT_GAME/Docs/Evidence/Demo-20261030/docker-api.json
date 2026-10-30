@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-10-30T09:39:11.169085+00:00",
+  "storage": "local Docker volume",
+  "model_sha256": "c94553614878308bc219487c2910de23ff2dd5a686737014cdc96a540e18814f",
+  "class_count": 12,
+  "progress_restored": true,
+  "learning_sessions_after_duplicate_upload": 1,
+  "restart_read_only_check": false,
+  "prediction": {
+    "class_name": "Organic",
+    "confidence": 0.9999688863754272,
+    "accepted": true
+  },
+  "invalid_image_status": 400
+}

@@ -28,6 +28,7 @@ namespace EcoSortQuest
         GameObject sleeveVisual;
         bool sleeveSeparated;
         AreaSceneryLayout sceneryLayout;
+        WasteItem promptItem;string promptLabel;bool promptCarrying,promptPrepared;
         void StartExploration()
         {
             AiMission=false;SelectedLevel=1;sessionLimit=0;learningAnswers.Clear();answerSeconds=0;
@@ -133,14 +134,16 @@ namespace EcoSortQuest
             if(resultShown)return;
             if(Time.unscaledTime>=feedbackUntil)
             {
-                if(carried!=null)
-                    explorationPrompt.text="Đang cầm: "+carried.Definition.Name+
-                        (preparedLitter.Contains(carried)?" • Đã chuẩn bị. Đến thùng rồi nhấn E.":" • R: quan sát / chuẩn bị trước khi bỏ thùng.");
-                else
+                bool carrying=carried!=null,prepared=carrying && preparedLitter.Contains(carried);
+                var near=carrying?carried:NearestLitter();
+                if(promptLabel==null || near!=promptItem || carrying!=promptCarrying || prepared!=promptPrepared)
                 {
-                    var near=NearestLitter();
-                    explorationPrompt.text=near!=null?"E • Nhặt "+near.Definition.Name:sceneryLayout!=null && sceneryLayout.Indoor?"Quan sát quanh phòng. Đến gần vật phẩm rồi nhấn E để nhặt.":"Quan sát quanh khu vực. Đến gần vật phẩm rồi nhấn E để nhặt.";
+                    promptItem=near;promptCarrying=carrying;promptPrepared=prepared;
+                    promptLabel=carrying?"Đang cầm: "+carried.Definition.Name+
+                        (prepared?" • Đã chuẩn bị. Đến thùng rồi nhấn E.":" • R: quan sát / chuẩn bị trước khi bỏ thùng."):
+                        near!=null?"E • Nhặt "+near.Definition.Name:sceneryLayout!=null && sceneryLayout.Indoor?"Quan sát quanh phòng. Đến gần vật phẩm rồi nhấn E để nhặt.":"Quan sát quanh khu vực. Đến gần vật phẩm rồi nhấn E để nhặt.";
                 }
+                explorationPrompt.text=promptLabel;
             }
             var key=Keyboard.current;if(key==null)return;
             if(key.eKey.wasPressedThisFrame)InteractExploration();
@@ -149,8 +152,17 @@ namespace EcoSortQuest
             if(key.hKey.wasPressedThisFrame)RequestAreaHint();
         }
         float FlatDistance(Vector3 a,Vector3 b) {a.y=b.y=0;return Vector3.Distance(a,b);}
-        WasteItem NearestLitter()=>scattered.Where(i=>i!=null && i.gameObject.activeInHierarchy && i!=carried && FlatDistance(i.transform.position,explorer.transform.position)<1.8f)
-            .OrderBy(i=>FlatDistance(i.transform.position,explorer.transform.position)).FirstOrDefault();
+        WasteItem NearestLitter()
+        {
+            WasteItem nearest=null;float best=1.8f*1.8f;var origin=explorer.transform.position;
+            foreach(var item in scattered)
+            {
+                if(item==null || item==carried || !item.gameObject.activeInHierarchy)continue;
+                var delta=item.transform.position-origin;float distance=delta.x*delta.x+delta.z*delta.z;
+                if(distance<best){best=distance;nearest=item;}
+            }
+            return nearest;
+        }
         readonly HashSet<WasteItem> answeredLitter=new HashSet<WasteItem>();
         void InteractExploration()
         {

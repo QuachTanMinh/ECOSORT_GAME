@@ -819,6 +819,80 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
+        [UnityTest] public IEnumerator EvaluationPageRecordsDistinctTestsAndExportsData()
+        {
+            yield return Open("MainMenu");var history=Field<LearningHistory>(App,"learning");
+            LearningSession Entry(string id,string date)=>new LearningSession{session_id=id,created_at=date,mode="Test",context="Home",total=10,
+                answers=new[]{new LearningAnswer{item_id="water-bottle",expected="Plastic",choice="Plastic",correct=true,seconds=2}}};
+            history.sessions.Add(Entry("before","2026-10-30T01:00:00Z"));
+            typeof(EcoSortApp).GetMethod("ShowLearningStatsPage",Fields).Invoke(App,new object[]{4});yield return null;
+            Assert.IsFalse(ButtonNamed("Ghi lượt sau").interactable);ButtonNamed("Ghi lượt đầu").onClick.Invoke();yield return null;
+            history.sessions.Add(Entry("after","2026-10-30T02:00:00Z"));
+            typeof(EcoSortApp).GetMethod("ShowLearningStatsPage",Fields).Invoke(App,new object[]{4});yield return null;
+            Assert.IsTrue(ButtonNamed("Ghi lượt sau").interactable);ButtonNamed("Ghi lượt sau").onClick.Invoke();yield return null;
+            Assert.IsTrue(ButtonNamed("Xuất bảng kết quả").interactable);
+            yield return Capture("learning-before-after-20261030");
+            PlayerPrefs.DeleteKey("EcoSortQuest.Evaluation.v1."+testId+".Home");
+        }
+        [UnityTest] public IEnumerator PhotoCaptureControlsAndDarkImageAdvice()
+        {
+            yield return Open("ScanScene");
+            Assert.IsNotNull(ButtonNamed("Đổi camera"));Assert.IsNotNull(ButtonNamed("Lưu ảnh kiểm tra"));
+            var texture=new Texture2D(32,32,TextureFormat.RGB24,false);var pixels=new Color32[1024];
+            for(int i=0;i<pixels.Length;i++)pixels[i]=new Color32(5,5,5,255);texture.SetPixels32(pixels);texture.Apply();
+            typeof(EcoSortApp).GetMethod("SetImage",Fields).Invoke(App,new object[]{texture});yield return null;
+            StringAssert.Contains("tối",Field<Text>(App,"status").text);
+            Assert.IsFalse(Field<Button>(App,"challengeButton").interactable);
+            yield return Capture("photo-quality-advice-20261030");
+        }
+        [UnityTest] public IEnumerator NearestItemPreservesRangeAndExclusions()
+        {
+            EcoSortApp.SelectedAreaMission="home-kitchen";EcoSortApp.SelectedLearningMode=LearningMode.Explore;
+            yield return Open("GameScene");Call(App,"AcceptRestorationMission");
+            var items=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");var actor=Field<ExplorerController>(App,"explorer");
+            foreach(var item in items)item.transform.position=actor.transform.position+Vector3.right*5;
+            items[0].transform.position=actor.transform.position+Vector3.right;
+            items[1].transform.position=actor.transform.position+Vector3.right*.5f;
+            var lookup=(Func<WasteItem>)Delegate.CreateDelegate(typeof(Func<WasteItem>),App,typeof(EcoSortApp).GetMethod("NearestLitter",Fields));
+            Assert.AreEqual(items[1],lookup());items[1].gameObject.SetActive(false);Assert.AreEqual(items[0],lookup());
+            typeof(EcoSortApp).GetField("carried",Fields).SetValue(App,items[0]);Assert.IsNull(lookup());
+        }
+        [UnityTest] public IEnumerator WebcamCaptureOptInSmoke()
+        {
+            if(Environment.GetEnvironmentVariable("ECOSORT_WEBCAM_SMOKE")!="1")Assert.Ignore("Physical webcam smoke requires explicit opt in");
+            yield return Open("ScanScene");
+            if(WebCamTexture.devices.Length==0)Assert.Ignore("No webcam available on this machine");
+            yield return (IEnumerator)typeof(EcoSortApp).GetMethod("OpenCamera",Fields).Invoke(App,null);
+            var camera=Field<WebCamTexture>(App,"webcam");Assert.IsNotNull(camera,"Webcam unavailable or permission denied");
+            for(int i=0;i<5;i++)yield return null;
+            int width=camera.width,height=camera.height;Call(App,"CaptureCamera");
+            Assert.Greater(Field<byte[]>(App,"jpeg").Length,0);Assert.IsNull(Field<WebCamTexture>(App,"webcam"));
+            string path=Path.Combine(Application.dataPath,"../Logs/Demo-Webcam-20261030.json");
+            File.WriteAllText(path,"{\"physical_capture\":true,\"width\":"+width+",\"height\":"+height+",\"image_saved\":false}");
+        }
+        [UnityTest] public IEnumerator ExplorationPerformanceSample()
+        {
+            EcoSortApp.SelectedAreaMission="home-kitchen";EcoSortApp.SelectedLearningMode=LearningMode.Explore;
+            yield return Open("GameScene");Call(App,"AcceptRestorationMission");
+            for(int i=0;i<40;i++)yield return null;
+            var nearest=(Func<WasteItem>)Delegate.CreateDelegate(typeof(Func<WasteItem>),App,typeof(EcoSortApp).GetMethod("NearestLitter",Fields));
+            for(int i=0;i<100;i++)nearest();
+            const int calls=20000;long allocated=GC.GetAllocatedBytesForCurrentThread();
+            var clock=System.Diagnostics.Stopwatch.StartNew();for(int i=0;i<calls;i++)nearest();clock.Stop();
+            long bytes=GC.GetAllocatedBytesForCurrentThread()-allocated;
+            var samples=new double[180];
+            for(int i=0;i<samples.Length;i++){long before=System.Diagnostics.Stopwatch.GetTimestamp();yield return null;samples[i]=1000.0*(System.Diagnostics.Stopwatch.GetTimestamp()-before)/System.Diagnostics.Stopwatch.Frequency;}
+            Array.Sort(samples);
+            string label=Environment.GetEnvironmentVariable("ECOSORT_BENCHMARK_LABEL")=="before"?"before":"after";
+            string directory=Path.Combine(Application.dataPath,"../Logs/Performance-20261030");Directory.CreateDirectory(directory);
+            string json="{\"environment\":\"Unity Editor PlayMode\",\"scene\":\"home-kitchen stationary\",\"calls\":"+calls+
+                ",\"bytes\":"+bytes+",\"search_ms\":"+clock.Elapsed.TotalMilliseconds.ToString("F3",System.Globalization.CultureInfo.InvariantCulture)+
+                ",\"frame_median_ms\":"+samples[90].ToString("F3",System.Globalization.CultureInfo.InvariantCulture)+
+                ",\"frame_p95_ms\":"+samples[171].ToString("F3",System.Globalization.CultureInfo.InvariantCulture)+
+                ",\"width\":"+Screen.width+",\"height\":"+Screen.height+"}";
+            File.WriteAllText(Path.Combine(directory,label+".json"),json);
+            if(label=="after")Assert.Less(bytes,200000,"Nearest-item lookup should avoid allocations proportional to calls");
+        }
         [UnityTest] public IEnumerator MissionSceneryHasReachableItemsAndDistinctRooms()
         {
             foreach(var mission in AreaMissions.All)

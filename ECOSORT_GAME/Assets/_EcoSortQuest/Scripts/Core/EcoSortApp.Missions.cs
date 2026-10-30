@@ -73,6 +73,7 @@ namespace EcoSortQuest
                 if(!labRecord.knowledge_confirmed){feedback.text="Hoàn thành câu xác nhận trước khi bắt đầu bài mới.";return;}
                 Destroy(labConfirmation.gameObject);labConfirmation=null;ResetLabInput();jpeg=null;
                 StopCamera();scanPreview.enabled=false;
+                scanPlaceholder.gameObject.SetActive(true);
                 if(imageTexture!=null){Destroy(imageTexture);imageTexture=null;}
                 imagePath.text="";SetStatus("Chụp hoặc nạp ảnh mới, rồi tự dự đoán trước.");
             },true);

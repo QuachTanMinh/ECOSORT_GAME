@@ -1,0 +1,77 @@
+{
+  "before.json": {
+    "environment": "Unity Editor PlayMode",
+    "scene": "home-kitchen stationary",
+    "calls": 20000,
+    "bytes": 0,
+    "search_ms": 62.55,
+    "frame_median_ms": 0.427,
+    "frame_p95_ms": 0.957,
+    "width": 640,
+    "height": 480
+  },
+  "after.json": {
+    "environment": "Unity Editor PlayMode",
+    "scene": "home-kitchen stationary",
+    "calls": 20000,
+    "bytes": 0,
+    "search_ms": 18.272,
+    "frame_median_ms": 0.34,
+    "frame_p95_ms": 1.07,
+    "width": 640,
+    "height": 480
+  },
+  "standalone-before.json": {
+    "environment": "Windows standalone stationary home-kitchen",
+    "gpu": "NVIDIA GeForce RTX 2050",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz",
+    "unity": "6000.6.2f1",
+    "width": 1280,
+    "height": 720,
+    "frames": 1693,
+    "seconds": 12.006444299999998,
+    "average_fps": 141.00760872225928,
+    "median_ms": 7.084899999998839,
+    "p95_ms": 7.4181000000024255
+  },
+  "standalone-after-focused.json": {
+    "environment": "Windows standalone stationary home-kitchen",
+    "gpu": "NVIDIA GeForce RTX 2050",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz",
+    "unity": "6000.6.2f1",
+    "width": 1280,
+    "height": 720,
+    "frames": 1587,
+    "seconds": 12.002829899999998,
+    "average_fps": 132.21881949689217,
+    "median_ms": 7.0790999999985615,
+    "p95_ms": 7.530300000002654
+  },
+  "standalone-after-focused-repeat.json": {
+    "environment": "Windows standalone stationary home-kitchen",
+    "gpu": "NVIDIA GeForce RTX 2050",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz",
+    "unity": "6000.6.2f1",
+    "width": 1280,
+    "height": 720,
+    "frames": 1571,
+    "seconds": 12.003928899999998,
+    "average_fps": 130.8738174882059,
+    "median_ms": 7.081400000000571,
+    "p95_ms": 7.599800000001267
+  },
+  "standalone-after-background.json": {
+    "environment": "Windows standalone stationary home-kitchen",
+    "gpu": "NVIDIA GeForce RTX 2050",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-11400H @ 2.70GHz",
+    "unity": "6000.6.2f1",
+    "width": 1280,
+    "height": 720,
+    "frames": 361,
+    "seconds": 12.032996200000003,
+    "average_fps": 30.000840522163543,
+    "median_ms": 33.34470000000067,
+    "p95_ms": 33.770099999999914
+  },
+  "interpretation": "Search microbenchmark improved; standalone median stayed near 7.08 ms. Mean FPS varied roughly 131-141 with activation stalls; background run capped at 30. This does not establish an overall FPS improvement."
+}

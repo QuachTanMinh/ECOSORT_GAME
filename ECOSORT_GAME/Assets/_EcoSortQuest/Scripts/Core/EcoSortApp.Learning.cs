@@ -78,8 +78,9 @@ namespace EcoSortQuest
             learningOverlay=view.ModalCard(.04f,.08f,.92f,.80f,"Learning statistics");
             var panel=learningOverlay;
             view.Text(panel,"HỌC TỪ KẾT QUẢ CỦA BẠN",.04f,.88f,.92f,.08f,32);
-            string[] tabs={"Tiến bộ", "Kỹ năng vật liệu", "Danh sách ôn", "Thành tích"};
-            for(int i=0;i<tabs.Length;i++) { int tab=i; view.Button(panel,tabs[i],.04f+i*.235f,.77f,.215f,.075f,()=>ShowLearningStatsPage(tab),page==i); }
+            string[] tabs={"Tiến bộ", "Kỹ năng vật liệu", "Danh sách ôn", "Thành tích", "Trước và sau"};
+            for(int i=0;i<tabs.Length;i++) { int tab=i; view.Button(panel,tabs[i],.04f+i*.185f,.77f,.175f,.075f,()=>ShowLearningStatsPage(tab),page==i); }
+            if(page==4){BuildEvaluationPanel(panel);return;}
             var recommendation=LearningInsights.Recommend(learning,SelectedContext);
             if(page==0)
             {

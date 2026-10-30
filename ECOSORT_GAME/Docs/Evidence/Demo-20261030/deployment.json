@@ -1,0 +1,10 @@
+{
+  "port": 8000,
+  "health": "ok",
+  "ai_ready": true,
+  "storage_mode": "adafruit_io",
+  "class_count": 12,
+  "model_sha256": "c94553614878308bc219487c2910de23ff2dd5a686737014cdc96a540e18814f",
+  "rollback_image": "ecosort-api:before-20261030",
+  "backup": "backend/data/docker-backup-20261030 (local only)"
+}

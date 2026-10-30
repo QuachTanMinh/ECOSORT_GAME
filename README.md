@@ -1,5 +1,7 @@
 # EcoSort Quest
 
+**Cập nhật 30/10/2026:** webcam có đổi camera, hướng dẫn chất lượng ảnh và lưu ảnh kiểm tra theo thao tác chủ động; kết quả học có trang Trước và sau và xuất CSV. Đã kiểm chứng 65 bài logic, 31 bài tương tác (có Unity–Docker/model thật và webcam), 16 bài Python; cloud thật và volume Docker đã kiểm tra lại. Xem [hướng dẫn kiểm chứng và giới hạn](ECOSORT_GAME/Docs/DEMO-VALIDATION-20261030.md) và [tài liệu Word giải thích hệ thống](BaoCao/Huong-dan-cach-he-thong-EcoSort-Quest-hoat-dong-20261030.docx).
+
 [Báo cáo đồ án hoàn chỉnh ngày 28/10/2026](BaoCao/Bao-cao-do-an-EcoSort-Quest-hoan-chinh-20261028.docx) — 23 trang, trình bày mục tiêu giáo dục, thiết kế, cảnh game mới, kết quả kiểm thử và giới hạn của bản demo.
 
 **Bản demo hiện tại (28/10/2026):** chín nhiệm vụ có cảnh riêng: bếp, phòng ngủ có góc học tập, phòng thu gom, lớp học, căng tin, sân trường, lối đi công viên, bãi dã ngoại và vườn cộng đồng. Menu tách theo hoạt động; nhận diện ảnh có bước tự dự đoán và xác nhận kiến thức. Xem [cảnh quan và kiểm chứng](ECOSORT_GAME/Docs/MISSION-SCENERY-20261028.md). Các ghi chú theo ngày dưới đây mô tả những đợt phát triển trước.
@@ -27,7 +29,7 @@ Giữ chuột để kéo vật phẩm đang chạy trên băng chuyền, thả v
 ## Bắt đầu sau khi clone
 
 1. Clone repo rồi mở thư mục `ECOSORT_GAME` bằng Unity Hub, Editor **6000.6.2f1**. Chờ import packages.
-2. Mở `Assets/_EcoSortQuest/Scenes/MainMenu.unity`, Play → **Kết nối backend → Chơi ngoại tuyến** để thử game ngay.
+2. Mở `Assets/_EcoSortQuest/Scenes/MainMenu.unity`, Play để vào menu. Thiết lập nhận diện thật ở **Cài đặt → Kết nối → Thiết lập kết nối**; các hoạt động học cục bộ vẫn dùng được khi chưa bật kết nối.
 3. Muốn nhận diện ảnh thật, cài Python 3.12 64-bit và chạy từ thư mục repo:
 
 ```powershell

@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-30",
+  "tests": {
+    "EditMode": {
+      "total": "65",
+      "passed": "65",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-30 09:28:04Z",
+      "end-time": "2026-10-30 09:28:04Z"
+    },
+    "PlayMode": {
+      "total": "31",
+      "passed": "31",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-30 09:44:48Z",
+      "end-time": "2026-10-30 09:46:16Z"
+    },
+    "PreviewRecheck": {
+      "total": "2",
+      "passed": "2",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-30 09:48:42Z",
+      "end-time": "2026-10-30 09:48:45Z"
+    },
+    "Backend": {
+      "tests": "16",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "54.050"
+    }
+  },
+  "runtime_sha256": "4a5901794c64639bd9066069b4a2ae96196b4eb8918b127cc11ffb8d0c84c164",
+  "build_bytes": 108611342,
+  "dll_size": 228864,
+  "notes": [
+    "PreviewRecheck repeats affected cases; do not add counts to PlayMode total.",
+    "Physical webcam captured only into memory; no image saved in smoke test.",
+    "No independent 12-class photo study or child-user study was conducted."
+  ]
+}

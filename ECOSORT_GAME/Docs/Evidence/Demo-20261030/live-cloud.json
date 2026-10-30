@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-10-30T09:17:56.619076+00:00",
+  "transport": "FastAPI TestClient with live Adafruit HTTP",
+  "model_sha256": "c94553614878308bc219487c2910de23ff2dd5a686737014cdc96a540e18814f",
+  "class_count": 12,
+  "progress_round_trip": "passed; original values preserved; updated_at refreshed",
+  "prediction_round_trip": {
+    "response": {
+      "class_name": "Organic",
+      "confidence": 0.9999688863754272,
+      "accepted": true
+    },
+    "cloud_readback_matches": true,
+    "photo": "existing img-test/test3.jpg; integration sample, not an independent accuracy benchmark"
+  },
+  "score_round_trip": "passed; explicitly labelled acceptance record"
+}
