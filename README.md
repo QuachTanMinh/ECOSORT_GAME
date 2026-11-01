@@ -1,5 +1,7 @@
 # EcoSort Quest
 
+**Cập nhật 01/11/2026:** đã tích hợp nhập/đổi tên người chơi, menu **Khám phá thêm** với khu tiếp đón bệnh viện, siêu thị và bãi biển; bảng kết quả đọc dữ liệu qua dịch vụ, không chứa khóa Adafruit trong HTML. Xem [hướng dẫn sử dụng](ECOSORT_GAME/Docs/NEW_FEATURES.md) và [kết quả kiểm chứng](ECOSORT_GAME/Docs/MENU-VALIDATION-20261101.md).
+
 **Cập nhật 30/10/2026:** webcam có đổi camera, hướng dẫn chất lượng ảnh và lưu ảnh kiểm tra theo thao tác chủ động; kết quả học có trang Trước và sau và xuất CSV. Đã kiểm chứng 65 bài logic, 31 bài tương tác (có Unity–Docker/model thật và webcam), 16 bài Python; cloud thật và volume Docker đã kiểm tra lại. Xem [hướng dẫn kiểm chứng và giới hạn](ECOSORT_GAME/Docs/DEMO-VALIDATION-20261030.md) và [tài liệu Word giải thích hệ thống](BaoCao/Huong-dan-cach-he-thong-EcoSort-Quest-hoat-dong-20261030.docx).
 
 [Báo cáo đồ án hoàn chỉnh ngày 28/10/2026](BaoCao/Bao-cao-do-an-EcoSort-Quest-hoan-chinh-20261028.docx) — 23 trang, trình bày mục tiêu giáo dục, thiết kế, cảnh game mới, kết quả kiểm thử và giới hạn của bản demo.

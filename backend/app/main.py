@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
 from starlette.concurrency import run_in_threadpool
 
 from .adafruit import AdafruitIOError, AdafruitIOStore
@@ -45,6 +46,21 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="EcoSort Quest API", version="1.0.0", lifespan=lifespan)
+
+
+@app.get("/dashboard", include_in_schema=False)
+def dashboard_page():
+    return FileResponse(Path(__file__).parent / "static" / "dashboard.html", media_type="text/html")
+
+
+@app.get("/dashboard/data")
+def dashboard_data(request: Request, player_id: str = Query(default="", max_length=64, pattern=r"^[A-Za-z0-9_-]*$")):
+    # A bounded snapshot, not a claim to represent all account history.
+    scores = request.app.state.store.recent_scores(100)
+    if player_id:
+        scores = [s for s in scores if s.get("player_id") == player_id]
+    return {"storage_mode": request.app.state.settings.storage, "player_id": player_id,
+            "scores": scores, "window": "latest_100_feed_entries", "returned": len(scores)}
 
 
 @app.post("/learning/sessions", status_code=201)

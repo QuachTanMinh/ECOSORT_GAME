@@ -100,6 +100,21 @@ class AdafruitIOStore(Store):
     def add_score(self, score: ScoreSubmission) -> None:
         self._publish(FEEDS["game_score"], {**score.model_dump(), "created_at": datetime.now(timezone.utc).isoformat()})
 
+    def recent_scores(self, limit: int = 100) -> list[dict]:
+        entries = self._request("GET", self._path(FEEDS["game_score"], "/data"),
+                                params={"limit": max(1, min(limit, 100))}).json()
+        scores = []
+        for entry in entries:
+            value = self._decode_value(entry.get("value"))
+            if not isinstance(value, dict):
+                continue
+            try:
+                score = ScoreSubmission.model_validate({k: value[k] for k in ScoreSubmission.model_fields if k in value})
+            except ValueError:
+                continue
+            scores.append({**score.model_dump(), "created_at": value.get("created_at", entry.get("created_at", ""))})
+        return scores
+
     def add_ar_result(self, result: ArResultSubmission) -> None:
         self._publish(FEEDS["ar_result"], {**result.model_dump(), "created_at": datetime.now(timezone.utc).isoformat()})
 

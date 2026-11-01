@@ -9,9 +9,10 @@ namespace EcoSortQuest
         {
             if(areaMission!=null){ShowAreaBrief();return;}
             missionBrief=view.Panel(view.Root,.18f,.20f,.64f,.57f,ViewFactory.Cream,"Restoration briefing");
-            view.Text(missionBrief,"PHỤC HỒI "+ContextLabel,.06f,.80f,.88f,.13f,32);
-            var previous=RestorationSave.Load(progress.player_id,SelectedContext);
-            view.Text(missionBrief,"Một khu vực sạch bắt đầu từ những quyết định nhỏ.\n\n1. Nhặt và dọn 4 vật phẩm để mở lại lối đi.\n2. Dọn 8 vật phẩm để hồi sinh vườn hoa.\n3. Dọn đủ 12 vật phẩm để hoàn thiện góc xanh.\n\nR: xem tình trạng và chọn cách chuẩn bị. E: nhặt / bỏ thùng.\nChọn sai thùng được sửa lại; điểm chỉ tính lần đầu.",.06f,.23f,.88f,.55f,23);
+            view.Text(missionBrief,"PHỤC HỒI "+(extraEnvironment!=ExtraEnvironment.None?ExtraEnvironmentInfo.Title(extraEnvironment):ContextLabel),.06f,.80f,.88f,.13f,32);
+            var previous=RestorationSave.Load(RestorationScopeId,SelectedContext);
+            string brief=extraEnvironment!=ExtraEnvironment.None?"Thu gom 12 vật phẩm sinh hoạt, làm rỗng vật chứa và tách vật liệu trước khi bỏ thùng. Dọn đủ 4, 8 và 12 vật phẩm để nhận cây trang trí.\n\nChỉ nhặt đồ sinh hoạt sạch. Gặp vật sắc nhọn hoặc rác y tế thì báo người lớn.\n\nR: quan sát / chuẩn bị • E: nhặt / bỏ thùng. Chọn sai được sửa lại; điểm chỉ tính lần đầu.":"Một khu vực sạch bắt đầu từ những quyết định nhỏ.\n\n1. Nhặt và dọn 4 vật phẩm để mở lại lối đi.\n2. Dọn 8 vật phẩm để hồi sinh vườn hoa.\n3. Dọn đủ 12 vật phẩm để hoàn thiện góc xanh.\n\nR: xem tình trạng và chọn cách chuẩn bị. E: nhặt / bỏ thùng.\nChọn sai thùng được sửa lại; điểm chỉ tính lần đầu.";
+            view.Text(missionBrief,brief,.06f,.23f,.88f,.55f,23);
             view.Text(missionBrief,"Kỷ lục khu vực: "+previous.bestStars+"/3 sao • "+previous.completions+" lần hoàn thành",.06f,.12f,.88f,.08f,20,ViewFactory.Accent);
             view.Button(missionBrief,"Nhận nhiệm vụ",.06f,.015f,.55f,.10f,AcceptRestorationMission,true);
             view.Button(missionBrief,"Về menu",.65f,.015f,.29f,.10f,Home);
@@ -98,7 +99,7 @@ namespace EcoSortQuest
         string RestorationSummary()
         {
             int stars=restoration.Stars(round.Correct);
-            var record=RestorationSave.Complete(progress.player_id,SelectedContext,restorationSession,stars);
+            var record=RestorationSave.Complete(RestorationScopeId,SelectedContext,restorationSession,stars);
             return "PHỤC HỒI HOÀN TẤT • "+stars+"/3 SAO\n"+
                 "Đã dọn 12/12 • Đúng lần đầu: "+round.Correct+"/12 • Điểm: "+round.Score+
                 "\nChọn cách chuẩn bị chưa đúng: "+restoration.PreparationMistakes+

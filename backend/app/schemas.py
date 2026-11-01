@@ -31,6 +31,8 @@ class ScoreSubmission(StrictModel):
     level: int = Field(ge=1, le=3)
     score: int = Field(ge=0, le=1_000_000)
     correct_count: int = Field(ge=0, le=1_000)
+    display_name: str = Field(default="", max_length=32, pattern=r"^[^\x00-\x1f\x7f<>]*$")
+    environment: Literal["", "Hospital", "Supermarket", "Beach"] = ""
 
 
 class ArResultSubmission(StrictModel):

@@ -33,6 +33,8 @@ namespace EcoSortQuest
         {
             AiMission=false;SelectedLevel=1;sessionLimit=0;learningAnswers.Clear();answerSeconds=0;
             areaMission=AreaMissions.Find(SelectedAreaMission);
+            extraEnvironment=areaMission==null?SelectedExtraEnvironment:ExtraEnvironment.None;
+            if(extraEnvironment!=ExtraEnvironment.None)SelectedContext=extraEnvironment==ExtraEnvironment.Beach?LearningContext.Park:LearningContext.Home;
             if(areaMission!=null && !AreaJourneyStore.Unlocked(AreaJourneyStore.Load(progress.player_id),areaMission))
             {SelectedAreaMission="";Home();return;}
             if(areaMission!=null)SelectedContext=areaMission.Context;
@@ -41,6 +43,7 @@ namespace EcoSortQuest
             restoration=new RestorationMission(total);
             restorationSession=System.Guid.NewGuid().ToString("N");
             if(areaMission!=null)sceneryLayout=world.BuildMissionEnvironment(areaMission);
+            else if(extraEnvironment!=ExtraEnvironment.None)sceneryLayout=world.BuildExtraEnvironment(extraEnvironment);
             else {BuildLearningContext();world.PrepareWalkableWorld();}
             sceneCamera.orthographic=false;sceneCamera.fieldOfView=58;sceneCamera.farClipPlane=100;
             explorer=world.Explorer(sceneryLayout!=null?sceneryLayout.Spawn:new Vector3(0,.1f,-5),sceneCamera);
@@ -82,7 +85,7 @@ namespace EcoSortQuest
                     new Vector3(side*.42f,.26f,0),new Vector3(.04f,.52f,.8f),new Color(.91f,.83f,.64f),false);
             }
             }
-            view.Header(areaMission!=null?areaMission.Zone:"KHÁM PHÁ 3D / "+ContextLabel,Mode,Home,true);
+            view.Header(areaMission!=null?areaMission.Zone:extraEnvironment!=ExtraEnvironment.None?ExtraEnvironmentInfo.Title(extraEnvironment):"KHÁM PHÁ 3D / "+ContextLabel,Mode,Home,true);
             var top=view.Panel(view.Root,.015f,.877f,.48f,.044f,ViewFactory.HudSurface,"Exploration score");
             top.GetComponent<Image>().raycastTarget=false;
             explorationHud=view.Text(top,"",.025f,.1f,.95f,.8f,19);
@@ -97,7 +100,7 @@ namespace EcoSortQuest
             missionObjective=view.Text(objective,"",.025f,.05f,.95f,.9f,19);
             view.FitContent(objective,.48f,220,missionObjective);
             prepareButton=view.Button(view.Root,"Quan sát / xử lý • R",.76f,.04f,.225f,.05f,ShowPreparation);
-            restorationStages=areaMission==null?world.BuildRestorationRewards():new GameObject[0];
+            restorationStages=areaMission==null?(extraEnvironment!=ExtraEnvironment.None?world.BuildExtraRewards():world.BuildRestorationRewards()):new GameObject[0];
             if(areaMission!=null)
             {
                 var journey=AreaJourneyStore.Load(progress.player_id);

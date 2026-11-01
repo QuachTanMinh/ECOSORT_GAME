@@ -46,6 +46,7 @@ namespace EcoSortQuest.Tests
         EcoSortApp App => UnityEngine.Object.FindFirstObjectByType<EcoSortApp>();
         [SetUp] public void Setup()
         {
+            EcoSortApp.SelectedExtraEnvironment=ExtraEnvironment.None;
             hadSave = PlayerPrefs.HasKey(SaveKey); originalSave = PlayerPrefs.GetString(SaveKey);
             originalSessionMode=typeof(EcoSortApp).GetField("SessionMode",StaticFields).GetValue(null);
             originalSessionUrl=typeof(EcoSortApp).GetField("SessionUrl",StaticFields).GetValue(null);
@@ -87,6 +88,8 @@ namespace EcoSortQuest.Tests
             foreach(LearningContext context in System.Enum.GetValues(typeof(LearningContext)))
                 PlayerPrefs.DeleteKey(RestorationSave.Key(testId,context));
             PlayerPrefs.DeleteKey("EcoSort.MockCloud." + testId); PlayerPrefs.Save();
+            PlayerPrefs.DeleteKey(PlayerManager.NameKey(testId));
+            EcoSortApp.SelectedExtraEnvironment=ExtraEnvironment.None;
             EcoSortApp.SelectedLevel = 1; EcoSortApp.PendingPrediction = null; EcoSortApp.SelectedAreaMission="";
             EcoSortApp.SelectedLearningMode = LearningMode.Campaign; EcoSortApp.SelectedContext = LearningContext.Home; EcoSortApp.AiMission = false;
             InputSystem.RemoveDevice(mouse);
@@ -819,6 +822,86 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
+        [UnityTest] public IEnumerator NicknameAndExtraMenuUseExistingCanvas()
+        {
+            yield return Open("MainMenu");var before=LocalProgress.Load().player_id;
+            int canvases=UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Length;
+            ButtonNamed("Đổi tên").onClick.Invoke();yield return null;
+            yield return Capture("player-name-prompt-20261101");
+            var input=GameObject.Find("Player nickname").GetComponent<InputField>();input.text="Bạn Mây";
+            ButtonNamed("Lưu tên gọi").onClick.Invoke();yield return null;
+            Assert.AreEqual(before,LocalProgress.Load().player_id);Assert.AreEqual("Bạn Mây",PlayerManager.DisplayName);
+            ButtonNamed("Khám phá thêm").onClick.Invoke();yield return null;
+            foreach(var title in new[]{"Bệnh viện • Khu tiếp đón","Siêu thị","Bãi biển"})Assert.IsNotNull(ButtonNamed(title));
+            Assert.AreEqual(canvases,UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Length);
+            yield return Capture("player-extra-menu-20261101");PlayerPrefs.DeleteKey(PlayerManager.NameKey(testId));
+        }
+        [UnityTest] public IEnumerator ExtraEnvironmentsHaveClearFloorAndWorkingRounds()
+        {
+            string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
+            if(!string.IsNullOrEmpty(url))
+            {
+                var settings=ScriptableObject.CreateInstance<ApiSettings>();settings.mode=ApiMode.Rest;settings.baseUrl=url;
+                nextSceneSettings=settings;testSettings.Add(settings);
+            }
+            PlayerManager.TrySetDisplayName("Bạn Demo",out _);
+            foreach(var environment in new[]{ExtraEnvironment.Hospital,ExtraEnvironment.Supermarket,ExtraEnvironment.Beach})
+            {
+                EcoSortApp.SelectedAreaMission="";EcoSortApp.SelectedExtraEnvironment=environment;EcoSortApp.SelectedLearningMode=LearningMode.Explore;
+                yield return Open("GameScene");Call(App,"AcceptRestorationMission");yield return null;Physics.SyncTransforms();
+                var actor=Field<ExplorerController>(App,"explorer");var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
+                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);Assert.AreEqual(4,bins.Length);Assert.AreEqual(12,litter.Count);
+                Assert.IsNotNull(GameObject.Find("Extra scenery • "+environment));
+                foreach(var item in litter.Where(i=>i.gameObject.activeInHierarchy))
+                    Assert.IsFalse(Physics.OverlapCapsule(item.transform.position+Vector3.up*.4f,item.transform.position+Vector3.up*1.5f,.34f).Any(c=>c.bounds.max.y>.15f && c.GetComponentInParent<WasteItem>()==null && c.GetComponentInParent<ExplorerController>()==null),environment+" item intersects furniture");
+                yield return Capture("extra-"+environment+"-20261101");
+                void Move(Vector3 position){var body=actor.GetComponent<CharacterController>();body.enabled=false;actor.transform.position=position;body.enabled=true;Physics.SyncTransforms();}
+                for(int n=0;n<12;n++)
+                {
+                    var item=litter.First(i=>i!=null && i.gameObject.activeInHierarchy);Move(item.transform.position+Vector3.back*.7f);Call(App,"InteractExploration");Assert.AreSame(item,Field<WasteItem>(App,"carried"));
+                    Call(App,"ShowPreparation");
+                    if(item==Field<WasteItem>(App,"wrappedCup") && !Field<bool>(App,"sleeveSeparated"))
+                        typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationAction.SeparateSleeve});
+                    if(Field<RectTransform>(App,"preparationPanel")!=null){typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationRules.Required(item.Definition.Id)});Call(App,"ClosePreparation");}
+                    Move(bins.First(b=>b.type==item.type).transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");yield return null;
+                }
+                Assert.AreEqual(12,Field<int>(App,"cleaned"));yield return null;Assert.IsTrue(Field<bool>(App,"resultShown"));
+                if(!string.IsNullOrEmpty(url))
+                {
+                    float deadline=Time.realtimeSinceStartup+20;while(Field<bool>(App,"busy") && Time.realtimeSinceStartup<deadline)yield return null;
+                    Assert.IsFalse(Field<bool>(App,"busy"));
+                    using(var request=UnityEngine.Networking.UnityWebRequest.Get(url+"/dashboard/data?player_id="+testId))
+                    {
+                        request.timeout=15;yield return request.SendWebRequest();Assert.AreEqual(200,request.responseCode);
+                        var snapshot=JsonUtility.FromJson<DashboardScores>(request.downloadHandler.text);
+                        var saved=snapshot.scores.Single(s=>s.environment==environment.ToString());
+                        Assert.AreEqual(120,saved.score);Assert.AreEqual("Bạn Demo",saved.display_name);Assert.AreEqual(testId,saved.player_id);
+                    }
+                }
+                PlayerPrefs.DeleteKey(RestorationSave.Key(testId+".extra."+environment,SelectedExtraContext(environment)));
+            }
+            EcoSortApp.SelectedExtraEnvironment=ExtraEnvironment.None;
+        }
+        [Serializable]class DashboardScores{public ScoreRequest[] scores;}
+        [UnityTest]public IEnumerator DebugScoreSenderRequiresExplicitActionAndReachesDashboard()
+        {
+            string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
+            if(string.IsNullOrEmpty(url)){Assert.Ignore("Dedicated local backend required for manual sender integration");yield break;}
+            yield return Open("MainMenu");
+            var go=new GameObject("Manual sender test");var sender=go.AddComponent<AdafruitTestSender>();sender.backendUrl=url;
+            yield return null;Assert.AreEqual("Chưa gửi điểm kiểm tra.",sender.LastStatus);
+            sender.SendTestScore();float deadline=Time.realtimeSinceStartup+15;
+            while(sender.LastStatus=="Chưa gửi điểm kiểm tra." && Time.realtimeSinceStartup<deadline)yield return null;
+            StringAssert.StartsWith("Đã gửi",sender.LastStatus);
+            using(var request=UnityEngine.Networking.UnityWebRequest.Get(url+"/dashboard/data?player_id=debug-dashboard-20261101"))
+            {
+                request.timeout=15;yield return request.SendWebRequest();Assert.AreEqual(200,request.responseCode);
+                var scores=JsonUtility.FromJson<DashboardScores>(request.downloadHandler.text).scores;
+                Assert.Greater(scores.Length,0);Assert.AreEqual(40,scores[0].score);Assert.AreEqual("Kiểm thử Dashboard",scores[0].display_name);
+            }
+            UnityEngine.Object.Destroy(go);
+        }
+        static LearningContext SelectedExtraContext(ExtraEnvironment environment)=>environment==ExtraEnvironment.Beach?LearningContext.Park:LearningContext.Home;
         [UnityTest] public IEnumerator EvaluationPageRecordsDistinctTestsAndExportsData()
         {
             yield return Open("MainMenu");var history=Field<LearningHistory>(App,"learning");

@@ -51,6 +51,10 @@ ScoreRequest:
 {"player_id":"demo-example","level":1,"score":85,"correct_count":9}
 ```
 
+Từ 01/11/2026, có thêm hai trường tùy chọn: `display_name` (mặc định rỗng, tối đa 32 ký tự, không nhận ký tự điều khiển hoặc dấu `< >`) và `environment` (rỗng, `Hospital`, `Supermarket` hoặc `Beach`). Mã người chơi vẫn ổn định khi đổi tên. Client cũ có thể bỏ hai trường này; client mới cần dịch vụ đã cập nhật.
+
+`GET /dashboard` trả trang HTML cùng nguồn, không gửi khóa Adafruit ra trình duyệt. `GET /dashboard/data?player_id=demo-example` trả `storage_mode`, `player_id`, `scores`, `returned` và `window="latest_100_feed_entries"`. Mã lọc chỉ nhận chữ/số ASCII, `-`, `_`, tối đa 64 ký tự; bỏ trống để xem tất cả trong cửa sổ. Dịch vụ đọc 100 bản ghi điểm mới nhất rồi lọc, không trả toàn bộ lịch sử. Bản ghi gồm dữ liệu ScoreRequest và `created_at`. Với Adafruit, đọc JSON từ feed `game-score` có tiền tố nhóm cấu hình; bản ghi kiểu cũ không phải JSON hợp lệ bị bỏ qua. Điểm do client gửi vẫn là dữ liệu demo, không được xác thực thành tích.
+
 ArResultRequest:
 
 ```json

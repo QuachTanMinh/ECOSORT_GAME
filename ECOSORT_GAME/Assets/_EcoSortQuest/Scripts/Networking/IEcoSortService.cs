@@ -26,6 +26,7 @@ namespace EcoSortQuest
     [Serializable] public sealed class ScoreRequest
     {
         public string player_id;
+        public string display_name="", environment="";
         public int level, score, correct_count;
     }
     [Serializable] public sealed class ArResultRequest

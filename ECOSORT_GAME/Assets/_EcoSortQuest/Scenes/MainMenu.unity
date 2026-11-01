@@ -309,6 +309,9 @@ GameObject:
   m_Component:
   - component: {fileID: 147202999}
   - component: {fileID: 147202998}
+  - component: {fileID: 147203002}
+  - component: {fileID: 147203001}
+  - component: {fileID: 147203000}
   m_Layer: 0
   m_Name: EcoSort / MainMenu
   m_TagString: Untagged
@@ -360,6 +363,42 @@ Transform:
   - {fileID: 1524548450}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &147203000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147202997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f239c1902f83c45ac829aac15b5434, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EcoSortQuest.Runtime::EcoSortQuest.MainMenuButtons
+--- !u!114 &147203001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147202997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2f8837742987e14f81a7609dfe925d4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EcoSortQuest.Runtime::EcoSortQuest.PlayerNamePrompt
+--- !u!114 &147203002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147202997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63d201fa6d694f34aba77f1b0753b92b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EcoSortQuest.Runtime::EcoSortQuest.PlayerManager
 --- !u!1 &245611085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1385,7 +1424,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -1707,7 +1746,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
