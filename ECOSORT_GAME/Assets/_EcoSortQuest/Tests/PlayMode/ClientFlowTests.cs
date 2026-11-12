@@ -737,7 +737,7 @@ namespace EcoSortQuest.Tests
         [UnityTest] public IEnumerator AreaJourneyPlaysAllNineMissionsUnlocksRewardsAndRetainsDiscoveries()
         {
             yield return Open("MainMenu");
-            ButtonNamed("HÀNH TRÌNH 3 KHU VỰC →").onClick.Invoke();yield return null;
+            ButtonNamed("HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →").onClick.Invoke();yield return null;
             Assert.IsNotNull(GameObject.Find("Area journey"));
             yield return Capture("areas-home-hub-20261024");
             Assert.AreEqual(1,UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Count(b=>b.interactable && b.GetComponentInChildren<Text>().text=="Nhận nhiệm vụ"));
@@ -822,7 +822,7 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
-        [UnityTest] public IEnumerator NicknameAndExtraMenuUseExistingCanvas()
+        [UnityTest] public IEnumerator NicknameAndJourneyKeepsEveryLocationOnOneCanvas()
         {
             yield return Open("MainMenu");var before=LocalProgress.Load().player_id;
             int canvases=UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Length;
@@ -831,10 +831,10 @@ namespace EcoSortQuest.Tests
             var input=GameObject.Find("Player nickname").GetComponent<InputField>();input.text="Bạn Mây";
             ButtonNamed("Lưu tên gọi").onClick.Invoke();yield return null;
             Assert.AreEqual(before,LocalProgress.Load().player_id);Assert.AreEqual("Bạn Mây",PlayerManager.DisplayName);
-            ButtonNamed("Khám phá thêm").onClick.Invoke();yield return null;
+            ButtonNamed("HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →").onClick.Invoke();yield return null;
             foreach(var title in new[]{"Bệnh viện • Khu tiếp đón","Siêu thị","Bãi biển"})Assert.IsNotNull(ButtonNamed(title));
             Assert.AreEqual(canvases,UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Length);
-            yield return Capture("player-extra-menu-20261101");PlayerPrefs.DeleteKey(PlayerManager.NameKey(testId));
+            yield return Capture("player-area-journey-20261112");PlayerPrefs.DeleteKey(PlayerManager.NameKey(testId));
         }
         [UnityTest] public IEnumerator ExtraEnvironmentsHaveClearFloorAndWorkingRounds()
         {
@@ -850,13 +850,17 @@ namespace EcoSortQuest.Tests
                 EcoSortApp.SelectedAreaMission="";EcoSortApp.SelectedExtraEnvironment=environment;EcoSortApp.SelectedLearningMode=LearningMode.Explore;
                 yield return Open("GameScene");Call(App,"AcceptRestorationMission");yield return null;Physics.SyncTransforms();
                 var actor=Field<ExplorerController>(App,"explorer");var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
-                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);Assert.AreEqual(4,bins.Length);Assert.AreEqual(12,litter.Count);
+                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);Assert.AreEqual(4,bins.Length);Assert.AreEqual(18,litter.Count);
                 Assert.IsNotNull(GameObject.Find("Extra scenery • "+environment));
                 foreach(var item in litter.Where(i=>i.gameObject.activeInHierarchy))
-                    Assert.IsFalse(Physics.OverlapCapsule(item.transform.position+Vector3.up*.4f,item.transform.position+Vector3.up*1.5f,.34f).Any(c=>c.bounds.max.y>.15f && c.GetComponentInParent<WasteItem>()==null && c.GetComponentInParent<ExplorerController>()==null),environment+" item intersects furniture");
-                yield return Capture("extra-"+environment+"-20261101");
+                {
+                    var blockers=Physics.OverlapCapsule(item.transform.position+Vector3.up*.4f,item.transform.position+Vector3.up*1.5f,.34f)
+                        .Where(c=>c.bounds.max.y>.15f && c.GetComponentInParent<WasteItem>()==null && c.GetComponentInParent<ExplorerController>()==null).ToArray();
+                    Assert.IsFalse(blockers.Any(),environment+" item "+item.Definition.Id+" at "+item.transform.position+" intersects "+string.Join(",",blockers.Select(c=>c.name)));
+                }
+                yield return Capture("extra-"+environment+"-20261112");
                 void Move(Vector3 position){var body=actor.GetComponent<CharacterController>();body.enabled=false;actor.transform.position=position;body.enabled=true;Physics.SyncTransforms();}
-                for(int n=0;n<12;n++)
+                for(int n=0;n<18;n++)
                 {
                     var item=litter.First(i=>i!=null && i.gameObject.activeInHierarchy);Move(item.transform.position+Vector3.back*.7f);Call(App,"InteractExploration");Assert.AreSame(item,Field<WasteItem>(App,"carried"));
                     Call(App,"ShowPreparation");
@@ -865,7 +869,7 @@ namespace EcoSortQuest.Tests
                     if(Field<RectTransform>(App,"preparationPanel")!=null){typeof(EcoSortApp).GetMethod("ChoosePreparation",Fields).Invoke(App,new object[]{PreparationRules.Required(item.Definition.Id)});Call(App,"ClosePreparation");}
                     Move(bins.First(b=>b.type==item.type).transform.position+Vector3.back*1.5f);Call(App,"InteractExploration");yield return null;
                 }
-                Assert.AreEqual(12,Field<int>(App,"cleaned"));yield return null;Assert.IsTrue(Field<bool>(App,"resultShown"));
+                Assert.AreEqual(18,Field<int>(App,"cleaned"));yield return null;Assert.IsTrue(Field<bool>(App,"resultShown"));
                 if(!string.IsNullOrEmpty(url))
                 {
                     float deadline=Time.realtimeSinceStartup+20;while(Field<bool>(App,"busy") && Time.realtimeSinceStartup<deadline)yield return null;
@@ -875,7 +879,7 @@ namespace EcoSortQuest.Tests
                         request.timeout=15;yield return request.SendWebRequest();Assert.AreEqual(200,request.responseCode);
                         var snapshot=JsonUtility.FromJson<DashboardScores>(request.downloadHandler.text);
                         var saved=snapshot.scores.Single(s=>s.environment==environment.ToString());
-                        Assert.AreEqual(120,saved.score);Assert.AreEqual("Bạn Demo",saved.display_name);Assert.AreEqual(testId,saved.player_id);
+                        Assert.AreEqual(180,saved.score);Assert.AreEqual("Bạn Demo",saved.display_name);Assert.AreEqual(testId,saved.player_id);
                     }
                 }
                 PlayerPrefs.DeleteKey(RestorationSave.Key(testId+".extra."+environment,SelectedExtraContext(environment)));

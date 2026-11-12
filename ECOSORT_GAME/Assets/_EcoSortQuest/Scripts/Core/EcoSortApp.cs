@@ -184,7 +184,7 @@ namespace EcoSortQuest
             var greeting=view.Text(card,PlayerManager.DisplayName.Length>0?"XIN CHÀO, "+PlayerManager.DisplayName:"HỌC QUA HÀNH ĐỘNG",.06f,.91f,.88f,.045f,18,ViewFactory.Accent);
             view.Text(card,"Phân loại hôm nay.\nXanh hơn ngày mai.",.06f,.735f,.88f,.16f,40);
             view.Text(card,"Khám phá, phân loại và hồi sinh từng khu vực.",.06f,.655f,.88f,.065f,21,ViewFactory.Muted);
-            view.Button(card,"HÀNH TRÌNH 3 KHU VỰC →",.06f,.54f,.88f,.085f,ShowAreaHub,true);
+            view.Button(card,"HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →",.06f,.54f,.88f,.085f,ShowAreaHub,true);
             view.Button(card,"Học có hướng dẫn",.06f,.44f,.42f,.07f,()=>ShowPracticePicker(LearningMode.Learn));
             view.Button(card,"Kiểm tra",.52f,.44f,.42f,.07f,()=>ShowPracticePicker(LearningMode.Test));
             view.Button(card,"Ôn câu sai",.06f,.345f,.42f,.07f,()=>ShowPracticePicker(LearningMode.Review));
@@ -195,10 +195,8 @@ namespace EcoSortQuest
             view.Button(card,"Cách chơi",.52f,.145f,.42f,.07f,ShowHelp);
             var namePrompt=GetComponent<PlayerNamePrompt>();if(namePrompt==null)namePrompt=gameObject.AddComponent<PlayerNamePrompt>();
             namePrompt.Configure(view,()=>greeting.text="XIN CHÀO, "+PlayerManager.DisplayName);
-            var extraMenu=GetComponent<MainMenuButtons>();if(extraMenu==null)extraMenu=gameObject.AddComponent<MainMenuButtons>();
-            extraMenu.Configure(view,BeginExtraEnvironment,OpenDashboard);
-            view.Button(card,"Khám phá thêm",.06f,.04f,.55f,.07f,extraMenu.Show);
-            view.Button(card,"Đổi tên",.65f,.04f,.29f,.07f,namePrompt.Show);
+            view.Button(card,"Bảng kết quả",.06f,.04f,.42f,.07f,OpenDashboard);
+            view.Button(card,"Đổi tên",.52f,.04f,.42f,.07f,namePrompt.Show);
             if(openJourneyOnMenu){openJourneyOnMenu=false;ShowAreaHub();}
             Footer("36 vật phẩm • 3 bối cảnh • Học từ những lựa chọn của bạn");
             if (!progress.player_id.StartsWith("test-") && PlayerPrefs.GetInt("EcoSortQuest.TutorialSeen", 0) == 0)

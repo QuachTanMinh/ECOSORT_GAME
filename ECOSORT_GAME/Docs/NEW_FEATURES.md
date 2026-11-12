@@ -1,21 +1,21 @@
-# Tên người chơi, môi trường bổ sung và bảng kết quả
+# Tên người chơi, hành trình khu vực và bảng kết quả
 
-Cập nhật ngày 01/11/2026. Các chức năng này bổ sung cho bản demo môn học; chín nhiệm vụ Nhà ở, Trường học và Công viên vẫn là hành trình chính.
+Cập nhật ngày 12/11/2026. Các chức năng này bổ sung cho bản demo môn học; chín nhiệm vụ Nhà ở, Trường học và Công viên cùng ba địa điểm thực hành nay nằm trong một hành trình.
 
 ## Nhập tên và mở môi trường
 
 1. Mở `Assets/_EcoSortQuest/Scenes/MainMenu.unity`, nhấn Play. Lần đầu, nhập tên gọi rồi chọn **Lưu tên gọi**, hoặc chọn **Chơi khách**. Tên dài tối đa 32 ký tự, hỗ trợ tiếng Việt, chữ số, dấu cách, gạch ngang và gạch dưới.
 2. Chọn **Đổi tên** trong menu để thay tên. Tên gọi lưu trên máy; mã người chơi và lịch sử cũ được giữ nguyên. Đây không phải tài khoản đăng nhập.
-3. Chọn **Khám phá thêm**, rồi chọn **Bệnh viện • Khu tiếp đón**, **Siêu thị** hoặc **Bãi biển**.
-4. Di chuyển và nhặt vật phẩm theo hướng dẫn trong game; quan sát tình trạng, chuẩn bị hoặc tách vật liệu khi cần, rồi đưa vào một trong bốn thùng. Mỗi cảnh có 12 vật phẩm, tối đa 120 điểm. Các mốc 4, 8 và 12 vật phẩm làm xuất hiện trang trí.
+3. Chọn **Hành trình dọn dẹp các khu vực**. Cùng một hành trình có chín nhiệm vụ theo tuyến ở Nhà ở, Trường học và Công viên, cùng ba địa điểm thực hành: **Bệnh viện • Khu tiếp đón**, **Siêu thị** và **Bãi biển**.
+4. Di chuyển và nhặt vật phẩm theo hướng dẫn trong game; quan sát tình trạng, chuẩn bị hoặc tách vật liệu khi cần, rồi đưa vào một trong bốn thùng. Mỗi địa điểm thực hành có 18 vật phẩm, tối đa 180 điểm. Các mốc 4, 8 và 12 vật phẩm làm xuất hiện trang trí.
 
 Khu tiếp đón bệnh viện chỉ có rác sinh hoạt sạch trong bộ vật phẩm hiện tại. Game không hướng dẫn trẻ thu gom kim tiêm hay rác y tế. Ba môi trường dùng lại kiến thức bốn nhóm Nhựa, Kim loại, Giấy và Hữu cơ; không bổ sung lớp nhận diện AI. Thành tích phục hồi của từng môi trường lưu riêng và không mở khóa hành trình chính.
 
-`PlayerManager`, `PlayerNamePrompt` và `MainMenuButtons` đã được gắn vào MainMenu. Giao diện dùng Canvas sẵn có, không tạo thêm Canvas chồng nhau. Nếu tạo lại scene bằng công cụ, chạy **EcoSort → Wire player prompt and extra environments** để gắn lại. Không cần prefab UI riêng cho bản demo này.
+`PlayerManager`, `PlayerNamePrompt` và `MainMenuButtons` đã được gắn vào MainMenu. Giao diện dùng Canvas sẵn có, không tạo thêm Canvas chồng nhau. Không cần prefab UI riêng cho bản demo này. Xem [hướng dẫn hành trình](AREA-JOURNEY.md) và [biên bản kiểm chứng ngày 12/11](JOURNEY-VALIDATION-20261112.md).
 
 ## Xem bảng kết quả
 
-Khởi động dịch vụ, sau đó mở [Bảng kết quả trên máy này](http://127.0.0.1:8000/dashboard). Tệp `ECOSORT_GAME/Dashboard.html` cũng dẫn tới địa chỉ này. Trong game, **Khám phá thêm → Bảng kết quả** mở trang đã lọc theo mã người chơi hiện tại.
+Khởi động dịch vụ, sau đó mở [Bảng kết quả trên máy này](http://127.0.0.1:8000/dashboard). Tệp `ECOSORT_GAME/Dashboard.html` cũng dẫn tới địa chỉ này. Trong game, nút **Bảng kết quả** ở menu chính mở trang đã lọc theo mã người chơi hiện tại.
 
 - Muốn gửi điểm thật: vào phần thiết lập kết nối của game, chọn chế độ kết nối và đúng địa chỉ dịch vụ trước khi chơi. Chế độ chơi trên máy không gửi dữ liệu lên Adafruit.
 - Dịch vụ dùng cấu hình `backend/.env` hiện có. Khóa Adafruit chỉ đặt tại đây; không điền vào HTML, Inspector hay mã nguồn, không đưa tệp này lên GitHub.

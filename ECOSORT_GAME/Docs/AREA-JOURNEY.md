@@ -1,8 +1,8 @@
-# Hành trình ba khu vực và phần thưởng — 24/10/2026
+# Hành trình dọn dẹp các khu vực và phần thưởng
 
 ## Mở và chơi
 
-Mở bản Windows hoặc MainMenu trong Unity. Chọn **HÀNH TRÌNH 3 KHU VỰC →**. Người chơi mới bắt đầu ở Nhà ở; chọn thẻ khu vực để xem ba nhiệm vụ và điều kiện mở khóa. Các chế độ luyện tập/chiến dịch cũ vẫn có đường vào riêng.
+Mở bản Windows hoặc MainMenu trong Unity. Chọn **HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →**. Trong một màn hình, người chơi chọn ba khu vực theo tuyến Nhà ở, Trường học, Công viên hoặc ba địa điểm thực hành Bệnh viện, Siêu thị, Bãi biển. Người chơi mới bắt đầu ở Nhà ở; các nhiệm vụ chính vẫn mở khóa tuần tự. Các địa điểm thực hành luôn có thể chọn và không thay đổi tiến trình mở khóa chính.
 
 WASD di chuyển, Shift chạy, giữ chuột phải xoay góc nhìn. E nhặt/bỏ thùng, Q đặt xuống, R quan sát và chọn cách chuẩn bị. H hỏi gợi ý cho vật đang cầm. Không có giới hạn thời gian trong cả chín nhiệm vụ; tốc độ không quyết định sao. Tên vật phẩm và thao tác quan sát không bị tính là gợi ý; H khi đang cầm vật sẽ tăng số lần gợi ý.
 
@@ -21,6 +21,18 @@ Ba lượt ngắn, mỗi lượt bốn vật phẩm cố định, đặt gần n
 Trường học gồm **Đội trực nhật — Lớp học**, **Sau giờ ăn — Căng tin**, **Sân trường xanh — Sân trường**. Mỗi nhiệm vụ có câu hỏi tình huống trước khi bắt đầu, đồ vật và bảng khu vực tương ứng. Câu trả lời sai có giải thích và được chọn lại; không thể bỏ qua câu hỏi. Hai lượt đầu bốn vật phẩm, lượt sân trường tám vật phẩm. Đây là các góc hoạt động trong cảnh 3D hiện có, chưa phải ba bản đồ nội thất lớn độc lập.
 
 Công viên gồm **Lối đi an toàn**, **Sau buổi dã ngoại**, **Trả lại góc xanh**, với 8/8/12 vật phẩm. Vị trí tìm kiếm trải rộng theo tuyến cố định, khác sân nhỏ ở Nhà ở; có tách vật liệu, làm rỗng vật chứa và thu gom thực phẩm. Không đổi ngẫu nhiên bộ vật phẩm giữa các lần chơi nhiệm vụ. Các tuyến nằm trong ranh giới đi bộ, tránh luống cây/công trình có va chạm.
+
+## Địa điểm thực hành rộng hơn
+
+Ba địa điểm thực hành nằm trong chính màn hành trình, không còn ở menu tách riêng. Mỗi nơi có 18 vật phẩm để người chơi phải đi lại, quan sát và đưa rác về trạm phân loại. Điểm tối đa là 180.
+
+| Địa điểm | Cảnh quan | Điểm nhấn trải nghiệm |
+|---|---|---|
+| Bệnh viện • Khu tiếp đón | Ghế chờ, quầy tiếp đón, bảng chỉ dẫn, giá thông tin và lối xếp hàng | Chỉ có rác sinh hoạt sạch; không mô phỏng thu gom vật sắc nhọn hay rác y tế. |
+| Siêu thị | Kệ hàng hai bên, hàng hóa, giỏ mua sắm, quầy thanh toán và lối đi giữa | Rác rải dọc lối đi chung, không nằm trong kệ hoặc quầy. |
+| Bãi biển | Cát, mép nước, lối ván, ô che, bàn ghế, cây ven biển và bảng nhắc giữ sạch | Khu tìm kiếm mở rộng theo chiều ngang; các vật phẩm tránh ô, ghế và cây. |
+
+Các cảnh giữ phong cách low-poly dựng bằng mã để giảm số tệp tài nguyên, dùng chung vật liệu đã bật instancing và chỉ tạo collider cho nền, tường, nội thất cần chặn người chơi. Đây là lựa chọn tối ưu cho bản demo Windows, không phải bản đồ mô phỏng có ảnh chụp thật.
 
 ## Sao và mở khóa
 

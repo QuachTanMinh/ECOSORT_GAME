@@ -17,6 +17,10 @@ namespace EcoSortQuest
             WalkBounds=indoor?Rect.MinMaxRect(-9.45f,-7.65f,9.45f,5.25f):Rect.MinMaxRect(-11,-8,11,5);
             Spawn=new Vector3(0,.1f,-6.7f);Collection=new Vector3(0,0,4.25f);
         }
+        public AreaSceneryLayout(string id,bool indoor,Rect walkBounds,Vector3 spawn,Vector3 collection,params Vector3[] items)
+        {
+            Id=id;Indoor=indoor;WalkBounds=walkBounds;Spawn=spawn;Collection=collection;Items=items;
+        }
         static Vector3 P(float x,float z)=>new Vector3(x,.04f,z);
         public static AreaSceneryLayout For(AreaMission mission)
         {

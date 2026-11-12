@@ -21,8 +21,8 @@ namespace EcoSortQuest
             if(areaOverlay!=null)Destroy(areaOverlay.gameObject);
             areaOverlay=view.Panel(view.Root,.04f,.09f,.92f,.79f,ViewFactory.Cream,"Area journey");
             var panel=areaOverlay;var data=AreaJourneyStore.Load(progress.player_id);
-            view.Text(panel,"HÀNH TRÌNH GÓC XANH",.035f,.865f,.70f,.09f,33);
-            view.Text(panel,"9 nhiệm vụ • "+data.missions.Sum(m=>m.bestStars)+"/27 sao • Sổ tay "+data.discovered.Count+"/36",.035f,.785f,.92f,.065f,22,ViewFactory.Accent);
+            view.Text(panel,"HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC",.035f,.865f,.78f,.09f,33);
+            view.Text(panel,"9 nhiệm vụ theo tuyến • 3 địa điểm thực hành • "+data.missions.Sum(m=>m.bestStars)+"/27 sao • Sổ tay "+data.discovered.Count+"/36",.035f,.785f,.92f,.065f,21,ViewFactory.Accent);
             for(int i=0;i<3;i++)
             {
                 var selected=(LearningContext)i;
@@ -41,9 +41,16 @@ namespace EcoSortQuest
                 var button=view.Button(card,open?"Nhận nhiệm vụ":"Hoàn thành nhiệm vụ trước",.055f,.035f,.89f,.12f,()=>BeginAreaMission(mission),true);
                 button.interactable=open;
             }
-            view.Text(panel,context==LearningContext.Home?"NHÀ Ở • Quan sát từng bước, chuẩn bị rác sinh hoạt, thử lại thoải mái.":context==LearningContext.School?"TRƯỜNG HỌC • Câu hỏi tình huống + phân loại tại ba khu vực.":"CÔNG VIÊN • Tìm kiếm xa hơn, thu gom 8–12 vật phẩm, phục hồi cảnh quan.",.035f,.13f,.92f,.08f,21);
-            view.Button(panel,"Phần thưởng / huy hiệu",.035f,.025f,.40f,.08f,()=>{Destroy(panel.gameObject);ShowAreaRewards();});
-            view.Button(panel,"Đóng",.66f,.025f,.30f,.08f,()=>Destroy(panel.gameObject));
+            view.Text(panel,context==LearningContext.Home?"NHÀ Ở • Quan sát từng bước, chuẩn bị rác sinh hoạt, thử lại thoải mái.":context==LearningContext.School?"TRƯỜNG HỌC • Câu hỏi tình huống + phân loại tại ba khu vực.":"CÔNG VIÊN • Tìm kiếm xa hơn, thu gom 8–12 vật phẩm, phục hồi cảnh quan.",.035f,.145f,.92f,.07f,20);
+            view.Text(panel,"ĐỊA ĐIỂM THỰC HÀNH • 18 vật phẩm mỗi nơi",.035f,.095f,.38f,.045f,18,ViewFactory.Accent);
+            var environments=new[]{ExtraEnvironment.Hospital,ExtraEnvironment.Supermarket,ExtraEnvironment.Beach};
+            for(int i=0;i<environments.Length;i++)
+            {
+                var environment=environments[i];
+                view.Button(panel,ExtraEnvironmentInfo.Title(environment),.42f+i*.18f,.09f,.17f,.055f,()=>BeginExtraEnvironment(environment));
+            }
+            view.Button(panel,"Phần thưởng / huy hiệu",.035f,.02f,.40f,.055f,()=>{Destroy(panel.gameObject);ShowAreaRewards();});
+            view.Button(panel,"Đóng",.80f,.02f,.16f,.055f,()=>Destroy(panel.gameObject));
         }
         void BeginAreaMission(AreaMission mission)
         {

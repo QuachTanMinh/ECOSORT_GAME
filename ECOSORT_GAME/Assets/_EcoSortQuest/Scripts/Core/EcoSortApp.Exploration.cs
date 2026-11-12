@@ -38,7 +38,7 @@ namespace EcoSortQuest
             if(areaMission!=null && !AreaJourneyStore.Unlocked(AreaJourneyStore.Load(progress.player_id),areaMission))
             {SelectedAreaMission="";Home();return;}
             if(areaMission!=null)SelectedContext=areaMission.Context;
-            int total=areaMission?.Items.Length??RestorationMission.Total;
+            int total=areaMission!=null?areaMission.Items.Length:extraEnvironment!=ExtraEnvironment.None?ExtraEnvironmentInfo.ItemCount(extraEnvironment):RestorationMission.Total;
             round=new SortingRound(total,Mathf.CeilToInt(total*.75f));
             restoration=new RestorationMission(total);
             restorationSession=System.Guid.NewGuid().ToString("N");
@@ -51,12 +51,12 @@ namespace EcoSortQuest
             {
                 explorer.WalkBounds=sceneryLayout.WalkBounds;
                 explorer.CameraOffset=sceneryLayout.Indoor?new Vector3(0,8.2f,-10):new Vector3(0,7,-9);
-                explorer.CameraFocusBounds=Rect.MinMaxRect(-4.5f,-4,4.5f,2);
+                explorer.CameraFocusBounds=sceneryLayout.WalkBounds;
                 sceneCamera.backgroundColor=sceneryLayout.Indoor?new Color(.71f,.78f,.79f):new Color(.64f,.81f,.90f);
             }
             SpawnBins(sceneryLayout!=null?sceneryLayout.Collection:new Vector3(0,0,3.8f),sceneryLayout!=null?sceneryLayout.BinScale:1);
             explorationBins=worldRoot.GetComponentsInChildren<WasteBin>();
-            var deck=LearningDeck.Build(SelectedContext,12,Random.Range(0,int.MaxValue));
+            var deck=LearningDeck.Build(SelectedContext,total,Random.Range(0,int.MaxValue));
             // Ensure every mission teaches both container preparation and dry-paper handling.
             deck[0]=WasteCatalog.All.First(d=>d.Id=="water-bottle");
             deck[1]=WasteCatalog.All.First(d=>d.Id=="paper-box");
