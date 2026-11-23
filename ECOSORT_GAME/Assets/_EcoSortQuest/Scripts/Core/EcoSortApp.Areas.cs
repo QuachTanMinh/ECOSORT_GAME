@@ -53,7 +53,7 @@ namespace EcoSortQuest
             DrawMissionCards(panel,data,AreaMissions.ForEnvironment(environment));
             view.Text(panel,environment==ExtraEnvironment.Hospital?"BỆNH VIỆN • Chỉ nhặt rác sinh hoạt sạch. Không chạm vào vật sắc nhọn hay rác y tế.":environment==ExtraEnvironment.Supermarket?"SIÊU THỊ • Giữ lối đi rộng rãi. Làm rỗng đồ chứa và tách vật liệu trước khi bỏ thùng.":"BÃI BIỂN • Đi dọc bờ cát, giữ khu nghỉ sạch và đưa rác về trạm thu gom.",.035f,.145f,.92f,.07f,20);
             view.Button(panel,"← Khu vực chính",.035f,.02f,.28f,.065f,()=>ShowAreaHub(SelectedContext));
-            view.Button(panel,"Phần thưởng và huy hiệu",.34f,.02f,.31f,.065f,()=>{Destroy(panel.gameObject);ShowAreaRewards();});
+            view.Button(panel,"Phần thưởng và huy hiệu",.34f,.02f,.31f,.065f,()=>{Destroy(panel.gameObject);DrawAreaRewards(false,0,()=>ShowPracticeJourney(environment));});
             view.Button(panel,"Đóng",.80f,.02f,.16f,.065f,()=>Destroy(panel.gameObject));
         }
         void DrawMissionCards(RectTransform panel,AreaJourney data,AreaMission[] missions)
@@ -76,24 +76,73 @@ namespace EcoSortQuest
             SelectedAreaMission=mission.Id;SelectedContext=mission.Context;SelectedLearningMode=LearningMode.Explore;
             AiMission=false;Navigate("GameScene");
         }
-        void ShowAreaRewards()
+        void ShowAreaRewards()=>DrawAreaRewards(false,0,ShowAreaHub);
+
+        void DrawAreaRewards(bool showMissions,int region,System.Action back)
         {
-            var panel=view.Panel(view.Root,.04f,.09f,.92f,.79f,ViewFactory.Cream,"Area rewards");
+            if(areaOverlay!=null)Destroy(areaOverlay.gameObject);
+            var panel=areaOverlay=view.Panel(view.Root,.04f,.09f,.92f,.79f,ViewFactory.Cream,"Area rewards");
             var data=AreaJourneyStore.Load(progress.player_id);
-            view.Text(panel,"PHẦN THƯỞNG CỦA BẠN",.04f,.86f,.92f,.10f,33);
-            view.Text(panel,"HUY HIỆU\n"+(data.badges.Count==0?"Chưa có huy hiệu. Hãy phân loại đúng bốn nhóm rác, ôn lại thật tốt hoặc phá kỷ lục của bạn.":string.Join(" • ",data.badges)),.04f,.64f,.92f,.20f,23);
-            view.Text(panel,"TRANG TRÍ ĐÃ MỞ\n"+string.Join("\n",AreaMissions.All.Where(m=>AreaJourneyStore.Completed(data,m.Id)).Select(m=>AreaMissions.Label(m.Context)+": "+m.Reward))+
-                (data.missions.Count==0?"Hoàn thành nhiệm vụ để nhận cây, hoa và ghế cho khu vực.":""),.04f,.31f,.92f,.31f,21);
-            void Toggle(int kind)
+            var badges=new[]{
+                ("Nhận biết bốn vật liệu","Phân loại đúng Nhựa, Kim loại, Giấy và Hữu cơ trong hành trình."),
+                ("Tiến bộ từng ngày","Chơi lại một nhiệm vụ và cải thiện số sao hoặc số lượt phân loại đúng."),
+                ("Chăm chỉ ôn tập","Trả lời đúng tất cả câu trong một lượt Ôn câu sai."),
+                ("Người giữ góc xanh","Hoàn thành nhiệm vụ cuối ở Công viên.")
+            };
+            int earned=badges.Count(b=>data.badges.Contains(b.Item1));
+            int completed=AreaMissions.All.Count(m=>AreaJourneyStore.Completed(data,m.Id));
+            view.Text(panel,"PHẦN THƯỞNG VÀ HUY HIỆU",.04f,.88f,.92f,.09f,33);
+            view.Text(panel,$"{earned}/{badges.Length} huy hiệu   •   {completed}/{AreaMissions.All.Length} nhiệm vụ hoàn thành",.04f,.805f,.92f,.06f,21,ViewFactory.Accent);
+            view.Button(panel,"Huy hiệu",.04f,.71f,.44f,.075f,()=>DrawAreaRewards(false,region,back),!showMissions);
+            view.Button(panel,"Phần thưởng theo khu vực",.52f,.71f,.44f,.075f,()=>DrawAreaRewards(true,region,back),showMissions);
+            Color Surface(bool unlocked)=>unlocked?new Color(.87f,.94f,.87f):new Color(.92f,.93f,.92f);
+            if(!showMissions)
             {
-                if(kind==0)data.plants=!data.plants;else if(kind==1)data.flowers=!data.flowers;else data.benches=!data.benches;
-                AreaJourneyStore.Save(progress.player_id,data);Destroy(panel.gameObject);ShowAreaRewards();
+                for(int i=0;i<badges.Length;i++)
+                {
+                    var (title,condition)=badges[i];
+                    bool unlocked=data.badges.Contains(title);
+                    var card=view.Card(panel,.04f+(i%2)*.48f,.415f-(i/2)*.275f,.44f,.255f,Surface(unlocked),title);
+                    view.Text(card,unlocked?"ĐÃ ĐẠT":"CHƯA ĐẠT",.06f,.71f,.88f,.20f,18,unlocked?ViewFactory.Accent:ViewFactory.Muted);
+                    view.Text(card,title,.06f,.46f,.88f,.22f,24);
+                    view.Text(card,condition,.06f,.10f,.88f,.31f,19,ViewFactory.Muted);
+                }
             }
-            view.Button(panel,"Cây: "+(data.plants?"BẬT":"TẮT"),.04f,.19f,.29f,.08f,()=>Toggle(0));
-            view.Button(panel,"Hoa: "+(data.flowers?"BẬT":"TẮT"),.355f,.19f,.29f,.08f,()=>Toggle(1));
-            view.Button(panel,"Ghế: "+(data.benches?"BẬT":"TẮT"),.67f,.19f,.29f,.08f,()=>Toggle(2));
-            view.Text(panel,"Trang trí đã mở sẽ hiện khi bạn quay lại cùng khu vực. Tiến trình được lưu trên máy theo từng người chơi.",.04f,.10f,.92f,.075f,19,ViewFactory.Muted);
-            view.Button(panel,"Về hành trình",.04f,.015f,.44f,.075f,()=>{Destroy(panel.gameObject);ShowAreaHub();},true);
+            else
+            {
+                string[] regions={"Nhà ở","Trường học","Công viên","Bệnh viện","Siêu thị","Bãi biển"};
+                var extras=new[]{ExtraEnvironment.Hospital,ExtraEnvironment.Supermarket,ExtraEnvironment.Beach};
+                for(int i=0;i<regions.Length;i++)
+                {
+                    int choice=i;
+                    view.Button(panel,regions[i],.04f+i*.155f,.61f,.145f,.07f,()=>DrawAreaRewards(true,choice,back),i==region);
+                }
+                var missions=region<3?AreaMissions.MainJourney.Where(m=>m.Context==(LearningContext)region).ToArray():AreaMissions.ForEnvironment(extras[region-3]);
+                for(int i=0;i<missions.Length;i++)
+                {
+                    var mission=missions[i];
+                    bool unlocked=AreaJourneyStore.Completed(data,mission.Id);
+                    var card=view.Card(panel,.04f+i*.31f,.275f,.30f,.295f,Surface(unlocked),mission.Id);
+                    view.Text(card,unlocked?"ĐÃ NHẬN":"CHƯA NHẬN",.06f,.72f,.88f,.20f,18,unlocked?ViewFactory.Accent:ViewFactory.Muted);
+                    view.Text(card,mission.Reward,.06f,.36f,.88f,.34f,23);
+                    view.Text(card,mission.Title,.06f,.07f,.88f,.25f,18,ViewFactory.Muted);
+                }
+                if(region<3)
+                {
+                    void Toggle(int kind)
+                    {
+                        if(kind==0)data.plants=!data.plants;else if(kind==1)data.flowers=!data.flowers;else data.benches=!data.benches;
+                        AreaJourneyStore.Save(progress.player_id,data);
+                        DrawAreaRewards(true,region,back);
+                    }
+                    view.Button(panel,"Cây: "+(data.plants?"BẬT":"TẮT"),.04f,.175f,.30f,.07f,()=>Toggle(0));
+                    view.Button(panel,"Hoa: "+(data.flowers?"BẬT":"TẮT"),.35f,.175f,.30f,.07f,()=>Toggle(1));
+                    view.Button(panel,"Ghế: "+(data.benches?"BẬT":"TẮT"),.66f,.175f,.30f,.07f,()=>Toggle(2));
+                    view.Text(panel,"Hiển thị cây, hoa và ghế đã mở tại ba khu vực chính.",.04f,.10f,.92f,.055f,18,ViewFactory.Muted);
+                }
+                else view.Text(panel,"Hoàn thành nhiệm vụ để ghi nhận thành quả tại địa điểm này.",.04f,.12f,.92f,.085f,19,ViewFactory.Muted);
+            }
+            view.Button(panel,"Về hành trình",.04f,.015f,.44f,.075f,()=>{Destroy(panel.gameObject);back();},true);
             view.Button(panel,"Đóng",.52f,.015f,.44f,.075f,()=>Destroy(panel.gameObject));
         }
         void RequestAreaHint()

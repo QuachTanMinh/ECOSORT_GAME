@@ -14,10 +14,10 @@ namespace EcoSortQuest
         {
             var group=new GameObject(name).transform;group.SetParent(sceneryRoot,false);group.localPosition=new Vector3(x,0,z);return group;
         }
-        void Label(string name,string text,Vector3 position,float size=.065f)
+        void Label(string name,string text,Vector3 position,float size=.065f, Color? textColor = null)
         {
             var go=new GameObject(name,typeof(TextMesh));go.transform.SetParent(sceneryRoot,false);go.transform.localPosition=position;go.transform.localRotation=Quaternion.identity;
-            var label=go.GetComponent<TextMesh>();label.text=text;label.fontSize=64;label.characterSize=Mathf.Clamp(size*1.05f,.042f,.06f);label.fontStyle=FontStyle.Bold;label.anchor=TextAnchor.MiddleCenter;label.alignment=TextAlignment.Center;label.color=ViewFactory.Ink;
+            var label=go.GetComponent<TextMesh>();label.text=text;label.fontSize=64;label.characterSize=Mathf.Clamp(size*1.05f,.042f,.06f);label.fontStyle=FontStyle.Bold;label.anchor=TextAnchor.MiddleCenter;label.alignment=TextAlignment.Center;label.color = textColor ?? ViewFactory.Ink;
         }
         public AreaSceneryLayout BuildMissionEnvironment(AreaMission mission)
         {

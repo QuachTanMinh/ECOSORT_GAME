@@ -809,6 +809,8 @@ namespace EcoSortQuest.Tests
             Assert.Contains("Người giữ góc xanh",completed.badges);Assert.GreaterOrEqual(completed.discovered.Count,20);
             Call(App,"ShowAreaRewards");yield return null;
             yield return Capture("areas-rewards-20261024");
+            ButtonNamed("Phần thưởng theo khu vực").onClick.Invoke();yield return null;
+            yield return Capture("area-rewards-by-location");
             ButtonNamed("Cây: BẬT").onClick.Invoke();yield return null;
             Assert.IsFalse(AreaJourneyStore.Load(testId).plants);
             yield return Open("MainMenu");
@@ -822,6 +824,27 @@ namespace EcoSortQuest.Tests
             Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>().Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
+        [UnityTest] public IEnumerator RewardsShowBadgeStatesAndSeparatePracticeLocations()
+        {
+            yield return Open("MainMenu");
+            var data=AreaJourneyStore.Load(testId);
+            data.badges.Add("Tiến bộ từng ngày");
+            data.plants=true;
+            AreaJourneyStore.Save(testId,data);
+            Call(App,"ShowAreaRewards");yield return null;
+            var panel=GameObject.Find("Area rewards");
+            Assert.AreEqual(1,panel.GetComponentsInChildren<Text>().Count(t=>t.text=="ĐÃ ĐẠT"));
+            Assert.AreEqual(3,panel.GetComponentsInChildren<Text>().Count(t=>t.text=="CHƯA ĐẠT"));
+            ButtonNamed("Phần thưởng theo khu vực").onClick.Invoke();yield return null;
+            ButtonNamed("Cây: BẬT").onClick.Invoke();yield return null;
+            Assert.IsFalse(AreaJourneyStore.Load(testId).plants);
+            ButtonNamed("Siêu thị").onClick.Invoke();yield return null;
+            panel=GameObject.Find("Area rewards");
+            Assert.IsTrue(panel.GetComponentsInChildren<Text>().Any(t=>t.text=="Giỏ tái sử dụng"));
+            Assert.IsFalse(panel.GetComponentsInChildren<Text>().Any(t=>t.text.StartsWith("Cây: ")));
+            yield return Capture("area-rewards-by-location");
+        }
+
         [UnityTest] public IEnumerator NicknameAndJourneyKeepsEveryLocationOnOneCanvas()
         {
             yield return Open("MainMenu");var before=LocalProgress.Load().player_id;

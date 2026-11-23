@@ -247,9 +247,9 @@ namespace EcoSortQuest
             for(int aisle=0;aisle<3;aisle++)
             {
                 float x=-8f+aisle*8f;
-                var board=Part("Aisle number board",new Vector3(x,3.35f,-.5f),new Vector3(1.15f,.72f,.12f),new Color(.18f,.39f,.39f));
+                var board=Part("Aisle number board",new Vector3(x,3.35f,-.5f),new Vector3(1.60f,.72f,.12f),new Color(.18f,.39f,.39f));
                 board.transform.localRotation=Quaternion.identity;
-                Label("Aisle number","LỐI "+(aisle+1),new Vector3(x,3.35f,-.58f),.055f);
+                Label("Aisle number","LỐI ĐI "+(aisle+1),new Vector3(x,3.35f,-.58f),.055f, Color.white);
                 foreach(float side in new[]{-.42f,.42f})
                     Part("Aisle number hanger",new Vector3(x+side,3.84f,-.5f),new Vector3(.08f,.28f,.08f),Steel);
             }
