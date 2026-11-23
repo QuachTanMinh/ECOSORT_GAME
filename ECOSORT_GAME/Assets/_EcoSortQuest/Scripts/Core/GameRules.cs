@@ -55,7 +55,7 @@ namespace EcoSortQuest
             WasteType.Shoes      => new Color(.45f, .28f, .18f),
             WasteType.Batteries  => new Color(.90f, .78f, .08f),
             WasteType.Trash      => new Color(.55f, .55f, .55f),
-            _                    => Color.gray
+            _                    => UnityEngine.Color.gray
         };
     }
 
