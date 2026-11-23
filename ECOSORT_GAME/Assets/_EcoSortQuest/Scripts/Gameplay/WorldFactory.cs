@@ -77,7 +77,7 @@ namespace EcoSortQuest
             label.transform.localPosition = new Vector3(0, .85f, -.711f);
             // TextMesh faces local -Z; identity faces the gameplay camera on -Z.
             label.transform.localRotation = Quaternion.identity;
-            var text = label.GetComponent<TextMesh>(); text.text = WasteInfo.Label(type);
+            var text = label.GetComponent<TextMesh>(); text.text = type == WasteType.Organic ? "HỮU CƠ" : type.ToString().ToUpperInvariant();
             text.anchor = TextAnchor.MiddleCenter; text.alignment = TextAlignment.Center;
             text.fontSize = 50; text.characterSize = 0.065f; text.fontStyle = FontStyle.Bold; text.color = Color.white;
             text.offsetZ = 0f; text.lineSpacing = 1f; text.tabSize = 4f; text.richText = true;
