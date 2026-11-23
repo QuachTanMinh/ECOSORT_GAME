@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 
 namespace EcoSortQuest
 {
@@ -6,11 +7,14 @@ namespace EcoSortQuest
     {
         public static ExtraEnvironment SelectedExtraEnvironment=ExtraEnvironment.None;
         ExtraEnvironment extraEnvironment;
-        string RestorationScopeId=>extraEnvironment==ExtraEnvironment.None?progress.player_id:progress.player_id+".extra."+extraEnvironment;
+        string RestorationScopeId=>extraEnvironment==ExtraEnvironment.None?progress.player_id:
+            progress.player_id+".extra."+(areaMission!=null?areaMission.Id:extraEnvironment.ToString());
         void BeginExtraEnvironment(ExtraEnvironment environment)
         {
             if(busy)return;
-            SelectedExtraEnvironment=environment;SelectedAreaMission="";SelectedLearningMode=LearningMode.Explore;
+            var first=AreaMissions.ForEnvironment(environment).FirstOrDefault();
+            if(first==null)return;
+            SelectedExtraEnvironment=environment;SelectedAreaMission=first.Id;SelectedLearningMode=LearningMode.Explore;
             SelectedContext=environment==ExtraEnvironment.Beach?LearningContext.Park:LearningContext.Home;Navigate("GameScene");
         }
         void OpenDashboard()

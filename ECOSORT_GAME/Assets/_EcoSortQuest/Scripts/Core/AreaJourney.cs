@@ -9,13 +9,14 @@ namespace EcoSortQuest
     {
         public readonly string Id, Title, Zone, Brief, Reward, Question, Explanation;
         public readonly LearningContext Context;
+        public readonly ExtraEnvironment Environment;
         public readonly string[] Items, Options;
         public readonly int Answer;
         public readonly bool Separate;
         public AreaMission(string id, LearningContext context, string title, string zone, string brief, string reward,
-            string items, bool separate=false, string question="", string options="", int answer=0, string explanation="")
+            string items, bool separate=false, string question="", string options="", int answer=0, string explanation="", ExtraEnvironment environment=ExtraEnvironment.None)
         { Id=id;Context=context;Title=title;Zone=zone;Brief=brief;Reward=reward;Items=items.Split(',');Separate=separate;
-          Question=question;Options=options.Length==0?Array.Empty<string>():options.Split('|');Answer=answer;Explanation=explanation; }
+          Question=question;Options=options.Length==0?Array.Empty<string>():options.Split('|');Answer=answer;Explanation=explanation;Environment=environment; }
     }
     public static class AreaMissions
     {
@@ -28,9 +29,23 @@ namespace EcoSortQuest
             new AreaMission("school-yard",LearningContext.School,"03 • Sân trường xanh","SÂN TRƯỜNG","Tìm tám vật phẩm quanh sân; giữ sạch khu sinh hoạt chung và vận dụng những gì đã học.","Ghế đọc sách • Mở Công viên","water-bottle,drink-can,flyer,fallen-leaf,plastic-spoon,paper-box,orange-peel,aluminium-tray",false,"Cách giảm rác sau giờ ăn phù hợp nhất?","Dùng đồ tái sử dụng khi phù hợp|Đổi sang nhiều đồ một lần|Để rác lại sân",0,"Ưu tiên giảm phát sinh và tái sử dụng trước khi cần phân loại rác."),
             new AreaMission("park-path",LearningContext.Park,"01 • Lối đi an toàn","LỐI ĐI","Khám phá lối đi, tìm tám vật phẩm và đưa về trạm thu gom. Có thể hỏi gợi ý khi cần.","Cây xanh lối đi","water-bottle,drink-can,newspaper,banana-peel,plastic-cap,bottle-crown,flyer,fallen-leaf"),
             new AreaMission("park-picnic",LearningContext.Park,"02 • Sau buổi dã ngoại","BÃI DÃ NGOẠI","Tìm vật phẩm rải quanh bãi cỏ. Tách túi giấy khỏi cốc và chuẩn bị hộp nhựa trước khi thu gom.","Hoa bãi dã ngoại","plastic-cup,paper-bag,food-container,watermelon-rind,aluminium-tray,apple-core,paper-box,plastic-spoon",true),
-            new AreaMission("park-restore",LearningContext.Park,"03 • Trả lại góc xanh","VƯỜN CỘNG ĐỒNG","Hoàn thành tuyến làm sạch 12 vật phẩm. Kết hợp quan sát, xử lý và phân loại để phục hồi khu vườn.","Ghế công viên • Huy hiệu Người giữ góc xanh","water-bottle,paper-box,drink-can,plastic-cup,paper-bag,banana-peel,newspaper,foil-ball,plastic-spoon,fallen-leaf,orange-peel,bottle-crown",true)
+            new AreaMission("park-restore",LearningContext.Park,"03 • Trả lại góc xanh","VƯỜN CỘNG ĐỒNG","Hoàn thành tuyến làm sạch 12 vật phẩm. Kết hợp quan sát, xử lý và phân loại để phục hồi khu vườn.","Ghế công viên • Huy hiệu Người giữ góc xanh","water-bottle,paper-box,drink-can,plastic-cup,paper-bag,banana-peel,newspaper,foil-ball,plastic-spoon,fallen-leaf,orange-peel,bottle-crown",true),
+
+            new AreaMission("hospital-waiting",LearningContext.Home,"01 • Phòng chờ sạch","BỆNH VIỆN / PHÒNG CHỜ","Thu gom rác sinh hoạt quanh ghế chờ. Chỉ xử lý vật sạch, không chạm vào vật sắc nhọn hoặc rác y tế.","Chậu cây sảnh","water-bottle,worksheet,banana-peel,drink-can,plastic-cap,paper-box",false,"", "",0,"",ExtraEnvironment.Hospital),
+            new AreaMission("hospital-reception",LearningContext.Home,"02 • Quầy tiếp đón gọn","BỆNH VIỆN / QUẦY TIẾP ĐÓN","Quan sát khu xếp hàng và chuẩn bị vật chứa trước khi phân loại.","Bảng chỉ dẫn xanh","plastic-cup,paper-bag,food-can,notebook,yogurt-pot,orange-peel,foil-ball,water-bottle,envelope,apple-core",true,"", "",0,"",ExtraEnvironment.Hospital),
+            new AreaMission("hospital-lobby",LearningContext.Home,"03 • Sảnh thân thiện","BỆNH VIỆN / SẢNH CHÍNH","Hoàn thành tuyến 18 vật phẩm ở sảnh. Đi chậm, quan sát kỹ và đưa rác sinh hoạt về trạm phân loại.","Góc cây phục hồi","water-bottle,drink-can,paper-box,banana-peel,notebook,plastic-cap,food-container,newspaper,foil-ball,plastic-spoon,orange-peel,apple-core,yogurt-pot,paper-bag,plastic-cup,aluminium-tray,fallen-leaf,bottle-crown",true,"", "",0,"",ExtraEnvironment.Hospital),
+
+            new AreaMission("market-aisle",LearningContext.Home,"01 • Lối đi mua sắm","SIÊU THỊ / LỐI ĐI","Nhặt những vật phẩm rơi trên lối đi chung, giữ khoảng trống cho mọi người di chuyển.","Giỏ tái sử dụng","water-bottle,food-can,envelope,banana-peel,plastic-spoon,paper-box",false,"", "",0,"",ExtraEnvironment.Supermarket),
+            new AreaMission("market-checkout",LearningContext.Home,"02 • Quầy thanh toán gọn","SIÊU THỊ / QUẦY THANH TOÁN","Làm rỗng hộp, giữ giấy khô và tách cốc khỏi túi giấy trước khi thu gom.","Kệ đổi quà xanh","plastic-cup,paper-bag,yogurt-pot,bread-scrap,drink-can,notebook,foil-ball,water-bottle,cardboard,orange-peel",true,"", "",0,"",ExtraEnvironment.Supermarket),
+            new AreaMission("market-floor",LearningContext.Home,"03 • Siêu thị xanh","SIÊU THỊ / KHU MUA SẮM","Hoàn thành 18 vật phẩm rải dọc các lối đi; không đặt vật vào kệ hàng hay quầy thanh toán.","Khu phân loại thân thiện","water-bottle,drink-can,paper-box,banana-peel,plastic-cup,paper-bag,food-container,newspaper,foil-ball,plastic-spoon,orange-peel,apple-core,yogurt-pot,cardboard,envelope,aluminium-tray,fallen-leaf,bottle-crown",true,"", "",0,"",ExtraEnvironment.Supermarket),
+
+            new AreaMission("beach-shore",LearningContext.Park,"01 • Mép nước sạch","BÃI BIỂN / MÉP NƯỚC","Thu gom các vật phẩm trên cát, tránh làm ảnh hưởng đến khu nghỉ của mọi người.","Cờ nhắc giữ sạch","water-bottle,drink-can,flyer,banana-peel,plastic-cap,fallen-leaf",false,"", "",0,"",ExtraEnvironment.Beach),
+            new AreaMission("beach-rest",LearningContext.Park,"02 • Khu nghỉ gọn gàng","BÃI BIỂN / KHU NGHỈ","Tách túi giấy khỏi cốc và làm rỗng vật chứa trước khi đưa về trạm phân loại.","Chậu hoa ven biển","plastic-cup,paper-bag,food-container,watermelon-rind,aluminium-tray,apple-core,paper-box,plastic-spoon,bottle-crown,orange-peel",true,"", "",0,"",ExtraEnvironment.Beach),
+            new AreaMission("beach-cleanup",LearningContext.Park,"03 • Bãi biển xanh","BÃI BIỂN / TUYẾN LÀM SẠCH","Đi dọc bãi cát rộng và hoàn thành 18 vật phẩm để trả lại không gian sạch cho mọi người.","Biển cảm ơn người giữ biển xanh","water-bottle,paper-box,drink-can,plastic-cup,paper-bag,banana-peel,newspaper,foil-ball,plastic-spoon,fallen-leaf,orange-peel,bottle-crown,food-container,watermelon-rind,plant-pot,flyer,apple-core,aluminium-tray",true,"", "",0,"",ExtraEnvironment.Beach)
         };
         public static AreaMission Find(string id)=>All.FirstOrDefault(m=>m.Id==id);
+        public static AreaMission[] ForEnvironment(ExtraEnvironment environment)=>All.Where(m=>m.Environment==environment).ToArray();
+        public static AreaMission[] MainJourney=>All.Where(m=>m.Environment==ExtraEnvironment.None).ToArray();
         public static string Label(LearningContext context)=>context==LearningContext.Home?"NHÀ Ở":context==LearningContext.School?"TRƯỜNG HỌC":"CÔNG VIÊN";
     }
     [Serializable] public sealed class AreaMissionRecord
@@ -56,7 +71,10 @@ namespace EcoSortQuest
         {PlayerPrefs.SetString(Key(player),JsonUtility.ToJson(data));PlayerPrefs.Save();}
         public static bool Completed(AreaJourney data,string id)=>data.missions.Any(r=>r.id==id && r.bestStars>0);
         public static bool Unlocked(AreaJourney data,AreaMission mission)
-        {int index=Array.IndexOf(AreaMissions.All,mission);return index==0 || index>0 && Completed(data,AreaMissions.All[index-1].Id);}
+        {
+            var route=mission.Environment==ExtraEnvironment.None?AreaMissions.MainJourney:AreaMissions.ForEnvironment(mission.Environment);
+            int index=Array.IndexOf(route,mission);return index==0 || index>0 && Completed(data,route[index-1].Id);
+        }
         public static int Stars(int total,int cleaned,int correct,int mistakes,int hints)
         {
             if(total<=0 || cleaned!=total || correct<0 || correct>total || mistakes<0 || hints<0)return 0;
@@ -86,6 +104,6 @@ namespace EcoSortQuest
             if(session.total<=0 || session.mode!="Review" || session.expired || session.answers==null || session.answers.Length!=session.total || !session.answers.All(a=>a.correct))return;
             var data=Load(player);Award(data,"Chăm chỉ ôn tập");Save(player,data);
         }
-        public static int Decorations(AreaJourney data,LearningContext context)=>AreaMissions.All.Count(m=>m.Context==context && Completed(data,m.Id));
+        public static int Decorations(AreaJourney data,LearningContext context)=>AreaMissions.MainJourney.Count(m=>m.Context==context && Completed(data,m.Id));
     }
 }

@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1f239c1902f83c45ac829aac15b5434, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EcoSortQuest.Runtime::EcoSortQuest.MainMenuButtons
 --- !u!114 &147203001
 MonoBehaviour:
@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2f8837742987e14f81a7609dfe925d4, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EcoSortQuest.Runtime::EcoSortQuest.PlayerNamePrompt
 --- !u!114 &147203002
 MonoBehaviour:
@@ -397,7 +397,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63d201fa6d694f34aba77f1b0753b92b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EcoSortQuest.Runtime::EcoSortQuest.PlayerManager
 --- !u!1 &245611085
 GameObject:
@@ -1424,7 +1424,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -1746,7 +1746,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2

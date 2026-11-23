@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="14" result="Passed" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.0792996">
+  <test-suite type="TestSuite" id="1000" name="ECOSORT_GAME" fullname="ECOSORT_GAME" runstate="Runnable" testcasecount="71" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.079300" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1088" name="EcoSortQuest.EditModeTests.dll" fullname="E:/Document_Collage/CNM/CK/ECOSORT_GAME/Library/ScriptAssemblies/EcoSortQuest.EditModeTests.dll" runstate="Runnable" testcasecount="71" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.069871" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="20964" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1089" name="EcoSortQuest" fullname="EcoSortQuest" runstate="Runnable" testcasecount="71" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.067597" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1090" name="Tests" fullname="EcoSortQuest.Tests" runstate="Runnable" testcasecount="71" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.066218" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="AreaJourneyTests" fullname="EcoSortQuest.Tests.AreaJourneyTests" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.063719" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1014" name="CompletionUnlocksInOrderAndIsIdempotentAcrossReloadAndWorseReplay" fullname="EcoSortQuest.Tests.AreaJourneyTests.CompletionUnlocksInOrderAndIsIdempotentAcrossReloadAndWorseReplay" methodname="CompletionUnlocksInOrderAndIsIdempotentAcrossReloadAndWorseReplay" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1193012751" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.026448" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="DiscoveryBadgesImprovementReviewAndCosmeticSettingsPersist" fullname="EcoSortQuest.Tests.AreaJourneyTests.DiscoveryBadgesImprovementReviewAndCosmeticSettingsPersist" methodname="DiscoveryBadgesImprovementReviewAndCosmeticSettingsPersist" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="44375432" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.003774" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1015" name="EachNewLocationUnlocksOnlyItsOwnThreeMissionRoute" fullname="EcoSortQuest.Tests.AreaJourneyTests.EachNewLocationUnlocksOnlyItsOwnThreeMissionRoute" methodname="EachNewLocationUnlocksOnlyItsOwnThreeMissionRoute" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1010392391" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.003139" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="EighteenAuthoredMissionsAreValidAndNewLocationsHaveThreeStepRoutes" fullname="EcoSortQuest.Tests.AreaJourneyTests.EighteenAuthoredMissionsAreValidAndNewLocationsHaveThreeStepRoutes" methodname="EighteenAuthoredMissionsAreValidAndNewLocationsHaveThreeStepRoutes" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="350302698" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.004436" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1013" name="StarsRewardCompletionAccuracyAndIndependentDecisions" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.007432" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1003" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,3,4,0,0,0)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,3,4,0,0,0)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="608018210" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000703" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,0,3)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,0,3)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="99224136" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000247" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1005" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,3,0,0,2)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,3,0,0,2)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="559271794" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000293" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,1,0,2)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,1,0,2)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1577965427" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000172" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1007" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,1,2)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,1,2)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="678297841" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000154" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1008" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,3,1)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,4,0,3,1)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="817906509" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000259" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="StarsRewardCompletionAccuracyAndIndependentDecisions(12,12,11,0,0,3)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(12,12,11,0,0,3)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1780123300" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000156" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="StarsRewardCompletionAccuracyAndIndependentDecisions(12,12,8,0,0,1)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(12,12,8,0,0,1)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1187978404" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000370" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1011" name="StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,5,0,0,0)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(4,4,5,0,0,0)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1390362564" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000273" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1012" name="StarsRewardCompletionAccuracyAndIndependentDecisions(0,0,0,0,0,0)" fullname="EcoSortQuest.Tests.AreaJourneyTests.StarsRewardCompletionAccuracyAndIndependentDecisions(0,0,0,0,0,0)" methodname="StarsRewardCompletionAccuracyAndIndependentDecisions" classname="EcoSortQuest.Tests.AreaJourneyTests" runstate="Runnable" seed="1340130777" result="Passed" start-time="2026-11-12 13:14:51Z" end-time="2026-11-12 13:14:51Z" duration="0.000255" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/tanmi/AppData/LocalLow/DefaultCompany/ECOSORT_GAME\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

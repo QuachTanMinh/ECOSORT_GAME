@@ -16,8 +16,8 @@ namespace EcoSortQuest
         }
         void Label(string name,string text,Vector3 position,float size=.065f)
         {
-            var go=new GameObject(name,typeof(TextMesh));go.transform.SetParent(sceneryRoot,false);go.transform.localPosition=position;
-            var label=go.GetComponent<TextMesh>();label.text=text;label.fontSize=48;label.characterSize=size;label.anchor=TextAnchor.MiddleCenter;label.color=ViewFactory.Ink;
+            var go=new GameObject(name,typeof(TextMesh));go.transform.SetParent(sceneryRoot,false);go.transform.localPosition=position;go.transform.localRotation=Quaternion.identity;
+            var label=go.GetComponent<TextMesh>();label.text=text;label.fontSize=64;label.characterSize=Mathf.Clamp(size*1.05f,.042f,.06f);label.fontStyle=FontStyle.Bold;label.anchor=TextAnchor.MiddleCenter;label.alignment=TextAlignment.Center;label.color=ViewFactory.Ink;
         }
         public AreaSceneryLayout BuildMissionEnvironment(AreaMission mission)
         {

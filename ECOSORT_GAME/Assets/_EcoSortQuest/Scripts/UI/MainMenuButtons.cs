@@ -14,7 +14,7 @@ namespace EcoSortQuest
             if(view==null || panel!=null)return;
             panel=view.ModalCard(.22f,.18f,.56f,.64f,"Extra environments");
             view.Text(panel,"KHÁM PHÁ THÊM",.06f,.82f,.88f,.11f,32);
-            view.Text(panel,"Mỗi nơi có 12 vật phẩm sinh hoạt để thu gom và phân loại. Không xử lý rác y tế hoặc vật sắc nhọn.",.06f,.65f,.88f,.15f,22,ViewFactory.Muted);
+            view.Text(panel,"Mỗi khu có 12 món đồ sinh hoạt để bạn nhặt và phân loại. Không nhặt rác y tế hay vật sắc nhọn.",.06f,.65f,.88f,.15f,22,ViewFactory.Muted);
             for(int i=1;i<=3;i++)
             {
                 var environment=(ExtraEnvironment)i;

@@ -12,7 +12,7 @@ namespace EcoSortQuest.Editor
         {
             string main=ProjectSetup.Root+"/Scenes/MainMenu.unity";
             var scene=EditorSceneManager.OpenScene(main,OpenSceneMode.Single);
-            var app=Object.FindFirstObjectByType<EcoSortApp>();
+            var app=Object.FindAnyObjectByType<EcoSortApp>();
             if(app.GetComponent<PlayerManager>()==null)app.gameObject.AddComponent<PlayerManager>();
             if(app.GetComponent<PlayerNamePrompt>()==null)app.gameObject.AddComponent<PlayerNamePrompt>();
             if(app.GetComponent<MainMenuButtons>()==null)app.gameObject.AddComponent<MainMenuButtons>();

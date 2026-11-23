@@ -54,7 +54,31 @@ namespace EcoSortQuest
             new WasteDefinition("eggshell", "Vỏ trứng", WasteType.Organic, 5, "Vỏ trứng thuộc hữu cơ trong bài học. Quy trình thu gom phụ thuộc địa phương.", LearningContext.Home, LearningContext.School),
             new WasteDefinition("coffee-grounds", "Bã cà phê", WasteType.Organic, 6, "Bã cà phê là hữu cơ; tách cốc và bao bì ra trước.", LearningContext.Home),
             new WasteDefinition("watermelon-rind", "Vỏ dưa hấu", WasteType.Organic, 7, "Vỏ dưa hấu thuộc hữu cơ; bỏ đúng nơi sau buổi dã ngoại.", LearningContext.Home, LearningContext.School, LearningContext.Park),
-            new WasteDefinition("fallen-leaf", "Lá cây rụng", WasteType.Organic, 8, "Lá rụng là hữu cơ từ vườn. Thu gom theo quy định rác vườn của địa phương.", LearningContext.Home, LearningContext.School, LearningContext.Park)
+            new WasteDefinition("fallen-leaf", "Lá cây rụng", WasteType.Organic, 8, "Lá rụng là hữu cơ từ vườn. Thu gom theo quy định rác vườn của địa phương.", LearningContext.Home, LearningContext.School, LearningContext.Park),
+            // Cardboard
+            new WasteDefinition("cereal-box", "Hộp ngũ cốc", WasteType.Cardboard, 0, "Ép phẳng carton, bỏ túi lót bên trong; giữ khô và sạch.", LearningContext.Home, LearningContext.School),
+            new WasteDefinition("pizza-box-clean", "Hộp pizza sạch", WasteType.Cardboard, 1, "Chỉ carton không dính dầu mới được tái chế; loại bỏ phần bẩn nếu có.", LearningContext.Home, LearningContext.School, LearningContext.Park),
+            // GreenGlass
+            new WasteDefinition("wine-bottle-green", "Chai thủy tinh xanh", WasteType.GreenGlass, 0, "Làm rỗng và bỏ nắp nhựa trước khi thu gom; thủy tinh vỡ cần bọc an toàn.", LearningContext.Home),
+            new WasteDefinition("glass-jar-green", "Hũ thủy tinh xanh", WasteType.GreenGlass, 1, "Rửa sạch hũ; kiểm tra nơi thu gom có yêu cầu tách màu hay không.", LearningContext.Home, LearningContext.School),
+            // BrownGlass
+            new WasteDefinition("beer-bottle-brown", "Chai bia nâu", WasteType.BrownGlass, 0, "Làm rỗng. Thu gom riêng thủy tinh màu; không gộp cùng thủy tinh trong.", LearningContext.Home, LearningContext.Park),
+            new WasteDefinition("sauce-bottle-brown", "Chai nước sốt nâu", WasteType.BrownGlass, 1, "Rửa sạch và tháo nắp nhựa. Thủy tinh màu nâu giữ riêng.", LearningContext.Home),
+            // WhiteGlass
+            new WasteDefinition("jam-jar", "Hũ thủy tinh trong", WasteType.WhiteGlass, 0, "Làm sạch, bỏ nắp kim loại; thủy tinh trong là nhóm thu gom phổ biến nhất.", LearningContext.Home, LearningContext.School),
+            new WasteDefinition("glass-bottle-clear", "Chai thủy tinh trong", WasteType.WhiteGlass, 1, "Kiểm tra kỹ: thủy tinh trong có thể nhầm với nhựa PET. Thủy tinh nặng và cứng hơn.", LearningContext.Home, LearningContext.Park),
+            // Clothes
+            new WasteDefinition("old-tshirt", "Áo cũ", WasteType.Clothes, 0, "Ưu tiên tái sử dụng hoặc điểm thu gom quần áo; không bỏ vào thùng tái chế thông thường.", LearningContext.Home, LearningContext.School),
+            new WasteDefinition("worn-jeans", "Quần jeans cũ", WasteType.Clothes, 1, "Quần áo còn phù hợp nên được cho tặng; vải hỏng liên hệ điểm tiếp nhận vải.", LearningContext.Home),
+            // Shoes
+            new WasteDefinition("worn-shoes", "Giày hỏng", WasteType.Shoes, 0, "Liên hệ điểm thu gom giày cũ; giày gồm nhiều vật liệu không phân loại đơn thuần.", LearningContext.Home),
+            new WasteDefinition("old-sandals", "Dép cũ", WasteType.Shoes, 1, "Dép còn phù hợp nên cho tặng; dép hỏng mang đến điểm tiếp nhận riêng.", LearningContext.Home, LearningContext.Park),
+            // Batteries
+            new WasteDefinition("aa-battery", "Pin AA", WasteType.Batteries, 0, "NGUY HẠI — bỏ điểm thu gom pin riêng; tuyệt đối không tự tháo hoặc đốt.", LearningContext.Home, LearningContext.School, LearningContext.Park),
+            new WasteDefinition("phone-battery", "Pin điện thoại", WasteType.Batteries, 1, "Pin lithium NGUY HẠI — liên hệ nhà sản xuất hoặc điểm thu gom điện tử.", LearningContext.Home),
+            // Trash
+            new WasteDefinition("tissue-used", "Khăn giấy đã dùng", WasteType.Trash, 0, "Khăn giấy ướt/bẩn vào rác thải chung; không tái chế được.", LearningContext.Home, LearningContext.School, LearningContext.Park),
+            new WasteDefinition("candy-wrapper", "Vỏ kẹo hỗn hợp", WasteType.Trash, 1, "Vỏ kẹo nhiều lớp vật liệu thường vào rác thải chung; giảm sử dụng bao bì một lần.", LearningContext.Home, LearningContext.School, LearningContext.Park)
         };
         public static IReadOnlyList<WasteDefinition> All => Array.AsReadOnly(entries);
         public static WasteDefinition Get(WasteType type, int model)

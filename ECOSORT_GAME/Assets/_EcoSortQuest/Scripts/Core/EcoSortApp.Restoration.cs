@@ -14,7 +14,7 @@ namespace EcoSortQuest
             string brief=extraEnvironment!=ExtraEnvironment.None?"Thu gom 12 vật phẩm sinh hoạt, làm rỗng vật chứa và tách vật liệu trước khi bỏ thùng. Dọn đủ 4, 8 và 12 vật phẩm để nhận cây trang trí.\n\nChỉ nhặt đồ sinh hoạt sạch. Gặp vật sắc nhọn hoặc rác y tế thì báo người lớn.\n\nR: quan sát / chuẩn bị • E: nhặt / bỏ thùng. Chọn sai được sửa lại; điểm chỉ tính lần đầu.":"Một khu vực sạch bắt đầu từ những quyết định nhỏ.\n\n1. Nhặt và dọn 4 vật phẩm để mở lại lối đi.\n2. Dọn 8 vật phẩm để hồi sinh vườn hoa.\n3. Dọn đủ 12 vật phẩm để hoàn thiện góc xanh.\n\nR: xem tình trạng và chọn cách chuẩn bị. E: nhặt / bỏ thùng.\nChọn sai thùng được sửa lại; điểm chỉ tính lần đầu.";
             view.Text(missionBrief,brief,.06f,.23f,.88f,.55f,23);
             view.Text(missionBrief,"Kỷ lục khu vực: "+previous.bestStars+"/3 sao • "+previous.completions+" lần hoàn thành",.06f,.12f,.88f,.08f,20,ViewFactory.Accent);
-            view.Button(missionBrief,"Nhận nhiệm vụ",.06f,.015f,.55f,.10f,AcceptRestorationMission,true);
+            view.Button(missionBrief,"Bắt đầu",.06f,.015f,.55f,.10f,AcceptRestorationMission,true);
             view.Button(missionBrief,"Về menu",.65f,.015f,.29f,.10f,Home);
         }
         void AcceptRestorationMission()
@@ -27,7 +27,7 @@ namespace EcoSortQuest
         {
             missionBrief=view.Panel(view.Root,.15f,.16f,.70f,.66f,ViewFactory.Cream,"Area mission briefing");
             view.Text(missionBrief,AreaMissions.Label(areaMission.Context)+" / "+areaMission.Title,.05f,.84f,.90f,.12f,30);
-            view.Text(missionBrief,areaMission.Brief+"\n\n1 sao: dọn đủ; 2 sao: đúng ≥75%, gợi ý ≤2.\n3 sao: đúng ≥90%, không sai chuẩn bị/câu hỏi, không gợi ý.\nKhông tính tốc độ. Sai được sửa; hoàn thành sẽ mở nhiệm vụ tiếp.",.05f,.48f,.90f,.34f,22);
+            view.Text(missionBrief,areaMission.Brief+"\n\n1 sao: dọn đủ đồ. 2 sao: đúng từ 75%, dùng tối đa 2 gợi ý.\n3 sao: đúng từ 90%, không sai khi xử lý hay trả lời, không dùng gợi ý.\nCứ thong thả, không bị tính giờ. Bạn có thể sửa nếu bỏ nhầm; hoàn thành để mở nhiệm vụ tiếp theo.",.05f,.48f,.90f,.34f,22);
             if(areaMission.Question.Length>0)
             {
                 hintText=view.Text(missionBrief,areaMission.Question,.05f,.34f,.90f,.12f,22,ViewFactory.Accent);

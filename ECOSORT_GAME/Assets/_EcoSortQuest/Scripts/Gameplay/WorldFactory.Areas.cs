@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace EcoSortQuest
 {
     public sealed partial class WorldFactory
@@ -9,7 +10,7 @@ namespace EcoSortQuest
             Color color=context==LearningContext.Home?new Color(.83f,.71f,.52f):context==LearningContext.School?new Color(.41f,.64f,.77f):new Color(.37f,.61f,.34f);
             var sign=new GameObject("Area identity sign",typeof(TextMesh));sign.transform.SetParent(root,false);
             sign.transform.localPosition=new Vector3(0,2.8f,5.3f);
-            var text=sign.GetComponent<TextMesh>();text.text=zone;text.anchor=TextAnchor.MiddleCenter;text.fontSize=48;text.characterSize=.07f;text.color=ViewFactory.Ink;
+            var text=sign.GetComponent<TextMesh>();text.text=zone;text.anchor=TextAnchor.MiddleCenter;text.fontSize=64;text.characterSize=.09f;text.fontStyle=FontStyle.Bold;text.color=ViewFactory.Ink;
             Shape("Area welcome board",PrimitiveType.Cube,root,new Vector3(0,2.8f,5.5f),new Vector3(9,.9f,.12f),color,false);
             // Distinct activity spaces: compact home corner, school workstations, park search trail.
             if(context==LearningContext.Home)

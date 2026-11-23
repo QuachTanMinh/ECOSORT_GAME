@@ -277,10 +277,14 @@ namespace EcoSortQuest
         }
         IEnumerator SaveChallenge(WasteType choice)
         {
-            yield return service.PostArResult(new ArResultRequest { player_id = progress.player_id,
+            var arReq = new ArResultRequest { player_id = progress.player_id,
                 predicted_class = PendingPrediction.class_name, confidence = PendingPrediction.confidence,
-                player_choice = choice.ToString(), is_correct = true },
-                () => SetStatus("Đã lưu kết quả thử thách • " + Mode), e => SetStatus("Kết quả lưu cục bộ, chưa lưu trực tuyến: " + e));
+                player_choice = choice.ToString(), is_correct = true };
+            yield return service.PostArResult(arReq,
+                () => SetStatus("Đã lưu kết quả thử thách • " + Mode), e => {
+                    offlineQueue.EnqueueArResult(arReq);
+                    SetStatus("Kết quả lưu hàng đợi ngoại tuyến: " + e);
+                });
             yield return service.PutProgress(progress, () => { }, e => SetStatus("Tiến trình lưu cục bộ; đồng bộ thất bại: " + e));
         }
     }

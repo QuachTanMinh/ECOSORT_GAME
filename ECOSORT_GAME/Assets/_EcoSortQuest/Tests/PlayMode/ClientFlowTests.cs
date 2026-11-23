@@ -30,7 +30,7 @@ namespace EcoSortQuest.Tests
         ApiSettings nextSceneSettings;
         void ConfigureMock(Scene scene, LoadSceneMode mode)
         {
-            var app = UnityEngine.Object.FindFirstObjectByType<EcoSortApp>();
+            var app = UnityEngine.Object.FindAnyObjectByType<EcoSortApp>();
             if (app == null) return;
             if (nextSceneSettings != null) { app.apiSettings = nextSceneSettings; return; }
             var settings = ScriptableObject.CreateInstance<ApiSettings>(); settings.mode = ApiMode.Mock;
@@ -43,7 +43,7 @@ namespace EcoSortQuest.Tests
         static readonly BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic;
         static T Field<T>(EcoSortApp app, string name) => (T)typeof(EcoSortApp).GetField(name, Fields).GetValue(app);
         static void Call(EcoSortApp app, string name) => typeof(EcoSortApp).GetMethod(name, Fields).Invoke(app, null);
-        EcoSortApp App => UnityEngine.Object.FindFirstObjectByType<EcoSortApp>();
+        EcoSortApp App => UnityEngine.Object.FindAnyObjectByType<EcoSortApp>();
         [SetUp] public void Setup()
         {
             EcoSortApp.SelectedExtraEnvironment=ExtraEnvironment.None;
@@ -116,14 +116,14 @@ namespace EcoSortQuest.Tests
         {
             var item = Field<WasteItem>(App, "currentItem"); Assert.IsNotNull(item);
             var origin = item.transform.position;
-            var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
+            var camera = UnityEngine.Object.FindAnyObjectByType<Camera>();
             var collider = item.GetComponentsInChildren<Collider>().First(c => c.enabled);
             var start = (Vector2)camera.WorldToScreenPoint(collider.bounds.center);
             InputSystem.QueueStateEvent(mouse, new MouseState { position = start }.WithButton(MouseButton.Left));
             yield return null; yield return null;
             Assert.IsTrue(item.selectionMarker.activeSelf, "Pointer selection must reach the item collider. Mouse=" + mouse.position.ReadValue() +
                 "; expected=" + camera.WorldToScreenPoint(collider.bounds.center) + "; screen=" + Screen.width + "x" + Screen.height);
-            var bin = UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None)
+            var bin = UnityEngine.Object.FindObjectsByType<WasteBin>()
                 .First(b => correct ? b.type == item.type : b.type != item.type);
             var binCollider = bin.GetComponentsInChildren<Collider>().First(c => c.enabled);
             var end = (Vector2)camera.WorldToScreenPoint(binCollider.bounds.center);
@@ -134,7 +134,7 @@ namespace EcoSortQuest.Tests
             yield return null;
             yield return new WaitForSeconds(1.65f);
         }
-        static Button ButtonNamed(string name) => UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
+        static Button ButtonNamed(string name) => UnityEngine.Object.FindObjectsByType<Button>()
             .First(button => button.GetComponentInChildren<Text>().text == name);
 
         [UnityTest] public IEnumerator SharedPaletteAndDropCueDoNotRevealTheAnswer()
@@ -143,10 +143,10 @@ namespace EcoSortQuest.Tests
             var factory=Field<WorldFactory>(App,"world");
             Assert.AreSame(factory.Material(Color.cyan),factory.Material(Color.cyan));
             Assert.IsTrue(factory.Material(Color.cyan).enableInstancing);
-            var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);
+            var bins=UnityEngine.Object.FindObjectsByType<WasteBin>();
             foreach(var bin in bins) { bin.Highlight(true);Assert.IsTrue(bin.transform.Find("Drop target outline").gameObject.activeSelf);bin.Highlight(false); }
             var item=Field<WasteItem>(App,"currentItem");
-            var camera=UnityEngine.Object.FindFirstObjectByType<Camera>();
+            var camera=UnityEngine.Object.FindAnyObjectByType<Camera>();
             var start=(Vector2)camera.WorldToScreenPoint(item.GetComponentsInChildren<Collider>().First(c=>c.enabled).bounds.center);
             InputSystem.QueueStateEvent(mouse,new MouseState{position=start}.WithButton(MouseButton.Left));yield return null;yield return null;
             var wrong=bins.First(b=>b.type!=item.type);
@@ -165,13 +165,13 @@ namespace EcoSortQuest.Tests
         [UnityTest] public IEnumerator MenuSeparatesActivitiesAndUsesPlainLanguage()
         {
             yield return Open("MainMenu");
-            var labels=UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Select(b=>b.GetComponentInChildren<Text>().text).ToArray();
+            var labels=UnityEngine.Object.FindObjectsByType<Button>().Select(b=>b.GetComponentInChildren<Text>().text).ToArray();
             Assert.AreEqual(1,labels.Count(t=>t=="Phân loại bằng ảnh"));
             Assert.IsFalse(labels.Any(t=>t.Contains(" / AI")||t.Contains("Thống kê")||t=="Tiến trình"));
             foreach(var label in new[]{"Học có hướng dẫn","Kiểm tra","Ôn câu sai","Thử thách phân loại","Kết quả học tập"})Assert.Contains(label,labels);
             yield return Capture("menu-separated-functions",1920,1000);
             ButtonNamed("Kiểm tra").onClick.Invoke();yield return null;
-            Assert.IsFalse(UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Any(b=>b.transform.IsChildOf(GameObject.Find("Practice context").transform) && b.GetComponentInChildren<Text>().text.Contains("ảnh")));
+            Assert.IsFalse(UnityEngine.Object.FindObjectsByType<Button>().Any(b=>b.transform.IsChildOf(GameObject.Find("Practice context").transform) && b.GetComponentInChildren<Text>().text.Contains("ảnh")));
             ButtonNamed("Công viên").onClick.Invoke();yield return null;yield return Capture("menu-test-context");
             ButtonNamed("Bắt đầu").onClick.Invoke();yield return null;yield return null;yield return null;
             Assert.AreEqual(LearningMode.Test,EcoSortApp.SelectedLearningMode);Assert.AreEqual(LearningContext.Park,EcoSortApp.SelectedContext);
@@ -185,7 +185,7 @@ namespace EcoSortQuest.Tests
             Call(App,"ShowExperienceSettings");ButtonNamed("Kết nối").onClick.Invoke();yield return null;ButtonNamed("Thiết lập kết nối").onClick.Invoke();yield return null;yield return Capture("menu-connection");
             ButtonNamed("Đóng").onClick.Invoke();yield return null;
             ButtonNamed("Phân loại bằng ảnh").onClick.Invoke();yield return null;yield return null;yield return null;
-            var texts=UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Select(t=>t.text).ToArray();
+            var texts=UnityEngine.Object.FindObjectsByType<Text>().Select(t=>t.text).ToArray();
             foreach(var text in texts)Assert.IsFalse(System.Text.RegularExpressions.Regex.IsMatch(text,@"(?i)\b(mock|api|backend|fastapi|json|confidence)\b"),text);
             ButtonNamed("Chưa biết / cần kiểm tra").onClick.Invoke();ButtonNamed("Xem kết quả ví dụ").onClick.Invoke();yield return new WaitForSecondsRealtime(.3f);
             StringAssert.Contains("KHÔNG PHÂN TÍCH ẢNH",Field<Text>(App,"predictionText").text);
@@ -195,7 +195,7 @@ namespace EcoSortQuest.Tests
         {
             yield return Open("MainMenu");yield return Capture("ui-main-menu-wide",1920,1000);
             yield return Open("GameScene");yield return null;
-            var canvas=UnityEngine.Object.FindFirstObjectByType<Canvas>().GetComponent<RectTransform>();
+            var canvas=UnityEngine.Object.FindAnyObjectByType<Canvas>().GetComponent<RectTransform>();
             var card=GameObject.Find("Item hint card").GetComponent<RectTransform>();
             Assert.LessOrEqual(card.rect.width,canvas.rect.width*.44f);
             float originalHeight=card.rect.height;
@@ -224,7 +224,7 @@ namespace EcoSortQuest.Tests
             yield return Open("GameScene");
             var item = Field<WasteItem>(App, "currentItem");
             var origin = item.transform.position;
-            var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
+            var camera = UnityEngine.Object.FindAnyObjectByType<Camera>();
             var start = (Vector2)camera.WorldToScreenPoint(item.GetComponentsInChildren<Collider>().First(c => c.enabled).bounds.center);
             yield return Click(start);
             Assert.AreEqual(0, Field<SortingRound>(App, "round").Answered);
@@ -255,10 +255,10 @@ namespace EcoSortQuest.Tests
         [UnityTest] public IEnumerator ConnectionMenuValidatesUrlAndKeepsChoiceAcrossScenes()
         {
             yield return Open("MainMenu"); Call(App,"ShowConnection");
-            var input=UnityEngine.Object.FindObjectsByType<InputField>(FindObjectsSortMode.None).Single();
+            var input=UnityEngine.Object.FindObjectsByType<InputField>().Single();
             input.text="not-a-url"; ButtonNamed("Bật kết nối").onClick.Invoke();
             Assert.IsTrue(Field<IEcoSortService>(App,"service").IsMock);
-            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text.StartsWith("Địa chỉ chưa đúng")));
+            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>().Any(t=>t.text.StartsWith("Địa chỉ chưa đúng")));
             input.text="http://127.0.0.1:8000"; ButtonNamed("Bật kết nối").onClick.Invoke();
             yield return null; yield return null; yield return null;
             Assert.IsFalse(Field<IEcoSortService>(App,"service").IsMock);
@@ -490,7 +490,7 @@ namespace EcoSortQuest.Tests
             var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
             Assert.AreEqual(12,litter.Count);
             Assert.IsTrue(litter.All(i=>i.Definition.AppearsIn(LearningContext.Park)));
-            var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);
+            var bins=UnityEngine.Object.FindObjectsByType<WasteBin>();
             Assert.AreEqual(4,bins.Length);
             yield return Capture("exploration-park-start");
             // Keyboard movement passes through the actual controller rather than moving the transform.
@@ -565,7 +565,7 @@ namespace EcoSortQuest.Tests
             yield return Capture("exploration-result");
             PlayerPrefs.DeleteKey(RestorationSave.Key(testId,LearningContext.Park));PlayerPrefs.Save();
         }
-        [Serializable] sealed class LearningApiCount { public int total_sessions; public int test_unanswered; }
+        [Serializable] sealed class LearningApiCount { public int total_sessions = 0; public int test_unanswered = 0; }
         [UnityTest] public IEnumerator LearningRestRoundTripDoesNotDuplicate()
         {
             string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
@@ -626,7 +626,7 @@ namespace EcoSortQuest.Tests
             try
             {
                 yield return Open("GameScene");Call(App,"ShowExperienceSettings");
-                var sliders=UnityEngine.Object.FindObjectsByType<Slider>(FindObjectsSortMode.None);
+                var sliders=UnityEngine.Object.FindObjectsByType<Slider>();
                 Assert.AreEqual(3,sliders.Length);
                 sliders.Single(x=>x.name=="Âm lượng tổng slider").value=.5f;
                 sliders.Single(x=>x.name=="Nhạc nền slider").value=.4f;
@@ -643,7 +643,7 @@ namespace EcoSortQuest.Tests
         [UnityTest] public IEnumerator SettingsGearPausesAndRestoresRoundAcrossTabs()
         {
             yield return Open("GameScene");
-            var gear=UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Single(b=>b.name=="Settings gear");
+            var gear=UnityEngine.Object.FindObjectsByType<Button>().Single(b=>b.name=="Settings gear");
             gear.onClick.Invoke();yield return null;
             Assert.AreEqual(0,Time.timeScale);Assert.IsTrue(Field<bool>(App,"paused"));
             float remaining=Field<float>(App,"remaining");yield return new WaitForSecondsRealtime(.1f);
@@ -672,7 +672,7 @@ namespace EcoSortQuest.Tests
             }
             finally{if(had)PlayerPrefs.SetInt("EcoSortQuest.Sound",old);else PlayerPrefs.DeleteKey("EcoSortQuest.Sound");PlayerPrefs.Save();}
         }
-        [Serializable] sealed class RecognitionHealth { public string[] class_names; public string storage_mode; }
+        [Serializable] sealed class RecognitionHealth { public string[] class_names = System.Array.Empty<string>(); public string storage_mode = string.Empty; }
         [UnityTest] public IEnumerator RecognitionRestUsesRealModelAndDisplaysResponse()
         {
             string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
@@ -737,10 +737,10 @@ namespace EcoSortQuest.Tests
         [UnityTest] public IEnumerator AreaJourneyPlaysAllNineMissionsUnlocksRewardsAndRetainsDiscoveries()
         {
             yield return Open("MainMenu");
-            ButtonNamed("HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →").onClick.Invoke();yield return null;
+            ButtonNamed("HÀNH TRÌNH DỌN DẸP →").onClick.Invoke();yield return null;
             Assert.IsNotNull(GameObject.Find("Area journey"));
             yield return Capture("areas-home-hub-20261024");
-            Assert.AreEqual(1,UnityEngine.Object.FindObjectsByType<Button>(FindObjectsSortMode.None).Count(b=>b.interactable && b.GetComponentInChildren<Text>().text=="Nhận nhiệm vụ"));
+            Assert.AreEqual(1,UnityEngine.Object.FindObjectsByType<Button>().Count(b=>b.interactable && b.GetComponentInChildren<Text>().text=="Bắt đầu"));
             foreach(var mission in AreaMissions.All)
             {
                 typeof(EcoSortApp).GetMethod("BeginAreaMission",Fields).Invoke(App,new object[]{mission});
@@ -768,7 +768,7 @@ namespace EcoSortQuest.Tests
                 Assert.AreEqual(0,Field<float>(App,"sessionLimit"));
                 if(mission.Id=="park-path")yield return Capture("areas-park-search-20261024");
                 if(mission.Id=="home-kitchen")yield return Capture("areas-home-start-20261024");
-                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);
+                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>();
                 foreach(var item in litter.ToArray())
                 {
                     Assert.IsTrue(item.gameObject.activeSelf,"Separate the wrapper before collecting its paper.");
@@ -818,23 +818,34 @@ namespace EcoSortQuest.Tests
             yield return Capture("areas-earned-decoration-20261024");
             yield return Open("MainMenu");
             typeof(EcoSortApp).GetMethod("ShowCatalog",Fields).Invoke(App,new object[]{0});yield return null;
-            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="Chai nước nhựa"));
-            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
+            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>().Any(t=>t.text=="Chai nước nhựa"));
+            Assert.IsTrue(UnityEngine.Object.FindObjectsByType<Text>().Any(t=>t.text=="VẬT PHẨM CHƯA GẶP"));
             yield return Capture("areas-discovered-guide-20261024");
         }
         [UnityTest] public IEnumerator NicknameAndJourneyKeepsEveryLocationOnOneCanvas()
         {
             yield return Open("MainMenu");var before=LocalProgress.Load().player_id;
-            int canvases=UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Length;
+            int canvases=UnityEngine.Object.FindObjectsByType<Canvas>().Length;
             ButtonNamed("Đổi tên").onClick.Invoke();yield return null;
             yield return Capture("player-name-prompt-20261101");
             var input=GameObject.Find("Player nickname").GetComponent<InputField>();input.text="Bạn Mây";
-            ButtonNamed("Lưu tên gọi").onClick.Invoke();yield return null;
+            ButtonNamed("Lưu tên").onClick.Invoke();yield return null;
             Assert.AreEqual(before,LocalProgress.Load().player_id);Assert.AreEqual("Bạn Mây",PlayerManager.DisplayName);
-            ButtonNamed("HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →").onClick.Invoke();yield return null;
+            ButtonNamed("HÀNH TRÌNH DỌN DẸP →").onClick.Invoke();yield return null;
+            ButtonNamed("Khu mới  →").onClick.Invoke();yield return null;
             foreach(var title in new[]{"Bệnh viện • Khu tiếp đón","Siêu thị","Bãi biển"})Assert.IsNotNull(ButtonNamed(title));
-            Assert.AreEqual(canvases,UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Length);
+            Assert.AreEqual(canvases,UnityEngine.Object.FindObjectsByType<Canvas>().Length);
             yield return Capture("player-area-journey-20261112");PlayerPrefs.DeleteKey(PlayerManager.NameKey(testId));
+        }
+        [UnityTest] public IEnumerator DirectExplorationOpeningBuildsMissionInterfaceAndItems()
+        {
+            EcoSortApp.SelectedContext=LearningContext.School;EcoSortApp.SelectedAreaMission="";EcoSortApp.SelectedExtraEnvironment=ExtraEnvironment.None;
+            EcoSortApp.SelectedLearningMode=LearningMode.Explore;
+            yield return Open("GameScene");
+            Assert.AreEqual("home-kitchen",EcoSortApp.SelectedAreaMission);
+            Assert.IsNotNull(GameObject.Find("EcoSort UI"));Assert.IsNotNull(Field<RectTransform>(App,"missionBrief"));
+            Call(App,"AcceptRestorationMission");yield return null;
+            Assert.AreEqual(4,Field<System.Collections.Generic.List<WasteItem>>(App,"scattered").Count);
         }
         [UnityTest] public IEnumerator ExtraEnvironmentsHaveClearFloorAndWorkingRounds()
         {
@@ -850,7 +861,7 @@ namespace EcoSortQuest.Tests
                 EcoSortApp.SelectedAreaMission="";EcoSortApp.SelectedExtraEnvironment=environment;EcoSortApp.SelectedLearningMode=LearningMode.Explore;
                 yield return Open("GameScene");Call(App,"AcceptRestorationMission");yield return null;Physics.SyncTransforms();
                 var actor=Field<ExplorerController>(App,"explorer");var litter=Field<System.Collections.Generic.List<WasteItem>>(App,"scattered");
-                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None);Assert.AreEqual(4,bins.Length);Assert.AreEqual(18,litter.Count);
+                var bins=UnityEngine.Object.FindObjectsByType<WasteBin>();Assert.AreEqual(4,bins.Length);Assert.AreEqual(18,litter.Count);
                 Assert.IsNotNull(GameObject.Find("Extra scenery • "+environment));
                 foreach(var item in litter.Where(i=>i.gameObject.activeInHierarchy))
                 {
@@ -886,7 +897,7 @@ namespace EcoSortQuest.Tests
             }
             EcoSortApp.SelectedExtraEnvironment=ExtraEnvironment.None;
         }
-        [Serializable]class DashboardScores{public ScoreRequest[] scores;}
+        [Serializable]class DashboardScores{public ScoreRequest[] scores = System.Array.Empty<ScoreRequest>();}
         [UnityTest]public IEnumerator DebugScoreSenderRequiresExplicitActionAndReachesDashboard()
         {
             string url=Environment.GetEnvironmentVariable("ECOSORT_LEARNING_TEST_URL");
@@ -988,7 +999,7 @@ namespace EcoSortQuest.Tests
                 yield return Open("GameScene");
                 var layout=Field<AreaSceneryLayout>(App,"sceneryLayout");Assert.IsNotNull(layout);
                 Assert.AreEqual(mission.Items.Length,layout.Items.Length);
-                Assert.IsNotNull(GameObject.Find("Mission scenery • "+mission.Id));
+                Assert.IsNotNull(GameObject.Find(mission.Environment==ExtraEnvironment.None?"Mission scenery • "+mission.Id:"Extra scenery • "+mission.Environment));
                 if(mission.Context==LearningContext.School)typeof(EcoSortApp).GetMethod("AnswerAreaQuestion",Fields).Invoke(App,new object[]{mission.Answer});
                 Call(App,"AcceptRestorationMission");yield return null;Physics.SyncTransforms();
                 var actor=Field<ExplorerController>(App,"explorer");
@@ -1018,7 +1029,7 @@ namespace EcoSortQuest.Tests
                     Assert.IsFalse(Blocked(position),mission.Id+" item in furniture at "+position);
                     Assert.IsTrue(reachable.Any(p=>Vector2.Distance(new Vector2(p.x,p.z),new Vector2(position.x,position.z))<1.5f),mission.Id+" unreachable item "+position);
                 }
-                foreach(var bin in UnityEngine.Object.FindObjectsByType<WasteBin>(FindObjectsSortMode.None))
+                foreach(var bin in UnityEngine.Object.FindObjectsByType<WasteBin>())
                     Assert.IsTrue(reachable.Any(p=>Vector2.Distance(new Vector2(p.x,p.z),new Vector2(bin.transform.position.x,bin.transform.position.z))<1.8f),mission.Id+" unreachable bin");
                 yield return Capture("scenery-"+mission.Id+"-play");
                 typeof(EcoSortApp).GetField("paused",Fields).SetValue(App,true);
@@ -1032,8 +1043,8 @@ namespace EcoSortQuest.Tests
         {
             string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/Evidence/Scenery-20261028"));
             Directory.CreateDirectory(dir);
-            var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
-            var canvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();
+            var camera = UnityEngine.Object.FindAnyObjectByType<Camera>();
+            var canvas = UnityEngine.Object.FindAnyObjectByType<Canvas>();
             var target = new RenderTexture(width, height, 24);
             var oldTarget = camera.targetTexture; var oldActive = RenderTexture.active;
             var oldMode = canvas.renderMode; float oldAspect = camera.aspect;

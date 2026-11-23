@@ -45,7 +45,21 @@ namespace EcoSortQuest
         RectTransform pausePanel;
         float remaining;
         IPlacementProvider placement;
-        string Mode => service.IsMock ? "CHƠI TRÊN MÁY" : "ĐÃ BẬT KẾT NỐI";
+        readonly OfflineQueue offlineQueue = new OfflineQueue();
+        string Mode => service.IsMock ? "Chơi trên máy" : "Đã kết nối";
+
+        IEnumerator AutoCloudSync()
+        {
+            if (service == null || service.IsMock) yield break;
+            yield return offlineQueue.Flush(service, SetStatus);
+            yield return service.GetProgress(progress.player_id, remote => {
+                progress.Merge(remote);
+                LocalProgress.Save(progress);
+                StartCoroutine(service.PutProgress(progress, () => { }, _ => { }));
+            }, _ => {
+                StartCoroutine(service.PutProgress(progress, () => { }, _ => { }));
+            });
+        }
 
         void Start()
         {
@@ -55,6 +69,7 @@ namespace EcoSortQuest
             LoadConnectionSettings();
             service = apiSettings != null && apiSettings.mode == ApiMode.Rest ?
                 (IEcoSortService)new RestEcoSortService(apiSettings) : new MockEcoSortService(apiSettings != null ? apiSettings.mockLatency : .35f);
+            if (!service.IsMock) StartCoroutine(AutoCloudSync());
             deviceARActive = screen == ClientScreen.ARChallenge && Application.isMobilePlatform &&
                 (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android);
             if (deviceARActive)
@@ -162,43 +177,50 @@ namespace EcoSortQuest
         }
         void SpawnBins(Vector3 origin,float scale=1)
         {
-            for (int i = 0; i < 4; i++)
+            WasteType[] types = new WasteType[] { WasteType.Plastic, WasteType.Metal, WasteType.Paper, WasteType.Organic };
+            if (screen == ClientScreen.ARChallenge && PendingPrediction != null && PendingPrediction.TryAccept(0, out WasteType target) && (int)target >= 4)
+            {
+                types[3] = target;
+            }
+            for (int i = 0; i < types.Length; i++)
             {
                 float spacing = deviceARActive ? .95f : 2.6f;
                 var position = origin + new Vector3((i - 1.5f) * spacing*scale, 0, 0);
-                if (binPrefabs != null && binPrefabs.Length > i && binPrefabs[i] != null)
+                if (binPrefabs != null && binPrefabs.Length > i && binPrefabs[i] != null && types[i] == (WasteType)i)
                 { var bin = Instantiate(binPrefabs[i], worldRoot); bin.transform.localPosition = position;bin.transform.localScale*=scale; }
-                else world.Bin((WasteType)i, position).transform.localScale*=scale;
+                else world.Bin(types[i], position).transform.localScale*=scale;
             }
         }
         void ShowMenu()
         {
             if(GetComponent<PlayerManager>()==null)gameObject.AddComponent<PlayerManager>();
             SpawnBins(new Vector3(0, 0, -1.7f));
-            SpawnItem(WasteType.Plastic, new Vector3(1, .88f, 1));
+            // Keep the menu's sample bottle away from the category labels.
+            SpawnItem(WasteType.Plastic, new Vector3(5.4f, .55f, 1.5f));
             sceneCamera.transform.position = new Vector3(8, 11, -15);
             sceneCamera.transform.LookAt(new Vector3(-5.2f, .4f, 0)); sceneCamera.orthographicSize = 7.8f;
-            var menuHeader=view.Header("MỖI VẬT PHẨM • MỘT HÀNH ĐỘNG XANH", Mode, null);
+            var menuHeader=view.Header("MỖI MÓN ĐỒ, MỘT VIỆC TỐT", Mode, null);
             view.Button(menuHeader,"Thoát",.845f,.25f,.085f,.5f,Quit);
             var card=view.Card(view.Root,.035f,.125f,.405f,.735f,ViewFactory.Cream,"Menu card");
-            var greeting=view.Text(card,PlayerManager.DisplayName.Length>0?"XIN CHÀO, "+PlayerManager.DisplayName:"HỌC QUA HÀNH ĐỘNG",.06f,.91f,.88f,.045f,18,ViewFactory.Accent);
+            var greeting=view.Text(card,PlayerManager.DisplayName.Length>0?"Chào, "+PlayerManager.DisplayName:"HỌC BẰNG CÁCH LÀM",.06f,.91f,.88f,.045f,18,ViewFactory.Accent);
             view.Text(card,"Phân loại hôm nay.\nXanh hơn ngày mai.",.06f,.735f,.88f,.16f,40);
-            view.Text(card,"Khám phá, phân loại và hồi sinh từng khu vực.",.06f,.655f,.88f,.065f,21,ViewFactory.Muted);
-            view.Button(card,"HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →",.06f,.54f,.88f,.085f,ShowAreaHub,true);
+            view.Text(card,"Cùng nhặt rác, phân loại và làm xanh từng khu vực.",.06f,.655f,.88f,.065f,21,ViewFactory.Muted);
+            view.Button(card,"HÀNH TRÌNH DỌN DẸP →",.06f,.54f,.88f,.085f,ShowAreaHub,true);
             view.Button(card,"Học có hướng dẫn",.06f,.44f,.42f,.07f,()=>ShowPracticePicker(LearningMode.Learn));
             view.Button(card,"Kiểm tra",.52f,.44f,.42f,.07f,()=>ShowPracticePicker(LearningMode.Test));
             view.Button(card,"Ôn câu sai",.06f,.345f,.42f,.07f,()=>ShowPracticePicker(LearningMode.Review));
             view.Button(card,"Phân loại bằng ảnh",.52f,.345f,.42f,.07f,()=>{AiMission=false;Navigate("ScanScene");});
-            view.Button(card,"Thử thách phân loại",.06f,.25f,.42f,.07f,ShowCampaignLevels);
-            view.Button(card,"Kết quả học tập",.52f,.25f,.42f,.07f,ShowLearningStats);
-            view.Button(card,"Sổ tay khám phá",.06f,.145f,.42f,.07f,()=>ShowCatalog(0));
+            view.Button(card,"Thử thách",.06f,.25f,.42f,.07f,ShowCampaignLevels);
+            view.Button(card,"Kết quả của bạn",.52f,.25f,.42f,.07f,ShowLearningStats);
+            view.Button(card,"Sổ tay",.06f,.145f,.42f,.07f,()=>ShowCatalog(0));
             view.Button(card,"Cách chơi",.52f,.145f,.42f,.07f,ShowHelp);
             var namePrompt=GetComponent<PlayerNamePrompt>();if(namePrompt==null)namePrompt=gameObject.AddComponent<PlayerNamePrompt>();
-            namePrompt.Configure(view,()=>greeting.text="XIN CHÀO, "+PlayerManager.DisplayName);
-            view.Button(card,"Bảng kết quả",.06f,.04f,.42f,.07f,OpenDashboard);
-            view.Button(card,"Đổi tên",.52f,.04f,.42f,.07f,namePrompt.Show);
+            namePrompt.Configure(view,()=>greeting.text="Chào, "+PlayerManager.DisplayName);
+            view.Button(card,"Bảng kết quả",.06f,.04f,.27f,.07f,OpenDashboard);
+            view.Button(card,"Đổi tên",.37f,.04f,.27f,.07f,namePrompt.Show);
+            view.Button(card,"Chơi lại từ đầu",.68f,.04f,.26f,.07f,ShowResetProgress);
             if(openJourneyOnMenu){openJourneyOnMenu=false;ShowAreaHub();}
-            Footer("36 vật phẩm • 3 bối cảnh • Học từ những lựa chọn của bạn");
+            Footer("36 vật phẩm • 6 khu vực • Cùng học cách phân loại rác");
             if (!progress.player_id.StartsWith("test-") && PlayerPrefs.GetInt("EcoSortQuest.TutorialSeen", 0) == 0)
             { PlayerPrefs.SetInt("EcoSortQuest.TutorialSeen", 1); PlayerPrefs.Save(); ShowHelp(); }
             if(!progress.player_id.StartsWith("test-") && string.IsNullOrEmpty(PlayerManager.DisplayName))namePrompt.Show();
@@ -214,7 +236,7 @@ namespace EcoSortQuest
         {
             var overlay = view.Card(view.Root, .22f, .23f, .56f, .56f, ViewFactory.Cream, "How to play");
             view.Text(overlay, "CÁCH CHƠI", .07f, .80f, .86f, .12f, 34);
-            view.Text(overlay, "1. Giữ chuột trái trên vật phẩm để kéo.\n2. Thả rác vào thùng Plastic, Metal, Paper hoặc Organic.\n3. Đúng +10; sai −5; điểm không âm.\n4. Đúng ít nhất 7/10 để mở level tiếp theo.\n\nESC: tạm dừng. Phân loại bằng ảnh có ví dụ để bạn thử trước.\nMàu thùng minh họa cho game, không phải quy định địa phương.", .07f, .22f, .86f, .55f, 25);
+            view.Text(overlay, "1. Giữ chuột trái để kéo món đồ.\n2. Thả vào đúng thùng: Plastic, Metal, Paper hoặc Organic.\n3. Đúng được 10 điểm; chưa đúng trừ 5 điểm.\n4. Cần đúng 7/10 câu để mở cấp tiếp theo.\n\nNhấn ESC để tạm dừng. Bạn có thể xem ví dụ ở mục phân loại bằng ảnh.\nMàu thùng chỉ dùng trong game, không thay cho hướng dẫn tại nơi bạn sống.", .07f, .22f, .86f, .55f, 25);
             view.Button(overlay, "Đã hiểu", .3f, .05f, .4f, .12f, () => Destroy(overlay.gameObject), true);
         }
         void StartRound()
@@ -235,7 +257,8 @@ namespace EcoSortQuest
                 level.timeLimit = SelectedLevel == 1 ? 0 : SelectedLevel == 2 ? 75 : 50;
             }
             round = new SortingRound(level.itemCount, level.requiredCorrect);
-            sessionLimit = SelectedLearningMode == LearningMode.Test ? 75 : SelectedLearningMode == LearningMode.Campaign ? level.timeLimit : 0;
+            float timerMult = SelectedLearningMode == LearningMode.Test ? 1f : PlayerPrefs.GetFloat("EcoSortQuest.TimerMultiplier", 1f);
+            sessionLimit = (SelectedLearningMode == LearningMode.Test ? 75 : SelectedLearningMode == LearningMode.Campaign ? level.timeLimit : 0) * timerMult;
             remaining = sessionLimit; answerSeconds = 0; learningAnswers.Clear(); BuildLearningContext();
             sequence = new WasteType[level.itemCount];
             var source = level.itemSequence;
@@ -255,7 +278,7 @@ namespace EcoSortQuest
             correctText=view.Text(answers,"",0,0,1,1,19);view.FitContent(answers,.275f,160,correctText);
             var clock=view.Panel(view.Root,.425f,.877f,.135f,.044f,ViewFactory.HudSurface,"Timer chip");
             clock.GetComponent<Image>().raycastTarget=false;
-            timeText=view.Text(clock,sessionLimit>0?remaining+"s":"Không giới hạn",0,0,1,1,19);view.FitContent(clock,.135f,72,timeText);
+            timeText=view.Text(clock,sessionLimit>0?remaining+"s":"Không tính giờ",0,0,1,1,19);view.FitContent(clock,.135f,72,timeText);
             view.Button(view.Root,"Tạm dừng / ESC",.86f,.877f,.125f,.044f,TogglePause);
             var track=view.Panel(view.Root,.015f,.864f,.30f,.004f,new Color(.40f,.52f,.57f),"Round progress track");
             track.GetComponent<Image>().raycastTarget=false;
@@ -267,14 +290,14 @@ namespace EcoSortQuest
             instruction=view.Text(lower,"",0,0,1,1,20,ViewFactory.HudAccent);
             lessonText=view.Text(lower,"",0,0,1,1,18,ViewFactory.HudMuted);
             view.FitContent(lower,.43f,280,itemName,instruction,lessonText);
-            Footer("Đúng +10 • Sai −5 • Qua màn: "+level.requiredCorrect+"/"+level.itemCount+" • ESC: tạm dừng");
+            Footer("Đúng: +10 • Chưa đúng: −5 • Cần "+level.requiredCorrect+"/"+level.itemCount+" câu đúng • ESC: tạm dừng");
             SpawnBins(new Vector3(0, 0, -1.8f));
             round.Changed += RefreshRound; RefreshRound(); NextItem();
         }
         void RefreshRound()
         {
-            scoreText.text = SelectedLearningMode == LearningMode.Test && !round.Finished ? "Ẩn điểm" : "ĐIỂM " + round.Score;
-            correctText.text = (SelectedLearningMode == LearningMode.Test && !round.Finished ? "ẨN ĐÁP ÁN" : "ĐÚNG " + round.Correct + "/" + round.Total) + "   •   ĐÃ CHỌN " + round.Answered + "/" + round.Total;
+            scoreText.text = SelectedLearningMode == LearningMode.Test && !round.Finished ? "Điểm: ẩn" : "Điểm: " + round.Score;
+            correctText.text = (SelectedLearningMode == LearningMode.Test && !round.Finished ? "Đáp án: ẩn" : "Đúng: " + round.Correct + "/" + round.Total) + "   •   Đã chọn: " + round.Answered + "/" + round.Total;
             if(roundProgressFill!=null)roundProgressFill.anchorMax=new Vector2((float)round.Answered/round.Total,1);
         }
         void NextItem()
@@ -282,9 +305,9 @@ namespace EcoSortQuest
             if (round.Finished) return;
             currentItem = world.CatalogItem(roundItems[round.Answered], new Vector3(-2.8f, .89f, 1.1f));
             AreaJourneyStore.Discover(progress.player_id,currentItem.Definition.Id);
-            itemName.text = "VẬT PHẨM " + (round.Answered + 1) + "/" + round.Total + (SelectedLearningMode == LearningMode.Test ? " • Quan sát mô hình" : "  •  " + currentItem.Definition.Name);
+            itemName.text = "Món đồ " + (round.Answered + 1) + "/" + round.Total + (SelectedLearningMode == LearningMode.Test ? " • Xem mô hình" : "  •  " + currentItem.Definition.Name);
             lessonText.text = Hints ? "Gợi ý: " + WasteInfo.Label(currentItem.type) : SelectedLearningMode == LearningMode.Test ? "Kiểm tra: giải thích hiển thị cuối lượt." : "Quan sát chất liệu. Giải thích xuất hiện sau khi chọn.";
-            instruction.text = "Kéo vật phẩm và thả vào thùng bạn chọn.";
+            instruction.text = "Kéo món đồ vào thùng phù hợp.";
             instruction.color = ViewFactory.HudAccent;
             resolving = false;
         }
@@ -308,7 +331,7 @@ namespace EcoSortQuest
                 dragging = true; dragOrigin = currentItem.transform.position;
                 dragPlane = new Plane(-sceneCamera.transform.forward, dragOrigin);
                 dragOffset = dragPlane.Raycast(ray, out float distance) ? dragOrigin - ray.GetPoint(distance) : Vector3.zero;
-                currentItem.Select(true);gameAudio?.Pickup(); instruction.text = "Giữ chuột và kéo rác vào thùng, rồi thả chuột.";
+                currentItem.Select(true);gameAudio?.Pickup(); instruction.text = "Giữ chuột, kéo món đồ đến thùng rồi thả chuột.";
             }
         }
         void DragItem(Vector2 position)
@@ -328,7 +351,7 @@ namespace EcoSortQuest
                 if(hoveredBin!=null)hoveredBin.Highlight(false);
                 hoveredBin=target;if(hoveredBin!=null)hoveredBin.Highlight(true);
             }
-            instruction.text=target!=null?"Thả vào "+WasteInfo.Label(target.type):"Kéo tới thùng bạn chọn • Viền vàng chỉ vùng thả.";
+            instruction.text=target!=null?"Thả vào "+WasteInfo.Label(target.type):"Kéo đến thùng phù hợp. Viền vàng là vùng thả.";
         }
         void CancelDrag()
         {
@@ -343,7 +366,7 @@ namespace EcoSortQuest
             if (overUI || paused || resolving || resultShown || arComplete || currentItem == null) return;
             // Ignore the dragged item's colliders when finding the bin beneath the pointer.
             WasteBin bin = FindDropBin(position);
-            if (bin == null) { instruction.text = "Thả vào một thùng rác. Vật phẩm đã trở về vị trí ban đầu."; return; }
+            if (bin == null) { instruction.text = "Hãy thả vào một thùng rác. Món đồ đã về vị trí cũ."; return; }
             gameAudio?.Drop();
             if (screen == ClientScreen.Game) StartCoroutine(SortItem(bin.type));
             else CompleteChallenge(bin.type);
@@ -371,9 +394,9 @@ namespace EcoSortQuest
             learningAnswers.Add(new LearningAnswer { item_id = currentItem.Definition.Id, expected = currentItem.type.ToString(), choice = bin.ToString(), correct = correct, seconds = answerSeconds });
             answerSeconds = 0;
             if (SelectedLearningMode != LearningMode.Test) { gameAudio?.FeedbackAfterDrop(correct); StartCoroutine(PulseBin(bin)); instruction.color = correct ? ViewFactory.HudAccent : new Color(1f,.65f,.48f); }
-            instruction.text = (correct ? "CHÍNH XÁC! +10 điểm • " : "CHƯA ĐÚNG. −5 điểm • Đáp án: ") + WasteInfo.Label(currentItem.type);
+            instruction.text = (correct ? "Đúng rồi! +10 điểm • " : "Chưa đúng. −5 điểm • Thùng đúng là: ") + WasteInfo.Label(currentItem.type);
             if (lessonText != null) lessonText.text = currentItem.Definition != null ? currentItem.Definition.Lesson : WasteInfo.Tip(currentItem.type);
-            if (SelectedLearningMode == LearningMode.Test) { instruction.text = "Đã ghi nhận đáp án. Xem giải thích cuối lượt."; lessonText.text = "Kiểm tra độc lập • Không hiển thị đúng/sai trong lượt."; }
+            if (SelectedLearningMode == LearningMode.Test) { instruction.text = "Đã ghi nhận câu trả lời. Xem giải thích khi kết thúc."; lessonText.text = "Bạn đang làm bài kiểm tra nên chưa thấy đúng hay sai."; }
             yield return new WaitForSeconds(SelectedLearningMode == LearningMode.Test ? .35f : 1.5f);
             if (currentItem != null) Destroy(currentItem.gameObject);
             if (round.Finished) FinishRound(); else NextItem();
@@ -406,14 +429,25 @@ namespace EcoSortQuest
             if (SelectedLearningMode != LearningMode.Campaign)
             {
                 if(extraEnvironment!=ExtraEnvironment.None)
-                    yield return service.PostScore(new ScoreRequest{player_id=progress.player_id,display_name=PlayerManager.DisplayName,environment=extraEnvironment.ToString(),
-                        level=1,score=round.Score,correct_count=round.Correct},()=>SetStatus("Đã gửi điểm khu vực. Xem tại Bảng kết quả."),e=>SetStatus("Điểm chưa gửi: "+e));
+                {
+                    var extraReq = new ScoreRequest{player_id=progress.player_id,display_name=PlayerManager.DisplayName,environment=extraEnvironment.ToString(),
+                        level=1,score=round.Score,correct_count=round.Correct};
+                    yield return service.PostScore(extraReq,()=>SetStatus("Đã gửi điểm khu vực. Xem tại Bảng kết quả."),e=>{
+                        offlineQueue.EnqueueScore(extraReq);
+                        SetStatus("Điểm chưa gửi (đã lưu hàng đợi ngoại tuyến): "+e);
+                    });
+                }
                 yield return SyncLearning();yield break;
             }
             SetStatus("Đã lưu cục bộ. Đang gửi kết quả đến " + Mode + "…");
             bool failed = false;
-            yield return service.PostScore(new ScoreRequest { player_id = progress.player_id, display_name=PlayerManager.DisplayName, level = SelectedLevel,
-                score = round.Score, correct_count = round.Correct }, () => { }, e => { failed = true; SetStatus("Điểm chưa gửi: " + e + " • Tiến trình vẫn được lưu cục bộ."); });
+            var req = new ScoreRequest { player_id = progress.player_id, display_name=PlayerManager.DisplayName, level = SelectedLevel,
+                score = round.Score, correct_count = round.Correct };
+            yield return service.PostScore(req, () => { }, e => {
+                failed = true;
+                offlineQueue.EnqueueScore(req);
+                SetStatus("Điểm chưa gửi (đã lưu hàng đợi ngoại tuyến): " + e + " • Tiến trình vẫn được lưu cục bộ.");
+            });
             yield return service.PutProgress(progress, () => { if (!failed) SetStatus("Đã lưu điểm và tiến trình • " + Mode); },
                 e => SetStatus("Đã lưu cục bộ; đồng bộ thất bại: " + e));
             yield return SyncLearning();

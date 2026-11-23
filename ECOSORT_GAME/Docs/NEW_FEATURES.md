@@ -6,10 +6,14 @@ Cập nhật ngày 12/11/2026. Các chức năng này bổ sung cho bản demo m
 
 1. Mở `Assets/_EcoSortQuest/Scenes/MainMenu.unity`, nhấn Play. Lần đầu, nhập tên gọi rồi chọn **Lưu tên gọi**, hoặc chọn **Chơi khách**. Tên dài tối đa 32 ký tự, hỗ trợ tiếng Việt, chữ số, dấu cách, gạch ngang và gạch dưới.
 2. Chọn **Đổi tên** trong menu để thay tên. Tên gọi lưu trên máy; mã người chơi và lịch sử cũ được giữ nguyên. Đây không phải tài khoản đăng nhập.
-3. Chọn **Hành trình dọn dẹp các khu vực**. Cùng một hành trình có chín nhiệm vụ theo tuyến ở Nhà ở, Trường học và Công viên, cùng ba địa điểm thực hành: **Bệnh viện • Khu tiếp đón**, **Siêu thị** và **Bãi biển**.
-4. Di chuyển và nhặt vật phẩm theo hướng dẫn trong game; quan sát tình trạng, chuẩn bị hoặc tách vật liệu khi cần, rồi đưa vào một trong bốn thùng. Mỗi địa điểm thực hành có 18 vật phẩm, tối đa 180 điểm. Các mốc 4, 8 và 12 vật phẩm làm xuất hiện trang trí.
+3. Chọn **Hành trình dọn dẹp các khu vực**. Trang 1/2 có chín nhiệm vụ theo tuyến ở Nhà ở, Trường học và Công viên. Chọn **Địa điểm mới →** để sang trang 2/2, gồm **Bệnh viện**, **Siêu thị** và **Bãi biển**.
+4. Mỗi địa điểm mới có ba nhiệm vụ mở theo thứ tự: 6, 10 rồi 18 vật phẩm. Di chuyển và nhặt vật phẩm theo hướng dẫn trong game; quan sát tình trạng, chuẩn bị hoặc tách vật liệu khi cần, rồi đưa vào một trong bốn thùng. Nhiệm vụ cuối tối đa 180 điểm.
 
 Khu tiếp đón bệnh viện chỉ có rác sinh hoạt sạch trong bộ vật phẩm hiện tại. Game không hướng dẫn trẻ thu gom kim tiêm hay rác y tế. Ba môi trường dùng lại kiến thức bốn nhóm Nhựa, Kim loại, Giấy và Hữu cơ; không bổ sung lớp nhận diện AI. Thành tích phục hồi của từng môi trường lưu riêng và không mở khóa hành trình chính.
+
+## Chơi lại từ đầu
+
+Nút **Chơi lại từ đầu** ở cuối menu chính mở một hộp xác nhận. Khi đồng ý, game xóa trên máy: điểm chiến dịch, sao, huy hiệu, sổ tay, lịch sử học và tiến trình của tất cả nhiệm vụ; sau đó quay lại menu để chơi từ đầu. Tên gọi và thiết lập hiển thị/kết nối vẫn giữ. Dữ liệu điểm đã gửi lên bảng kết quả trực tuyến không bị xóa bởi nút này.
 
 `PlayerManager`, `PlayerNamePrompt` và `MainMenuButtons` đã được gắn vào MainMenu. Giao diện dùng Canvas sẵn có, không tạo thêm Canvas chồng nhau. Không cần prefab UI riêng cho bản demo này. Xem [hướng dẫn hành trình](AREA-JOURNEY.md) và [biên bản kiểm chứng ngày 12/11](JOURNEY-VALIDATION-20261112.md).
 

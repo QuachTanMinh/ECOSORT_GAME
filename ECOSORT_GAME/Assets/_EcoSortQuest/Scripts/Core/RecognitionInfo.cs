@@ -11,7 +11,7 @@ namespace EcoSortQuest
     }
     public static class RecognitionInfo
     {
-        [Serializable] sealed class Catalog { public RecognitionCategory[] classes; }
+        [Serializable] sealed class Catalog { public RecognitionCategory[] classes = Array.Empty<RecognitionCategory>(); }
         static RecognitionCategory[] cached;
         public static IReadOnlyList<RecognitionCategory> All
         {

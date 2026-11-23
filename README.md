@@ -1,6 +1,14 @@
 # EcoSort Quest
 
-**Cập nhật 12/11/2026:** menu đã gộp thành **Hành trình dọn dẹp các khu vực**, bao gồm chín nhiệm vụ theo tuyến và ba địa điểm thực hành mở rộng: khu tiếp đón bệnh viện, siêu thị và bãi biển. Mỗi địa điểm thực hành có 18 vật phẩm, cảnh rộng hơn và nhiều đồ vật đặc trưng. Xem [hướng dẫn sử dụng](ECOSORT_GAME/Docs/NEW_FEATURES.md).
+> 📖 **HƯỚNG DẪN CÀI ĐẶT & CHẠY TRÊN MÁY MỚI:** Xem tài liệu chi tiết tại [HUONG-DAN-CLONE-VA-CHAY-MAY-MOI.md](HUONG-DAN-CLONE-VA-CHAY-MAY-MOI.md) để thiết lập dự án từ A-Z sau khi `git clone`.
+
+**Cập nhật 23/11/2026:**
+- **AI 12 nhóm tích hợp toàn diện vào Gameplay & AR:** Cả 12 nhóm rác (Plastic, Metal, Paper, Organic, Cardboard, GreenGlass, BrownGlass, WhiteGlass, Clothes, Shoes, Batteries, Trash) đều có mô hình 3D, thùng rác riêng và thử thách phân loại tương tác.
+- **Hàng đợi ngoại tuyến (Offline Queue):** Lưu điểm và kết quả AR vào `OfflineQueue` khi mất mạng; tự động đồng bộ lên máy chủ ngay khi có kết nối trở lại.
+- **Tự động đồng bộ đám mây (Cloud Sync):** Game tự động gộp (merge) tiến trình cục bộ và đám mây khi khởi động ở chế độ Online.
+- **Tùy chỉnh thời gian lượt chơi (Timer Preset):** Thêm 3 mức thời gian (Ngắn 40s/30s, Mặc định 75s/50s, Dài 120s/90s) trong menu Cài đặt > Lối chơi.
+- **Đo FPS Benchmark chuẩn hóa:** Nâng cấp `DemoBenchmark` toàn màn hình và script `run-benchmark.ps1` để đánh giá hiệu năng khách quan.
+- **Docker 12 lớp & Hướng dẫn Playtest:** Đã bổ sung `DOCKER-BUILD-12CLASS.md`, `PLAYTEST-STANDALONE-CHECKLIST.md` (M01-M24) và `CHILD-PLAYTEST-PROTOCOL.md`.
 
 **Cập nhật 30/10/2026:** webcam có đổi camera, hướng dẫn chất lượng ảnh và lưu ảnh kiểm tra theo thao tác chủ động; kết quả học có trang Trước và sau và xuất CSV. Đã kiểm chứng 65 bài logic, 31 bài tương tác (có Unity–Docker/model thật và webcam), 16 bài Python; cloud thật và volume Docker đã kiểm tra lại. Xem [hướng dẫn kiểm chứng và giới hạn](ECOSORT_GAME/Docs/DEMO-VALIDATION-20261030.md) và [tài liệu Word giải thích hệ thống](BaoCao/Huong-dan-cach-he-thong-EcoSort-Quest-hoat-dong-20261030.docx).
 

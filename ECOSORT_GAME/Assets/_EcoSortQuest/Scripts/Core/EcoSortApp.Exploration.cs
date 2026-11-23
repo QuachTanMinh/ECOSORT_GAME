@@ -32,18 +32,25 @@ namespace EcoSortQuest
         void StartExploration()
         {
             AiMission=false;SelectedLevel=1;sessionLimit=0;learningAnswers.Clear();answerSeconds=0;
+            EnsureExplorationSelection();
             areaMission=AreaMissions.Find(SelectedAreaMission);
-            extraEnvironment=areaMission==null?SelectedExtraEnvironment:ExtraEnvironment.None;
+            extraEnvironment=areaMission!=null && areaMission.Environment!=ExtraEnvironment.None?areaMission.Environment:SelectedExtraEnvironment;
             if(extraEnvironment!=ExtraEnvironment.None)SelectedContext=extraEnvironment==ExtraEnvironment.Beach?LearningContext.Park:LearningContext.Home;
             if(areaMission!=null && !AreaJourneyStore.Unlocked(AreaJourneyStore.Load(progress.player_id),areaMission))
             {SelectedAreaMission="";Home();return;}
             if(areaMission!=null)SelectedContext=areaMission.Context;
+            int extraLevel=0;
+            if(extraEnvironment!=ExtraEnvironment.None && areaMission!=null && areaMission.Environment==extraEnvironment)
+            {
+                extraLevel=System.Array.IndexOf(AreaMissions.ForEnvironment(extraEnvironment),areaMission);
+                if(extraLevel<0)throw new System.InvalidOperationException("The selected extra mission is not in its environment route.");
+            }
             int total=areaMission!=null?areaMission.Items.Length:extraEnvironment!=ExtraEnvironment.None?ExtraEnvironmentInfo.ItemCount(extraEnvironment):RestorationMission.Total;
             round=new SortingRound(total,Mathf.CeilToInt(total*.75f));
             restoration=new RestorationMission(total);
             restorationSession=System.Guid.NewGuid().ToString("N");
-            if(areaMission!=null)sceneryLayout=world.BuildMissionEnvironment(areaMission);
-            else if(extraEnvironment!=ExtraEnvironment.None)sceneryLayout=world.BuildExtraEnvironment(extraEnvironment);
+            if(areaMission!=null && areaMission.Environment==ExtraEnvironment.None)sceneryLayout=world.BuildMissionEnvironment(areaMission);
+            else if(extraEnvironment!=ExtraEnvironment.None)sceneryLayout=world.BuildExtraEnvironment(extraEnvironment,extraLevel);
             else {BuildLearningContext();world.PrepareWalkableWorld();}
             sceneCamera.orthographic=false;sceneCamera.fieldOfView=58;sceneCamera.farClipPlane=100;
             explorer=world.Explorer(sceneryLayout!=null?sceneryLayout.Spawn:new Vector3(0,.1f,-5),sceneCamera);
@@ -57,14 +64,21 @@ namespace EcoSortQuest
             SpawnBins(sceneryLayout!=null?sceneryLayout.Collection:new Vector3(0,0,3.8f),sceneryLayout!=null?sceneryLayout.BinScale:1);
             explorationBins=worldRoot.GetComponentsInChildren<WasteBin>();
             var deck=LearningDeck.Build(SelectedContext,total,Random.Range(0,int.MaxValue));
-            // Ensure every mission teaches both container preparation and dry-paper handling.
-            deck[0]=WasteCatalog.All.First(d=>d.Id=="water-bottle");
-            deck[1]=WasteCatalog.All.First(d=>d.Id=="paper-box");
-            deck[2]=WasteCatalog.All.First(d=>d.Id=="drink-can");
-            deck[3]=WasteCatalog.All.First(d=>d.Id=="plastic-cup");
-            deck[4]=WasteCatalog.All.First(d=>d.Id=="paper-bag");
-            deck[5]=WasteCatalog.All.First(d=>d.Id=="banana-peel");
-            if(areaMission!=null)deck=areaMission.Items.Select(id=>WasteCatalog.All.First(d=>d.Id==id)).ToArray();
+            if(areaMission!=null)
+            {
+                // Use the mission's authored item list directly.
+                deck=areaMission.Items.Select(id=>WasteCatalog.All.FirstOrDefault(d=>d.Id==id)).Where(d=>d!=null).ToArray();
+            }
+            else
+            {
+                // Free-roam: seed the first slots with pedagogically useful items (only up to deck length).
+                var seeds=new[]{"water-bottle","paper-box","drink-can","plastic-cup","paper-bag","banana-peel"};
+                for(int s=0;s<seeds.Length && s<deck.Length;s++)
+                {
+                    var found=WasteCatalog.All.FirstOrDefault(d=>d.Id==seeds[s]);
+                    if(found!=null)deck[s]=found;
+                }
+            }
             for(int i=0;i<deck.Length;i++)
             {
                 // Four columns inside the plaza; no item is placed inside a building or garden.
@@ -99,21 +113,22 @@ namespace EcoSortQuest
             objective.GetComponent<Image>().raycastTarget=false;
             missionObjective=view.Text(objective,"",.025f,.05f,.95f,.9f,19);
             view.FitContent(objective,.48f,220,missionObjective);
-            prepareButton=view.Button(view.Root,"Quan sát / xử lý • R",.76f,.04f,.225f,.05f,ShowPreparation);
-            restorationStages=areaMission==null?(extraEnvironment!=ExtraEnvironment.None?world.BuildExtraRewards():world.BuildRestorationRewards()):new GameObject[0];
-            if(areaMission!=null)
+            prepareButton=view.Button(view.Root,"Xem kỹ vật • R",.76f,.04f,.225f,.05f,ShowPreparation);
+            restorationStages=extraEnvironment!=ExtraEnvironment.None?world.BuildExtraRewards():areaMission==null?world.BuildRestorationRewards():new GameObject[0];
+            if(areaMission!=null && areaMission.Environment==ExtraEnvironment.None)
             {
                 var journey=AreaJourneyStore.Load(progress.player_id);
                 world.BuildAreaIdentity(areaMission.Context,areaMission.Zone,AreaJourneyStore.Decorations(journey,areaMission.Context),journey);
-                view.Button(view.Root,"Gợi ý vật đang cầm • H",.76f,.105f,.225f,.05f,RequestAreaHint);
+                view.Button(view.Root,"Gợi ý cho vật này • H",.76f,.105f,.225f,.05f,RequestAreaHint);
             }
-            Footer("WASD: đi • Shift: chạy • Chuột phải: xoay • E: nhặt / bỏ thùng • R: quan sát / chuẩn bị • Q: đặt xuống");
+            Footer("WASD: đi • Shift: chạy • Chuột phải: xoay • E: nhặt/bỏ thùng • R: xem kỹ • Q: đặt xuống");
             RefreshExplorationHud();explorer.CanMove=true;explorer.Tick(0);
             ShowMissionBrief();
         }
         Vector3 AreaItemPosition(int index)
         {
-            if(sceneryLayout!=null)return sceneryLayout.Items[index];
+            if(sceneryLayout!=null && sceneryLayout.Items!=null && sceneryLayout.Items.Length>0)
+                return sceneryLayout.Items[index % sceneryLayout.Items.Length];
             if(areaMission==null)return new Vector3(-4.5f+(index%4)*3,.04f,-5.8f+(index/4)*2.7f);
             if(areaMission.Context==LearningContext.Home)return new Vector3(-2.4f+(index%2)*4.8f,.04f,-4.5f+(index/2)*2.8f);
             if(areaMission.Context==LearningContext.School)return new Vector3(-4.5f+(index%4)*3,.04f,-5.5f+(index/4)*3.2f);
@@ -121,11 +136,11 @@ namespace EcoSortQuest
             var route=new[]{new Vector3(-7,0,-7),new Vector3(0,0,-7),new Vector3(7,0,-7),new Vector3(7,0,-3),
                 new Vector3(0,0,-3),new Vector3(-7,0,-3),new Vector3(-8.5f,0,0),new Vector3(8.5f,0,0),
                 new Vector3(-4,0,-5),new Vector3(4,0,-5),new Vector3(-4,0,1),new Vector3(4,0,1)};
-            return route[index]+Vector3.up*.04f;
+            return route[index % route.Length]+Vector3.up*.04f;
         }
         void RefreshExplorationHud()
         {
-            explorationHud.text="ĐÃ DỌN "+cleaned+"/"+round.Total+"   •   ĐÚNG LẦN ĐẦU "+round.Correct+"/"+round.Total+(areaMission!=null?"   •   GỢI Ý "+missionHints:"   •   ĐIỂM "+round.Score);
+            explorationHud.text="Đã dọn: "+cleaned+"/"+round.Total+"   •   Bỏ đúng ngay: "+round.Correct+"/"+round.Total+(areaMission!=null?"   •   Gợi ý đã dùng: "+missionHints:"   •   Điểm: "+round.Score);
             missionObjective.text=(areaMission!=null?areaMission.Title:restoration.Objective)+"   ["+cleaned+"/"+round.Total+"]";
             prepareButton.interactable=carried!=null && !resultShown;
         }
@@ -143,8 +158,8 @@ namespace EcoSortQuest
                 {
                     promptItem=near;promptCarrying=carrying;promptPrepared=prepared;
                     promptLabel=carrying?"Đang cầm: "+carried.Definition.Name+
-                        (prepared?" • Đã chuẩn bị. Đến thùng rồi nhấn E.":" • R: quan sát / chuẩn bị trước khi bỏ thùng."):
-                        near!=null?"E • Nhặt "+near.Definition.Name:sceneryLayout!=null && sceneryLayout.Indoor?"Quan sát quanh phòng. Đến gần vật phẩm rồi nhấn E để nhặt.":"Quan sát quanh khu vực. Đến gần vật phẩm rồi nhấn E để nhặt.";
+                        (prepared?" • Đã sẵn sàng. Đến gần thùng rồi nhấn E.":" • Nhấn R để xem kỹ trước khi bỏ thùng."):
+                        near!=null?"Nhấn E để nhặt "+near.Definition.Name:sceneryLayout!=null && sceneryLayout.Indoor?"Nhìn quanh phòng nhé. Lại gần một món đồ rồi nhấn E để nhặt.":"Nhìn quanh khu vực nhé. Lại gần một món đồ rồi nhấn E để nhặt.";
                 }
                 explorationPrompt.text=promptLabel;
             }
@@ -181,7 +196,7 @@ namespace EcoSortQuest
             }
             var bin=explorationBins.OrderBy(b=>FlatDistance(b.transform.position,explorer.transform.position)).FirstOrDefault();
             if(bin==null || FlatDistance(bin.transform.position,explorer.transform.position)>2.2f)
-            {explorationPrompt.text="Đến gần một thùng phân loại rồi nhấn E.";feedbackUntil=Time.unscaledTime+1.5f;return;}
+            {explorationPrompt.text="Lại gần một thùng rác rồi nhấn E.";feedbackUntil=Time.unscaledTime+1.5f;return;}
             if(carried==wrappedCup && !sleeveSeparated){ShowPreparation();return;}
             if(!preparedLitter.Contains(carried) && PreparationRules.Required(carried.Definition.Id)!=PreparationAction.Ready)
             {ShowPreparation();return;}
@@ -192,23 +207,33 @@ namespace EcoSortQuest
                 learningAnswers.Add(new LearningAnswer{item_id=carried.Definition.Id,expected=carried.type.ToString(),choice=bin.type.ToString(),correct=correct,seconds=answerSeconds});answerSeconds=0;
             }
             gameAudio.Drop();gameAudio.FeedbackAfterDrop(correct);
-            explorationPrompt.text=correct?"ĐÃ BỎ ĐÚNG THÙNG • "+carried.Definition.Lesson:
-                "THÙNG CHƯA ĐÚNG • "+carried.Definition.Lesson+" Giữ rác và thử lại; điểm chỉ tính lần chọn đầu.";
+            explorationPrompt.text=correct?"Đúng rồi! "+carried.Definition.Lesson:
+                "Chưa đúng. "+carried.Definition.Lesson+" Bạn vẫn có thể thử lại; điểm chỉ tính ở lần chọn đầu.";
             feedbackUntil=Time.unscaledTime+3;
             if(correct)
             {
                 scattered.Remove(carried);preparedLitter.Remove(carried);Destroy(carried.gameObject);carried=null;cleaned++;
                 restoration.CleanOne();
                 for(int i=0;i<restorationStages.Length;i++)restorationStages[i].SetActive(i<restoration.Stage);
-                if(areaMission==null && cleaned%4==0)
+                if(extraEnvironment!=ExtraEnvironment.None && cleaned%4==0)
                 {
-                    explorationPrompt.text=cleaned==4?"LỐI ĐI ĐÃ MỞ • Các luống cây được hồi sinh!":
-                        cleaned==8?"VƯỜN HOA ĐÃ NỞ • Tiếp tục hoàn thiện góc xanh!":"ĐÃ PHỤC HỒI KHU VỰC • Cảm ơn bạn đã giữ môi trường sạch!";
+                    explorationPrompt.text=cleaned==4?"Lối đi đã mở! Cây xanh đang trở lại.":
+                        cleaned==8?"Vườn hoa đã nở! Cùng hoàn thiện góc xanh nhé.":"Khu vực đã hồi sinh. Cảm ơn bạn đã giữ môi trường sạch!";
                     feedbackUntil=Time.unscaledTime+5;
                 }
                 if(cleaned==round.Total)FinishRound();
             }
             RefreshExplorationHud();
+        }
+        void EnsureExplorationSelection()
+        {
+            // Opening GameScene directly must still create a complete, playable mission.
+            if(!string.IsNullOrEmpty(SelectedAreaMission) || SelectedExtraEnvironment!=ExtraEnvironment.None)return;
+            var data=AreaJourneyStore.Load(progress.player_id);
+            var requested=AreaMissions.MainJourney.FirstOrDefault(m=>m.Context==SelectedContext);
+            var fallback=requested!=null && AreaJourneyStore.Unlocked(data,requested)?requested:
+                AreaMissions.MainJourney.First(m=>AreaJourneyStore.Unlocked(data,m));
+            SelectedAreaMission=fallback.Id;SelectedContext=fallback.Context;
         }
         void PutDownExploration()
         {

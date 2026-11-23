@@ -8,20 +8,20 @@ namespace EcoSortQuest
     {
         readonly Transform root;
         readonly List<Material> materials = new List<Material>();
-        readonly List<Mesh> generatedMeshes=new List<Mesh>();
-        readonly Dictionary<Color,Material> palette = new Dictionary<Color,Material>();
+        readonly List<Mesh> generatedMeshes = new List<Mesh>();
+        readonly Dictionary<Color, Material> palette = new Dictionary<Color, Material>();
         Shader surfaceShader;
         public WorldFactory(Transform root) { this.root = root; }
         public Material Material(Color color)
         {
-            if(palette.TryGetValue(color,out var shared) && shared!=null)return shared;
-            if(surfaceShader==null)surfaceShader=Shader.Find("Universal Render Pipeline/Lit");
-            if(surfaceShader==null)surfaceShader=Shader.Find("Standard");
+            if (palette.TryGetValue(color, out var shared) && shared != null) return shared;
+            if (surfaceShader == null) surfaceShader = Shader.Find("Universal Render Pipeline/Lit");
+            if (surfaceShader == null) surfaceShader = Shader.Find("Standard");
             var mat = new Material(surfaceShader) { color = color, enableInstancing = true };
             if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", .22f);
-            materials.Add(mat);palette[color]=mat; return mat;
+            materials.Add(mat); palette[color] = mat; return mat;
         }
-        public GameObject Shape(string name, PrimitiveType shape, Transform parent, Vector3 position, Vector3 scale, Color color, bool collider = true)
+        public GameObject Shape(string name, PrimitiveType shape, Transform parent, Vector3 position, Vector3 scale, Color color, System.Boolean collider = true)
         {
             var go = GameObject.CreatePrimitive(shape); go.name = name; go.transform.SetParent(parent, false);
             go.transform.localPosition = position; go.transform.localScale = scale;
@@ -75,17 +75,27 @@ namespace EcoSortQuest
             Shape("Opening", PrimitiveType.Cube, go.transform, new Vector3(0, 1.54f, 0), new Vector3(1.1f, .03f, .85f), ViewFactory.Ink, false);
             var label = new GameObject("Category label", typeof(TextMesh)); label.transform.SetParent(go.transform, false);
             label.transform.localPosition = new Vector3(0, .85f, -.711f);
-            label.transform.localRotation = Quaternion.Euler(0, 180, 0);
             // TextMesh faces local -Z; identity faces the gameplay camera on -Z.
             label.transform.localRotation = Quaternion.identity;
-            var text = label.GetComponent<TextMesh>(); text.text = type.ToString().ToUpperInvariant();
+            var text = label.GetComponent<TextMesh>(); text.text = WasteInfo.Label(type);
             text.anchor = TextAnchor.MiddleCenter; text.alignment = TextAlignment.Center;
-            text.fontSize = 50; text.characterSize = .065f; text.color = ViewFactory.Ink;
+            text.fontSize = 50; text.characterSize = 0.065f; text.fontStyle = FontStyle.Bold; text.color = Color.white;
+            text.offsetZ = 0f; text.lineSpacing = 1f; text.tabSize = 4f; text.richText = true;
+
+            // Co chữ nếu quá dài (ví dụ ORGANIC) để không chạm mép thùng
+            float width = label.GetComponent<MeshRenderer>().bounds.size.x;
+            if (width <= 0.01f) width = text.text.Length * .17f;   // dự phòng nếu bounds chưa cập nhật
+            const float maxWidth = 1.3f;                            // thân thùng rộng 1.6
+            if (width > maxWidth) { label.transform.localScale *= maxWidth / width; width = maxWidth; }
+
+            // Tấm nền tối: nằm giữa mặt thùng (z = -.70) và chữ (z = -.711)
+            Shape("Label plate", PrimitiveType.Quad, go.transform, new Vector3(0, .85f, -.706f),
+            new Vector3(width * 1.2f, .42f, 1f), new Color(.12f, .16f, .20f), false);
             return bin;
         }
         public WasteItem Item(WasteType type, Vector3 position)
         {
-            if (type == WasteType.Organic) return CatalogItem(WasteCatalog.Get(type,0),position);
+            if (type != WasteType.Plastic && type != WasteType.Metal && type != WasteType.Paper) return CatalogItem(WasteCatalog.Get(type, 0), position);
             var go = new GameObject(type + " Item"); go.transform.SetParent(root, false); go.transform.localPosition = position;
             var item = go.AddComponent<WasteItem>(); item.type = type;
             var color = WasteInfo.Color(type);
@@ -114,8 +124,8 @@ namespace EcoSortQuest
         }
         public void Dispose()
         {
-            foreach (var material in materials) if (material != null) Object.Destroy(material);materials.Clear();palette.Clear();
-            foreach(var mesh in generatedMeshes)if(mesh!=null)Object.Destroy(mesh);generatedMeshes.Clear();
+            foreach (var material in materials) if (material != null) Object.Destroy(material); materials.Clear(); palette.Clear();
+            foreach (var mesh in generatedMeshes) if (mesh != null) Object.Destroy(mesh); generatedMeshes.Clear();
         }
     }
 }

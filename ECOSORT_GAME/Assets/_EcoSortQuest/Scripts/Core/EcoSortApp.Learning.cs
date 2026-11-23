@@ -25,7 +25,7 @@ namespace EcoSortQuest
         string LearningLabel => SelectedLearningMode == LearningMode.Explore ? "KHÁM PHÁ 3D" : SelectedLearningMode == LearningMode.Test ? "KIỂM TRA" : SelectedLearningMode == LearningMode.Learn ? "HỌC CÓ HƯỚNG DẪN" : SelectedLearningMode == LearningMode.Review ? "ÔN CÂU SAI" : "CHIẾN DỊCH";
         IEnumerator PulseBin(WasteType type)
         {
-            var bin = FindObjectsByType<WasteBin>(FindObjectsSortMode.None).FirstOrDefault(b => b.type == type);
+            var bin = FindObjectsByType<WasteBin>().FirstOrDefault(b => b.type == type);
             if(bin == null) yield break;
             var original=bin.transform.localScale;
             for(float elapsed=0;elapsed<.35f;elapsed+=Time.deltaTime)
@@ -131,6 +131,7 @@ namespace EcoSortQuest
         IEnumerator SyncLearning(bool includeProgress=false)
         {
             if(service.IsMock){SetStatus("Kết quả đã lưu trên máy. Bật kết nối trong Cài đặt nếu muốn lưu trực tuyến.");yield break;}
+            yield return offlineQueue.Flush(service, SetStatus);
             var rest=service as RestEcoSortService;
             if(rest==null)yield break;
             int sent=0;

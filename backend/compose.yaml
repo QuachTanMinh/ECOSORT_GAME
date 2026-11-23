@@ -1,6 +1,21 @@
 services:
   ecosort-api:
-    build: .
+    build:
+      context: .
+      # ─────────────────────────────────────────────────────────────────────
+      # BASE_IMAGE build argument
+      # ─────────────────────────────────────────────────────────────────────
+      # Default: pulls python:3.12-slim from Docker Hub (~620 MB for TF).
+      # Fast build (no re-download): pass the local runtime image that already
+      # has TensorFlow installed, e.g.:
+      #
+      #   docker compose build --build-arg BASE_IMAGE=ecosort-api:before-20261030
+      #
+      # or set it here:
+      #   args:
+      #     BASE_IMAGE: ecosort-api:before-20261030
+      args:
+        BASE_IMAGE: python:3.12-slim
     image: ecosort-api:local
     container_name: ecosort-api
     ports:
@@ -16,9 +31,21 @@ services:
       AIO_FEED_PREFIX: ${AIO_FEED_PREFIX:-}
       ECOSORT_AI_THRESHOLD: ${ECOSORT_AI_THRESHOLD:-0.75}
     volumes:
+      # Named volume – persists game data across container restarts and rebuilds.
+      # WARNING: `docker compose down -v` DELETES this volume and all game data.
       - ecosort-data:/app/data
+    # Health check hits the FastAPI /health endpoint (not root /).
+    # start-period=180s allows time for TensorFlow model loading on first start.
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 180s
+      retries: 3
     restart: unless-stopped
 
 volumes:
+  # ecosort-data stores the persistent JSON game-score database.
+  # Inspect with: docker volume inspect ecosort-data
   ecosort-data:
-

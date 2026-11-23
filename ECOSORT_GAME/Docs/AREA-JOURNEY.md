@@ -2,7 +2,7 @@
 
 ## Mở và chơi
 
-Mở bản Windows hoặc MainMenu trong Unity. Chọn **HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →**. Trong một màn hình, người chơi chọn ba khu vực theo tuyến Nhà ở, Trường học, Công viên hoặc ba địa điểm thực hành Bệnh viện, Siêu thị, Bãi biển. Người chơi mới bắt đầu ở Nhà ở; các nhiệm vụ chính vẫn mở khóa tuần tự. Các địa điểm thực hành luôn có thể chọn và không thay đổi tiến trình mở khóa chính.
+Mở bản Windows hoặc MainMenu trong Unity. Chọn **HÀNH TRÌNH DỌN DẸP CÁC KHU VỰC →**. Trang 1/2 là tuyến Nhà ở, Trường học, Công viên; chọn **Địa điểm mới →** để mở trang 2/2 với Bệnh viện, Siêu thị, Bãi biển. Người chơi mới bắt đầu ở Nhà ở; các nhiệm vụ chính vẫn mở khóa tuần tự.
 
 WASD di chuyển, Shift chạy, giữ chuột phải xoay góc nhìn. E nhặt/bỏ thùng, Q đặt xuống, R quan sát và chọn cách chuẩn bị. H hỏi gợi ý cho vật đang cầm. Không có giới hạn thời gian trong cả chín nhiệm vụ; tốc độ không quyết định sao. Tên vật phẩm và thao tác quan sát không bị tính là gợi ý; H khi đang cầm vật sẽ tăng số lần gợi ý.
 
@@ -24,13 +24,13 @@ Công viên gồm **Lối đi an toàn**, **Sau buổi dã ngoại**, **Trả l�
 
 ## Địa điểm thực hành rộng hơn
 
-Ba địa điểm thực hành nằm trong chính màn hành trình, không còn ở menu tách riêng. Mỗi nơi có 18 vật phẩm để người chơi phải đi lại, quan sát và đưa rác về trạm phân loại. Điểm tối đa là 180.
+Ba địa điểm thực hành nằm ở trang 2 của hành trình, không còn ở menu tách riêng. Mỗi nơi có ba nhiệm vụ tăng dần (6, 10, 18 vật phẩm) và mở khóa theo thứ tự trong chính địa điểm đó. Điểm tối đa của nhiệm vụ cuối là 180.
 
 | Địa điểm | Cảnh quan | Điểm nhấn trải nghiệm |
 |---|---|---|
-| Bệnh viện • Khu tiếp đón | Ghế chờ, quầy tiếp đón, bảng chỉ dẫn, giá thông tin và lối xếp hàng | Chỉ có rác sinh hoạt sạch; không mô phỏng thu gom vật sắc nhọn hay rác y tế. |
-| Siêu thị | Kệ hàng hai bên, hàng hóa, giỏ mua sắm, quầy thanh toán và lối đi giữa | Rác rải dọc lối đi chung, không nằm trong kệ hoặc quầy. |
-| Bãi biển | Cát, mép nước, lối ván, ô che, bàn ghế, cây ven biển và bảng nhắc giữ sạch | Khu tìm kiếm mở rộng theo chiều ngang; các vật phẩm tránh ô, ghế và cây. |
+| Bệnh viện | Phòng chờ sạch → Quầy tiếp đón gọn → Sảnh thân thiện | Chỉ có rác sinh hoạt sạch; không mô phỏng thu gom vật sắc nhọn hay rác y tế. |
+| Siêu thị | Lối đi mua sắm → Quầy thanh toán gọn → Siêu thị xanh | Rác rải dọc lối đi chung, không nằm trong kệ hoặc quầy. |
+| Bãi biển | Mép nước sạch → Khu nghỉ gọn gàng → Bãi biển xanh | Khu tìm kiếm mở rộng theo chiều ngang; các vật phẩm tránh ô, ghế và cây. |
 
 Các cảnh giữ phong cách low-poly dựng bằng mã để giảm số tệp tài nguyên, dùng chung vật liệu đã bật instancing và chỉ tạo collider cho nền, tường, nội thất cần chặn người chơi. Đây là lựa chọn tối ưu cho bản demo Windows, không phải bản đồ mô phỏng có ảnh chụp thật.
 
@@ -42,7 +42,7 @@ Các cảnh giữ phong cách low-poly dựng bằng mã để giảm số tệp
 
 Một đáp án sai không ngăn hoàn thành: giữ vật phẩm và chọn lại thùng. Điểm/độ chính xác chỉ ghi lần phân loại đầu. Tách túi/cốc không tự tăng số vật đã dọn. Đúng vật liệu nhưng sai chuẩn bị hoặc câu hỏi vẫn chưa đủ điều kiện ba sao.
 
-Hoàn thành một nhiệm vụ mở nhiệm vụ kế tiếp; xong ba nhiệm vụ Nhà ở mở Trường học, xong Trường học mở Công viên. Không yêu cầu ba sao để đi tiếp. Chơi lại giữ số sao/độ chính xác tốt nhất, không ghi thưởng lặp cho cùng phiên hoàn thành. Thành tích chiến dịch/phục hồi cũ được giữ nguyên; hành trình mới có bộ nhiệm vụ và lưu tiến trình riêng.
+Hoàn thành một nhiệm vụ mở nhiệm vụ kế tiếp; xong ba nhiệm vụ Nhà ở mở Trường học, xong Trường học mở Công viên. Ba địa điểm mới có ba nhiệm vụ riêng, chỉ mở nhiệm vụ sau trong cùng địa điểm. Không yêu cầu ba sao để đi tiếp. Chơi lại giữ số sao/độ chính xác tốt nhất, không ghi thưởng lặp cho cùng phiên hoàn thành. Thành tích chiến dịch/phục hồi cũ được giữ nguyên; hành trình mới có bộ nhiệm vụ và lưu tiến trình riêng.
 
 ## Phần thưởng, huy hiệu và sổ tay
 

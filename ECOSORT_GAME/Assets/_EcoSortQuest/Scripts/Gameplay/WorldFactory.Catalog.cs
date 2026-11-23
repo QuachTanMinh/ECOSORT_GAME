@@ -12,8 +12,18 @@ namespace EcoSortQuest
             var silver = new Color(.72f, .78f, .81f); var blue = new Color(.22f, .67f, .82f);
             var orange = new Color(.91f, .47f, .20f); var brown = new Color(.67f, .43f, .23f);
             Transform parent = go.transform;
-            GameObject Box(string name, Vector3 p, Vector3 s, Color c) => Shape(name, PrimitiveType.Cube, parent, p, s, c, false);
-            GameObject Round(string name, Vector3 p, Vector3 s, Color c) => Shape(name, PrimitiveType.Cylinder, parent, p, s, c, false);
+            GameObject Box(string name, Vector3 p, Vector3 s, Color c)
+            {
+                return Shape(name, PrimitiveType.Cube, parent, p, s, c, false);
+            }
+
+
+            GameObject Round(string name, Vector3 p, Vector3 s, Color c)
+            {
+                return Shape(name, PrimitiveType.Cylinder, parent, p, s, c, false);
+            }
+
+
             int model = definition.Model;
             if (definition.Type == WasteType.Organic) OrganicModel(parent, model);
             else if (model >= 6) ExtraModel(parent, definition.Type, model);
@@ -94,7 +104,7 @@ namespace EcoSortQuest
                     Box("Tin pattern",new Vector3(0,.55f,0),new Vector3(.65f,.02f,.45f),orange);
                 }
             }
-            else
+            else if(definition.Type == WasteType.Paper)
             {
                 if(model==0 || model==3 || model==4)
                 {
@@ -126,6 +136,10 @@ namespace EcoSortQuest
                     Round("Hollow",new Vector3(0,.85f,0),new Vector3(.5f,.015f,.5f),ink);
                 }
             }
+            else
+            {
+                ExtendedModel(parent, definition.Type, model);
+            }
             // A single generous pickup collider keeps all small/flat variants easy to grab.
             var bounds = new Bounds(go.transform.position, Vector3.zero);
             foreach(var renderer in go.GetComponentsInChildren<Renderer>()) bounds.Encapsulate(renderer.bounds);
@@ -134,5 +148,6 @@ namespace EcoSortQuest
             item.selectionMarker = Shape("Selected",PrimitiveType.Cylinder,parent,new Vector3(0,.02f,0),new Vector3(1.45f,.012f,1.45f),new Color(1,.87f,.28f),false);
             item.Select(false); return item;
         }
+
     }
 }

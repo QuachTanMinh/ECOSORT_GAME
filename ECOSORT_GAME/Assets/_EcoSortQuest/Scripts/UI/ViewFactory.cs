@@ -39,7 +39,7 @@ namespace EcoSortQuest
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1600, 900); scaler.matchWidthOrHeight = .5f;
             Root = canvas.GetComponent<RectTransform>();
-            if (UnityEngine.Object.FindFirstObjectByType<EventSystem>() == null)
+            if (UnityEngine.Object.FindAnyObjectByType<EventSystem>() == null)
             {
                 var events = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
                 events.transform.SetParent(parent, false);
@@ -85,8 +85,12 @@ namespace EcoSortQuest
             if(surface!=null && surface.color==HudSurface)
                 text.color=!color.HasValue || color.Value==Ink?HudInk:color.Value==Muted?HudMuted:color.Value==Accent?HudAccent:color.Value;
             text.alignment = align; text.raycastTarget = false; text.supportRichText = false;
-            text.lineSpacing=1.10f;if(size>=28)text.fontStyle=FontStyle.Bold;
-            text.resizeTextForBestFit = true; text.resizeTextMinSize = Mathf.Min(16, size); text.resizeTextMaxSize = size;
+            text.lineSpacing=1.12f;text.fontStyle=size>=18?FontStyle.Bold:FontStyle.Normal;
+            text.resizeTextForBestFit = true; text.resizeTextMinSize = Mathf.Min(18, size); text.resizeTextMaxSize = size;
+            var outline=rect.gameObject.AddComponent<Outline>();
+            bool lightText=text.color.grayscale>.58f;
+            outline.effectColor=lightText?new Color(.01f,.04f,.07f,.72f):new Color(1f,1f,1f,.58f);
+            outline.effectDistance=new Vector2(1.15f,-1.15f);
             return text;
         }
         public Button Button(Transform parent, string title, float x, float y, float w, float h, Action clicked,
@@ -136,7 +140,7 @@ namespace EcoSortQuest
                 FitContent(title,.40f,120,locationText);
                 var connection = Panel(strip, .735f, 0, .115f, 1, HudSurface, "Connection chip");
                 connection.GetComponent<Image>().raycastTarget = false;
-                Text(connection, mode.StartsWith("CHƠI")?"CHƠI TRÊN MÁY":"TRỰC TUYẾN", .07f, .08f, .86f, .84f, 16, HudAccent, TextAnchor.MiddleCenter);
+                Text(connection, mode.StartsWith("Chơi")?"Chơi trên máy":"Đã kết nối", .07f, .08f, .86f, .84f, 16, HudAccent, TextAnchor.MiddleCenter);
                 if (home != null) Button(strip, "Menu", .865f, 0, .075f, 1, home);
                 var settings = Button(strip, "", .95f, 0, .05f, 1, () => SettingsRequested?.Invoke());
                 settings.name = "Settings gear";
@@ -147,7 +151,7 @@ namespace EcoSortQuest
             var header = Panel(Root, .02f, .92f, .96f, .065f, Cream, "Header");
             Text(header, "ECOSORT / QUEST", .015f, .20f, .26f, .60f, 26);
             Text(header, subtitle, .30f, .20f, .38f, .60f, 19, Muted);
-            Text(header, mode.StartsWith("CHƠI")?"CHƠI TRÊN MÁY":"TRỰC TUYẾN", .69f, .20f, .14f, .60f, 16, Accent, TextAnchor.MiddleRight);
+            Text(header, mode.StartsWith("Chơi")?"Chơi trên máy":"Đã kết nối", .69f, .20f, .14f, .60f, 16, Accent, TextAnchor.MiddleRight);
             if (home != null) Button(header, "Menu", .845f, .25f, .085f, .5f, home);
             var gear=Button(header,"",.94f,.25f,.045f,.5f,()=>SettingsRequested?.Invoke());gear.name="Settings gear";
             var icon=Rect("Gear icon",gear.transform,.2f,.12f,.6f,.76f);icon.gameObject.AddComponent<GearIcon>().color=Ink;

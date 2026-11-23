@@ -48,12 +48,27 @@ namespace EcoSortQuest
             }
             else if(tab==2)
             {
+                // --- TỐC ĐỘ BĂNG CHUYỀN ---
                 view.Text(panel,"TỐC ĐỘ BĂNG CHUYỀN KHI LUYỆN TẬP",.05f,.60f,.90f,.08f,25);
                 var label=view.Text(panel,"",.05f,.46f,.90f,.09f,23);
                 System.Action refresh=()=>label.text="Hiện tại: "+PlayerPrefs.GetFloat("EcoSortQuest.BeltSpeed",1).ToString("F1")+"×";
                 refresh();
                 for(int i=0;i<3;i++){float speed=.6f+i*.4f;view.Button(panel,speed.ToString("F1")+"×",.05f+i*.31f,.32f,.28f,.10f,()=>{PlayerPrefs.SetFloat("EcoSortQuest.BeltSpeed",speed);PlayerPrefs.Save();refresh();});}
-                view.Text(panel,"Kiểm tra giữ tốc độ chuẩn để so sánh kết quả.\nESC: đóng cài đặt và trở về đúng trạng thái trước đó.\nKhi mở cài đặt trong lượt chơi, đồng hồ và băng chuyền tạm dừng.",.05f,.08f,.90f,.19f,23,ViewFactory.Muted);
+
+                // --- THỜI GIAN MỖI LƯỢT ---
+                // Giá trị mặc định (75s/50s) chưa được playtest với người dùng thật.
+                // Ba preset nhân vào timeLimit khi khởi tạo timer (không ảnh hưởng chế độ Kiểm tra).
+                view.Text(panel,"THỜI GIAN MỖI LƯỢT (giây)",.05f,.23f,.90f,.07f,23);
+                var timerLabel=view.Text(panel,"",.05f,.13f,.90f,.08f,21);
+                float[] timerMults=new float[]{.55f,1.0f,1.6f};
+                string[] timerNames=new string[]{"Ngắn (40s/30s)","Mặc định (75s/50s)","Dài (120s/90s)"};
+                System.Action timerRefresh=()=>{
+                    float cur=PlayerPrefs.GetFloat("EcoSortQuest.TimerMultiplier",1f);
+                    int idx=0;for(int k=0;k<timerMults.Length;k++)if(Mathf.Approximately(cur,timerMults[k]))idx=k;
+                    timerLabel.text="Hiện tại: "+timerNames[idx]+" • áp dụng lượt tiếp theo";
+                };
+                timerRefresh();
+                for(int i=0;i<3;i++){int n=i;view.Button(panel,timerNames[n],.05f+n*.31f,.03f,.28f,.09f,()=>{PlayerPrefs.SetFloat("EcoSortQuest.TimerMultiplier",timerMults[n]);PlayerPrefs.Save();timerRefresh();});}
             }
             else
             {
